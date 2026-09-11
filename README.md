@@ -1,11 +1,11 @@
-# DialecticAI 2.0 🧠⚡
+# DialecticAI 0.1 🧠⚡
 
 DialecticAI is an architectural framework for building predictable, philosophical, and truly cognitive Multi-Agent systems. It is built strictly on the principles of **Dialectics** (Thesis -> Antithesis -> Synthesis).
 
 Unlike LangChain or other "Lego block" frameworks that let you write spaghetti code, **DialecticAI forces you to think**. 
 
 ![Dialectical Cycle](https://img.shields.io/badge/Architecture-Strict-red)
-![Version](https://img.shields.io/badge/version-2.0-blue)
+![Version](https://img.shields.io/badge/version-0.1-blue)
 ![Python](https://img.shields.io/badge/python-3.10+-success)
 
 ## Why DialecticAI? (The Problem with LangChain)

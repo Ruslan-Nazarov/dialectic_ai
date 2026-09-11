@@ -1,4 +1,4 @@
-🚀 Tired of LLM sycophancy? Say hello to DialecticAI 2.0! 
+🚀 Tired of LLM sycophancy? Say hello to DialecticAI 0.1! 
 
 We built an autonomous agent framework grounded in Hegelian dialectics (Thesis ➡️ Reality Check ➡️ Synthesis). Stop coding rigid workflows and start building AI that argues with reality! 
 

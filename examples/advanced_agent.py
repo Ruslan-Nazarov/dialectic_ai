@@ -14,7 +14,7 @@ from dialectic_ai.tools import web_search
 from dialectic_ai.core.schema import AgentInput
 
 async def main():
-    print("=== Initializing Advanced Agent (DialecticAI 2.0) ===")
+    print("=== Initializing Advanced Agent (DialecticAI 0.1) ===")
     
     # Initializing a new SQLite database
     db_path = "examples_memory.db"
