@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DialecticAI Dashboard</title>
+<script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --cyan: #39d0d8;
+    --blue: #58a6ff;
+    --orange: #f0883e;
+    --green: #3fb950;
+    --red: #f85149;
+    --purple: #bc8cff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── HEADER ─────────────────────────────────────── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    flex-shrink: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cyan);
+  }
+  .logo span { color: var(--text); font-weight: 400; }
+
+  .status-badges { display: flex; gap: 10px; }
+  .badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+  .badge.active { color: var(--green); border-color: var(--green); background: rgba(63,185,80,.1); }
+  .badge.info   { color: var(--blue);  border-color: var(--blue);  background: rgba(88,166,255,.1); }
+
+  .refresh-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all .2s;
+  }
+  .refresh-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  /* ── MAIN GRID ───────────────────────────────────── */
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr 1fr;
+    gap: 16px;
+    padding: 16px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .panel-header h2 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .panel-header p  { font-size: 12px; color: var(--text2); }
+
+  /* ── TRACE TIMELINE (center) ─────────────────────── */
+  .trace-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .trace-event {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    position: relative;
+    transition: border-color .2s;
+    animation: fadeIn .3s ease;
+  }
+  .trace-event:hover { border-color: var(--cyan); }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .trace-event::before {
+    content: '';
+    position: absolute;
+    left: -1px; top: -1px; bottom: -1px;
+    width: 3px;
+    border-radius: 8px 0 0 8px;
+  }
+  .event-generate::before    { background: var(--blue); }
+  .event-collision::before   { background: var(--orange); }
+  .event-synthesize::before  { background: var(--green); }
+  .event-parse_error::before { background: var(--red); }
+  .event-engine_start::before{ background: var(--purple); }
+
+  .event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .event-type {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .event-generate    .event-type { color: var(--blue); }
+  .event-collision   .event-type { color: var(--orange); }
+  .event-synthesize  .event-type { color: var(--green); }
+  .event-parse_error .event-type { color: var(--red); }
+  .event-engine_start .event-type { color: var(--purple); }
+
+  .event-time { font-size: 11px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
+
+  .event-body {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  .event-body strong { color: var(--text); }
+
+  /* ── CHAT (left) ─────────────────────────────────── */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .msg { display: flex; gap: 8px; animation: fadeIn .3s ease; }
+  .msg.user { flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .msg.agent .msg-avatar { background: rgba(57,208,216,.15); color: var(--cyan); border: 1px solid rgba(57,208,216,.3); }
+  .msg.user  .msg-avatar { background: rgba(88,166,255,.15); color: var(--blue); border: 1px solid rgba(88,166,255,.3); }
+
+  .msg-bubble {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .msg.agent .msg-bubble { background: var(--bg3); border: 1px solid var(--border); color: var(--text); }
+  .msg.user  .msg-bubble { background: rgba(88,166,255,.1); border: 1px solid rgba(88,166,255,.25); color: var(--text); }
+
+  .msg-meta { font-size: 10px; color: var(--text2); margin-top: 3px; }
+  .msg.user .msg-meta { text-align: right; }
+
+  .chat-input-area {
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .chat-input:focus { border-color: var(--cyan); }
+  .send-btn {
+    background: var(--cyan);
+    color: #0d1117;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity .2s;
+  }
+  .send-btn:hover { opacity: .85; }
+
+  /* ── KNOWLEDGE GRAPH (right) ─────────────────────── */
+  .graph-container {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .graph-empty {
+    color: var(--text2);
+    font-size: 13px;
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .concept-node {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn .3s ease;
+    transition: border-color .2s, transform .2s;
+  }
+  .concept-node:hover { transform: translateX(4px); }
+  .concept-node.learned   { border-left: 3px solid var(--green); }
+  .concept-node.struggling{ border-left: 3px solid var(--orange); }
+  .concept-node.unknown   { border-left: 3px solid var(--text2); }
+  .concept-node.introduced{ border-left: 3px solid var(--blue); }
+
+  .concept-name { font-size: 13px; font-weight: 500; }
+  .concept-status {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+  }
+  .status-learned    { background: rgba(63,185,80,.15);  color: var(--green);  }
+  .status-struggling { background: rgba(240,136,62,.15); color: var(--orange); }
+  .status-unknown    { background: rgba(139,148,158,.15);color: var(--text2);  }
+  .status-introduced { background: rgba(88,166,255,.15); color: var(--blue);   }
+
+  /* ── STATS BAR ───────────────────────────────────── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 0 16px 16px;
+    flex-shrink: 0;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+  .stat-value { font-size: 22px; font-weight: 700; color: var(--cyan); }
+  .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* ── ICONS ───────────────────────────────────────── */
+  .icon { font-size: 14px; }
+
+  /* ── SCROLLBARS ──────────────────────────────────── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text2); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    🧠 DialecticAI <span>Dashboard</span>
+  </div>
+  <div class="status-badges">
+    <div class="badge active" id="agent-status">● Agent: Active</div>
+    <div class="badge info" id="session-badge">Session: default</div>
+  </div>
+  <button class="refresh-btn" onclick="refresh()">⟳ Refresh</button>
+</header>
+
+<!-- MAIN GRID -->
+<main>
+
+  <!-- LEFT: CHAT -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2>💬 Dialogue</h2>
+      <p>User and agent interaction history</p>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg agent">
+        <div class="msg-avatar">🧠</div>
+        <div>
+          <div class="msg-bubble">Hello! I am a dialectical agent. Send a message via the API or test script — it will appear here.</div>
+          <div class="msg-meta">DialecticAI Agent</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input class="chat-input" id="chat-input" type="text" placeholder="Message (for demonstration)..." />
+      <button class="send-btn" onclick="addDemoMessage()">→</button>
+    </div>
+  </div>
+
+  <!-- CENTER: AGENT MIND TRACE -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2>🔍 Agent Mind</h2>
+      <p>Trace of the dialectical cycle in real time</p>
+    </div>
+    <div class="trace-list" id="trace-list">
+      <div class="graph-empty">Loading traces...</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: KNOWLEDGE GRAPH -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2>🕸️ Knowledge Graph</h2>
+      <p>Current state of the agent's memory</p>
+    </div>
+    <div class="graph-container" id="graph-container">
+      <div class="graph-empty">Loading knowledge graph...</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-card">
+    <div class="stat-value" id="stat-total">0</div>
+    <div class="stat-label">Events</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="stat-collisions" style="color:var(--orange)">0</div>
+    <div class="stat-label">Collisions</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="stat-syntheses" style="color:var(--green)">0</div>
+    <div class="stat-label">Synthesis</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="stat-errors" style="color:var(--red)">0</div>
+    <div class="stat-label">Errors</div>
+  </div>
+</div>
+
+<script>
+const EVENT_ICONS = {
+  engine_start: '🚀',
+  generate:     '🧠',
+  collision:    '⚡',
+  synthesize:   '✅',
+  parse_error:  '❌',
+  unknown:      '•',
+};
+const EVENT_LABELS = {
+  engine_start: 'Cycle Start',
+  generate:     'Intent Generation',
+  collision:    'Collision with Reality',
+  synthesize:   'Response Synthesis',
+  parse_error:  'Parsing Error',
+};
+
+function formatTime(ts) {
+  try {
+    const d = new Date(ts);
+    return d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  } catch { return ts; }
+}
+
+function renderTrace(events) {
+  const container = document.getElementById('trace-list');
+  if (!events || events.length === 0) {
+    container.innerHTML = '<div class="graph-empty">No events. Run the test script.</div>';
+    return;
+  }
+  container.innerHTML = events.slice().reverse().map(e => {
+    const icon = EVENT_ICONS[e.type] || '•';
+    const label = EVENT_LABELS[e.type] || e.type;
+    let body = '';
+    if (e.thought) body += `<div><strong>Thought:</strong> ${e.thought.substring(0, 120)}${e.thought.length > 120 ? '…' : ''}</div>`;
+    if (e.user_message) body += `<div><strong>Message:</strong> ${e.user_message.substring(0, 100)}</div>`;
+    if (e.tool) body += `<div><strong>Tool:</strong> ${e.tool} — ${e.success ? '✅ success' : '❌ error'}</div>`;
+    if (e.output) body += `<div style="font-family:monospace;font-size:11px;margin-top:4px;color:#8b949e">${String(e.output).substring(0,120)}</div>`;
+    if (e.response_preview) body += `<div><strong>Response:</strong> ${e.response_preview.substring(0, 120)}${e.response_preview.length > 120 ? '…' : ''}</div>`;
+    if (e.memory_updates !== undefined) body += `<div><strong>Memory Updates:</strong> ${e.memory_updates}</div>`;
+    return `<div class="trace-event event-${e.type}">
+      <div class="event-header">
+        <div class="event-type">${icon} ${label}</div>
+        <div class="event-time">${formatTime(e.timestamp)}</div>
+      </div>
+      <div class="event-body">${body || '<em>no data</em>'}</div>
+    </div>`;
+  }).join('');
+}
+
+let network = null;
+
+function renderGraph(graph) {
+  const container = document.getElementById('graph-container');
+  const entries = Object.entries(graph);
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="graph-empty">Graph is empty. The agent has not updated memory yet.</div>';
+    if (network) { network.destroy(); network = null; }
+    return;
+  }
+  
+  // If we don't have a visual yet, clear the empty graph placeholder
+  if (!network) {
+    container.innerHTML = '';
+  }
+  
+  const nodes = new vis.DataSet();
+  const edges = new vis.DataSet();
+  
+  entries.forEach(([concept, status], index) => {
+    let color = '#30363d';
+    if (status === 'learned') color = '#3fb950';
+    if (status === 'struggling') color = '#f85149';
+    if (status === 'introduced') color = '#58a6ff';
+    
+    nodes.add({
+      id: index,
+      label: concept.replace(/_/g, ' '),
+      color: { background: color, border: '#e6edf3' },
+      font: { color: '#e6edf3' },
+      shape: 'dot',
+      size: 15
+    });
+    
+    // In the future, real connections from the graph can be added here
+    if (index > 0) {
+        edges.add({ from: index - 1, to: index, color: { color: '#30363d' } });
+    }
+  });
+
+  const data = { nodes: nodes, edges: edges };
+  const options = {
+      physics: { stabilization: false, barnesHut: { springLength: 100 } }
+  };
+  
+  if (!network) {
+      network = new vis.Network(container, data, options);
+  } else {
+      network.setData(data);
+  }
+}
+
+function updateStats(summary) {
+  document.getElementById('stat-total').textContent = summary.total_events || 0;
+  document.getElementById('stat-collisions').textContent = summary.collisions || 0;
+  document.getElementById('stat-syntheses').textContent = summary.syntheses || 0;
+  document.getElementById('stat-errors').textContent = summary.parse_errors || 0;
+}
+
+async function refresh() {
+  try {
+    const [traceRes, graphRes] = await Promise.all([
+      fetch('/api/trace'),
+      fetch('/api/graph'),
+    ]);
+    const summary = await traceRes.json();
+    const graph = await graphRes.json();
+    renderTrace(summary.events || []);
+    renderGraph(graph);
+    updateStats(summary);
+  } catch (e) {
+    console.error('Loading error:', e);
+  }
+}
+
+// WebSocket Stream connection
+function connectWebSocket() {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const ws = new WebSocket(`${protocol}//${window.location.host}/ws/stream`);
+  
+  ws.onopen = () => {
+    console.log("WebSocket connected");
+  };
+  
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === "update") {
+        renderTrace(data.summary.events || []);
+        renderGraph(data.graph);
+        updateStats(data.summary);
+      }
+    } catch (e) {
+      console.error("WebSocket message parsing error:", e);
+    }
+  };
+  
+  ws.onclose = () => {
+    console.log("WebSocket disconnected, reconnecting in 3s...");
+    setTimeout(connectWebSocket, 3000);
+  };
+  
+  ws.onerror = (e) => {
+    console.error("WebSocket error:", e);
+  };
+}
+
+// Demo message in chat for interactivity
+let demoMsgCount = 0;
+const DEMO_PAIRS = [
+  {user: "What is recursion?", agent: "Interesting question! Have you ever seen a matryoshka? What do you think is common between a matryoshka and recursion?"},
+  {user: "Here is my code: for i in range(10):\nprint(i)", agent: "I ran your code — got IndentationError. The line print(i) should be indented. Why do you think Python requires indentation?"},
+];
+
+function addDemoMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim() || DEMO_PAIRS[demoMsgCount % DEMO_PAIRS.length].user;
+  input.value = '';
+
+  const chat = document.getElementById('chat-messages');
+  const now = new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+
+  chat.innerHTML += `<div class="msg user"><div class="msg-avatar">👤</div><div><div class="msg-bubble">${text}</div><div class="msg-meta">You • ${now}</div></div></div>`;
+
+  setTimeout(() => {
+    const reply = DEMO_PAIRS[demoMsgCount % DEMO_PAIRS.length].agent;
+    chat.innerHTML += `<div class="msg agent"><div class="msg-avatar">🧠</div><div><div class="msg-bubble">${reply}</div><div class="msg-meta">DialecticAI Agent • ${now}</div></div></div>`;
+    chat.scrollTop = chat.scrollHeight;
+    demoMsgCount++;
+  }, 800);
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addDemoMessage();
+});
+
+// Initialization
+refresh(); // first HTTP request for quick rendering
+connectWebSocket(); // then switch to streaming via WebSocket
+</script>
+</body>
+</html>
