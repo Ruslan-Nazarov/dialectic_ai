@@ -38,8 +38,8 @@ async def test_schema():
 @pytest.mark.asyncio
 async def test_mock_llm():
     llm = MockLLM(responses=[
-        '{"thought": "Analyzing...", "tool_calls": [], "response": "Response 1"}',
-        '{"thought": "Clarifying...", "tool_calls": [], "response": "Response 2"}',
+        '{"decision": "Analyzing...", "tool_calls": [], "response": "Response 1"}',
+        '{"decision": "Clarifying...", "tool_calls": [], "response": "Response 2"}',
     ])
     r1 = await llm.generate([{"role": "user", "content": "test"}])
     r2 = await llm.generate([{"role": "user", "content": "test2"}])

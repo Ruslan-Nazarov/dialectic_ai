@@ -15,11 +15,11 @@ from dialectic_ai.multi import AgentRouter, AgentMessage
 def multi_agent_setup():
     tutor_agent = DialecticalAgent(
         goal="You are a Python tutor.",
-        llm=MockLLM(responses=['{"thought":"explaining","knowledge_updates":[],"tool_calls":[],"response":"Great question!"}'])
+        llm=MockLLM(responses=['{"decision":"explaining","knowledge_updates":[],"tool_calls":[],"response":"Great question!"}'])
     )
     coder_agent = DialecticalAgent(
         goal="You are a coding assistant.",
-        llm=MockLLM(responses=['{"thought":"writing code","knowledge_updates":[],"tool_calls":[],"response":"Here is the solution"}'])
+        llm=MockLLM(responses=['{"decision":"writing code","knowledge_updates":[],"tool_calls":[],"response":"Here is the solution"}'])
     )
 
     logger = DevelopmentLogger(log_path="multi_test_log.md", trace_path="multi_test_trace.jsonl")

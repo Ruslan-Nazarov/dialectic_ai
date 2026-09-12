@@ -17,12 +17,14 @@ DIALECTICAL DESCRIPTION:
 """
 from abc import ABC, abstractmethod
 from dialectic_ai.core.dialectical import dialectical, DialecticalObject
+from dialectic_ai.core.schema import ModelResult
 
 
 import asyncio
 
 class BaseLLM(ABC, DialecticalObject):
     """Abstraction over any language model."""
+    supports_native_tool_calling: bool = False
 
     @abstractmethod
     async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
@@ -36,6 +38,20 @@ class BaseLLM(ABC, DialecticalObject):
             String — the raw response from the model (usually JSON for our agent)
         """
         ...
+
+    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+        """
+        Generates a structured result from the language model, including text and native tool calls.
+        
+        Args:
+            messages: A list of messages in the format [{"role": "...", "content": "..."}]
+            tools: Tools to expose to the LLM.
+        
+        Returns:
+            ModelResult
+        """
+        text = await self.generate(messages, tools)
+        return ModelResult(text=text)
 
 
 @dialectical(
@@ -69,6 +85,10 @@ class MockLLM(BaseLLM):
         response = self._responses[min(self._index, len(self._responses) - 1)]
         self._index += 1
         return response
+
+    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+        text = await self.generate(messages, tools)
+        return ModelResult(text=text)
 
 
 import warnings
@@ -112,6 +132,21 @@ class FallbackLLM(BaseLLM):
             try:
                 # Attempting to generate a response
                 return await provider.generate(messages, tools=tools)
+            except Exception as e:
+                print(f"  [FallbackLLM] Provider {provider_name} ({i+1}/{len(self.providers)}) returned an error: {e}")
+                last_error = e
+                continue
+                
+        # If no provider worked
+        raise RuntimeError(f"All {len(self.providers)} LLM providers are unavailable. Last error: {last_error}")
+
+    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+        last_error = None
+        for i, provider in enumerate(self.providers):
+            provider_name = provider.__class__.__name__
+            try:
+                # Attempting to generate a response
+                return await provider.generate_result(messages, tools=tools)
             except Exception as e:
                 print(f"  [FallbackLLM] Provider {provider_name} ({i+1}/{len(self.providers)}) returned an error: {e}")
                 last_error = e

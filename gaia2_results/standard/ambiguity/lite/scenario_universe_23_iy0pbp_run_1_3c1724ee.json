@@ -1,0 +1,1 @@
+{"scenario_id": "scenario_universe_23_iy0pbp", "model_id": "meta-llama/llama3-70b-instruct", "main_agent_type": "default", "validation_decision": "Invalid", "validation_rationale": null, "run_duration": 0.030331134796142578, "per_agent_interaction_histories": {}, "per_agent_llm_usage_stats": {}}

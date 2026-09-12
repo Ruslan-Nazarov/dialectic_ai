@@ -28,33 +28,39 @@ _AGENT_DIALECTICAL_RULES = """
 
 _DIALECTICAL_RULES_MD = _AGENT_DIALECTICAL_RULES
 
-# Instruction for JSON format — separate from the rules
 _FORMAT_INSTRUCTION = """
 ## Response format (STRICTLY JSON)
+You must respond with a JSON object containing the following structure. Do not use conversational text outside the JSON.
+
 ```json
 {
+  "decision": "<string: short rationale for the chosen action>",
   "hypothesis": {
-    "assumption": "Current hypothesis (e.g., 'The problem is with indentation' or 'Need to verify fact X')",
-    "plan_steps": ["Step 1", "Step 2"]
+    "assumption": "<string: current hypothesis>",
+    "plan_steps": ["<string: step description>"]
   },
-  "thought": "Internal monologue: analysis, decision to invoke a tool",
-  "knowledge_updates": [{"concept": "...", "status": "learned|struggling|unknown|introduced"}],
-  "tool_calls": [{"name": "tool_name", "args": {"key": "value strictly according to the tool's JSON Schema"}}],
+  "knowledge_updates": [
+    {"concept": "<string>", "status": "<string: learned|struggling|unknown>"}
+  ],
+  "tool_calls": [
+    {"name": "<string: exact tool name>", "args": {"<string: arg name>": "<any: arg value>"}}
+  ],
   "claims": [
     {
-      "text": "Separate logical statement.",
-      "evidence_ids": ["uuid_from_observation_if_any"],
-      "requires_validation": false
+      "text": "<string: claim statement>",
+      "evidence_ids": ["<string: id of evidence>"],
+      "requires_validation": <boolean>
     }
   ],
-  "response": "Concatenation of all claims into a single readable text for the user (ONLY if tool_calls is empty)"
+  "response": "<string: final answer to the user, only if tool_calls is empty>"
 }
 ```
 """
 
 
 
-def build_system_prompt(goal: str, memory: BaseMemory, tools: list = None) -> str:
+
+def build_system_prompt(goal: str, memory: BaseMemory, tools: list = None, native_tool_calling: bool = False) -> str:
     """Assembles the system prompt from the goal, rules, memory, and tools."""
     
     rules = []
@@ -69,13 +75,30 @@ def build_system_prompt(goal: str, memory: BaseMemory, tools: list = None) -> st
         tools_lines = "\n".join(t.to_prompt_description() for t in tools_to_use)
         tools_section = f"\n## Available tools (Confrontation with reality)\n{tools_lines}\n"
 
+    format_instruction = _FORMAT_INSTRUCTION
+    if native_tool_calling:
+        # Remove tool_calls from textual JSON requirement
+        # Simple string manipulation since it's a static format
+        lines = format_instruction.splitlines()
+        filtered_lines = []
+        skip = False
+        for line in lines:
+            if '"tool_calls": [' in line:
+                skip = True
+            elif skip and '],' in line:
+                skip = False
+                continue
+            elif not skip:
+                filtered_lines.append(line)
+        format_instruction = "\n".join(filtered_lines)
+
     memory_context = memory.get_context()
 
     return f"""# Your goal
 {goal}
 
 {_DIALECTICAL_RULES_MD}
-{_FORMAT_INSTRUCTION}{tools_section}
+{format_instruction}{tools_section}
 ## Current state of memory
 {memory_context}
 """

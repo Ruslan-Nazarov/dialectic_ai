@@ -21,6 +21,25 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
+class ModelUsage(BaseModel):
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+
+
+class ModelToolCall(BaseModel):
+    id: Optional[str] = None
+    name: str
+    arguments: dict
+
+
+class ModelResult(BaseModel):
+    """Unified result directly from the LLM provider, independent of Dialectic framework entities."""
+    text: Optional[str] = None
+    tool_calls: list[ModelToolCall] = Field(default_factory=list)
+    usage: Optional[ModelUsage] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
 
 class AgentInput(BaseModel):
     """Incoming message from the user to the agent."""
@@ -81,8 +100,9 @@ class ToolCallRequest(BaseModel):
 
 class AgentOutput(BaseModel):
     """The final structured response from the agent after a complete engine cycle."""
+    status: str = "completed"                  # "completed", "validation_failed", "max_iterations", "error"
     response: str                              # Text for the user
-    thought: str = ""                          # Internal monologue (hidden)
+    decision: str = ""                         # Short rationale for the chosen action
     hypothesis: Optional[Hypothesis] = None    # Current hypothesis and plan
     claims: list[Claim] = Field(default_factory=list)                      # Claims
     memory_updates: list[MemoryUpdate] = Field(default_factory=list)

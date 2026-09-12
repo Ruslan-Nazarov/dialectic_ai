@@ -42,7 +42,7 @@ class HypothesisInput(BaseModel):
 
 class ParsedLLMResponse(BaseModel):
     hypothesis: Optional[HypothesisInput] = None
-    thought: str = ""
+    decision: str = ""
     knowledge_updates: list[dict] = Field(default_factory=list)
     tool_calls: list[dict] = Field(default_factory=list)
     claims: list[ClaimInput] = Field(default_factory=list)

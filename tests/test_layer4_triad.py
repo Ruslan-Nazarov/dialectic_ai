@@ -14,19 +14,19 @@ from dialectic_ai.multi.triad import DialecticalTriad
 @pytest.mark.asyncio
 async def test_dialectical_triad():
     thesis_llm = MockLLM(responses=[
-        '{"thought":"Generating draft", "response":"def is_prime(n): return True"}'
+        '{"decision":"Generating draft", "response":"def is_prime(n): return True"}'
     ])
     thesis_agent = DialecticalAgent(goal="You are the Generator.", llm=thesis_llm)
     thesis_engine = DialecticalEngine(thesis_agent)
 
     antithesis_llm = MockLLM(responses=[
-        '{"thought":"Critiquing", "response":"Critique: The function always returns True."}'
+        '{"decision":"Critiquing", "response":"Critique: The function always returns True."}'
     ])
     antithesis_agent = DialecticalAgent(goal="You are the Critic.", llm=antithesis_llm)
     antithesis_engine = DialecticalEngine(antithesis_agent)
 
     synthesis_llm = MockLLM(responses=[
-        '{"thought":"Synthesizing", "response":"Corrected code: def is_prime(n): ..."}'
+        '{"decision":"Synthesizing", "response":"Corrected code: def is_prime(n): ..."}'
     ])
     synthesis_agent = DialecticalAgent(goal="You are the Synthesis.", llm=synthesis_llm)
     synthesis_engine = DialecticalEngine(synthesis_agent)

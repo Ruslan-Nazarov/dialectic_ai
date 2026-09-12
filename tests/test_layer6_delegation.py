@@ -15,7 +15,7 @@ from dialectic_ai.reality.delegation import SubAgentTool
 async def test_delegation():
     # Mock response from sub-agent
     sub_mock_resp = """{
-      "thought": "Solving the subtask.",
+      "decision": "Solving the subtask.",
       "tool_calls": [],
       "claims": [],
       "response": "Subtask completed: answer 42."
@@ -27,13 +27,13 @@ async def test_delegation():
     
     # Mock response from supervisor
     super_mock_resp_1 = """{
-      "thought": "Need to delegate.",
+      "decision": "Need to delegate.",
       "tool_calls": [{"name": "ask_worker", "args": {"task": "Calculate"}}],
       "claims": [],
       "response": ""
     }"""
     super_mock_resp_2 = """{
-      "thought": "Received response from worker.",
+      "decision": "Received response from worker.",
       "tool_calls": [],
       "claims": [{"text": "Answer 42", "evidence_ids": [], "requires_validation": false}],
       "response": "Final answer: 42"

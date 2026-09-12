@@ -27,14 +27,14 @@ async def generate_trace():
         Path(trace_file).unlink()
 
     mock_response_1 = """{
-      "thought": "The student sent code.",
+      "decision": "The student sent code.",
       "knowledge_updates": [],
       "tool_calls": [{"name": "execute_python_code", "args": {"code": "for i in range(3):\\nprint(i)"}}],
       "response": ""
     }"""
 
     mock_response_2 = """{
-      "thought": "Error.",
+      "decision": "Error.",
       "knowledge_updates": [{"concept": "python_indentation", "status": "struggling"}],
       "tool_calls": [],
       "response": "Indentation error."

@@ -15,14 +15,14 @@ from dialectic_ai.engine import DialecticalEngine
 @pytest.mark.asyncio
 async def test_dialectical_engine_cycle():
     mock_response_1 = """{
-      "thought": "The student sent the code.",
+      "decision": "The student sent the code.",
       "knowledge_updates": [],
       "tool_calls": [{"name": "execute_python_code", "args": {"code": "for i in range(3):\\nprint(i)"}}],
       "response": ""
     }"""
 
     mock_response_2 = """{
-      "thought": "The code crashed with IndentationError. Updating the graph.",
+      "decision": "The code crashed with IndentationError. Updating the graph.",
       "knowledge_updates": [{"concept": "python_indentation", "status": "struggling"}],
       "tool_calls": [],
       "response": "Indentation error (IndentationError)."

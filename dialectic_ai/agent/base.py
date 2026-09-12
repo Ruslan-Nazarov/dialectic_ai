@@ -66,7 +66,12 @@ class DialecticalAgent(DialecticalObject):
 
     def get_system_prompt(self) -> str:
         """Assembles the current system prompt (goal + rules + memory + tools)."""
-        return build_system_prompt(self.goal, self.memory, tools=self.tools)
+        return build_system_prompt(
+            self.goal, 
+            self.memory, 
+            tools=self.tools,
+            native_tool_calling=self.llm.supports_native_tool_calling
+        )
 
     async def add_to_history(self, role: str, content: str) -> None:
         """Adds a message to the dialogue history and performs sublation on overflow."""

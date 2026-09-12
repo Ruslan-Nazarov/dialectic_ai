@@ -21,6 +21,8 @@ from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.schema import AgentInput, AgentOutput, MemoryUpdate, Evidence, Claim, Hypothesis
 from dialectic_ai.core.logger import DevelopmentLogger
 from dialectic_ai.engine.parser import parse_llm_response, ParseError
+from dialectic_ai.engine.repair import JsonRepairer, ControlledRepairError
+from dialectic_ai.engine.evidence_store import EvidenceStore
 from dialectic_ai.engine.validator import ClaimValidator
 import asyncio
 import uuid
@@ -87,8 +89,9 @@ class DialecticalEngine:
             "user_message": user_input.user_message[:200],
         })
 
-        all_evidence: list[Evidence] = []
+        evidence_store = EvidenceStore()
         iteration = 0
+        validation_retries = 0
 
         while iteration < self.max_iterations:
             iteration += 1
@@ -100,20 +103,26 @@ class DialecticalEngine:
 
             tool_calls = parsed.get("tool_calls", [])
             if tool_calls:
-                observation_message = await self._phase_collide(user_input, iteration, tool_calls, all_evidence)
+                observation_message = await self._phase_collide(user_input, iteration, tool_calls, evidence_store)
                 await self.agent.add_to_history("assistant", json.dumps(parsed, ensure_ascii=False))
                 await self.agent.add_to_history("user", f"Observation from tools:\n{observation_message}")
                 continue
 
             response_text = parsed.get("response", "")
             if response_text:
-                agent_output = await self._phase_synthesize(user_input, iteration, parsed, all_evidence)
+                agent_output = await self._phase_synthesize(user_input, iteration, parsed, evidence_store)
                 
                 # Phase 4 Validate
-                validation_errors = await self._phase_validate(agent_output.claims, all_evidence, user_input.session_id)
+                validation_errors = await self._phase_validate(agent_output.claims, evidence_store, user_input.session_id)
                 if validation_errors:
-                    err_msg = "Your claims did not pass validation:\n- " + "\n- ".join(validation_errors) + "\nPlease correct your response."
-                    print(f"  [Validation] ERROR: {len(validation_errors)} discrepancies.")
+                    if validation_retries >= 1:
+                        print(f"  [Validation] FAILED. Limit reached.")
+                        agent_output.status = "validation_failed"
+                        return agent_output
+                        
+                    validation_retries += 1
+                    err_msg = "The following evidence IDs do not exist in the current run or are invalid:\n- " + "\n- ".join(validation_errors) + f"\n\nAvailable evidence IDs in current run:\n{evidence_store.ids()}\n\nRevise the claims using only existing evidence IDs. Do not invent new evidence IDs."
+                    print(f"  [Validation] ERROR: {len(validation_errors)} discrepancies. Requesting correction...")
                     await self.agent.add_to_history("assistant", json.dumps(parsed, ensure_ascii=False))
                     await self.agent.add_to_history("user", err_msg)
                     await self.logger.trace_event("validation_failed", {
@@ -124,10 +133,12 @@ class DialecticalEngine:
                     continue
 
                 print("  [Validation] Successfully passed.")
+                agent_output.status = "completed"
                 return agent_output
 
         await self.logger.trace_event("max_iterations_reached", {"iterations": self.max_iterations})
         return AgentOutput(
+            status="max_iterations",
             response="[Engine] Maximum number of iterations exceeded. The agent could not generate a response.",
             thought="",
             is_final=True,
@@ -147,20 +158,51 @@ class DialecticalEngine:
                     }
                 })
                 
-        raw_response = await self.agent.llm.generate(self.agent.get_messages(), tools=tools_payload)
-        try:
-            parsed = parse_llm_response(raw_response)
-        except ParseError as e:
-            print(f"  [!] Parsing error: {e}")
-            await self.logger.trace_event("parse_error", {
-                "session_id": user_input.session_id,
-                "error": str(e),
-                "raw": raw_response[:200],
-            })
-            await self.agent.add_to_history("user", "Error: your response is not valid JSON. Please respond strictly in JSON format.")
-            return None
+        result = await self.agent.llm.generate_result(self.agent.get_messages(), tools=tools_payload)
+        
+        if result.tool_calls:
+            # Bypass parser for native tool calls
+            parsed = {
+                "decision": "Invoking native tools",
+                "tool_calls": [{"name": tc.name, "args": tc.arguments} for tc in result.tool_calls]
+            }
+        else:
+            try:
+                parsed = parse_llm_response(result.text or "")
+            except ParseError as e:
+                print(f"  [!] Parsing error: {e}. Attempting controlled repair...")
+                await self.logger.trace_event("parse_error_before_repair", {
+                    "session_id": user_input.session_id,
+                    "error": str(e),
+                    "raw": str(result.text)[:200],
+                })
+                
+                repairer = JsonRepairer(self.agent.llm)
+                try:
+                    parsed, repaired_result = await repairer.repair(str(result.text), e)
+                    
+                    # Accumulate usage
+                    if result.usage and repaired_result.usage:
+                        result.usage.prompt_tokens += repaired_result.usage.prompt_tokens
+                        result.usage.completion_tokens += repaired_result.usage.completion_tokens
+                        result.usage.total_tokens += repaired_result.usage.total_tokens
+                    elif repaired_result.usage:
+                        result.usage = repaired_result.usage
+                        
+                    print("  [+] Controlled repair successful.")
+                    await self.logger.trace_event("repair_successful", {
+                        "session_id": user_input.session_id
+                    })
+                except ControlledRepairError as repair_error:
+                    print(f"  [!] Repair failed: {repair_error}")
+                    await self.logger.trace_event("repair_failed", {
+                        "session_id": user_input.session_id,
+                        "error": str(repair_error),
+                        "raw_after_repair": repair_error.raw_response[:200] if repair_error.raw_response else "",
+                    })
+                    raise  # Let the engine crash and bubble up the controlled error, as requested by the user.
 
-        thought = parsed.get("thought", "")
+        decision = parsed.get("decision", "")
         hyp_raw = parsed.get("hypothesis")
         
         if hyp_raw:
@@ -168,18 +210,18 @@ class DialecticalEngine:
             if hyp_raw.get("plan_steps"):
                 print(f"  [Plan] " + ", ".join(hyp_raw.get("plan_steps", [])))
 
-        print(f"  [Thought] {thought[:100]}")
+        print(f"  [Decision] {decision[:100]}")
         await self.logger.trace_event("generate", {
             "session_id": user_input.session_id,
             "iteration": iteration,
             "hypothesis": hyp_raw,
-            "thought": thought,
+            "decision": decision,
             "tool_calls_count": len(parsed.get("tool_calls", [])),
             "has_response": bool(parsed.get("response")),
         })
         return parsed
 
-    async def _phase_collide(self, user_input: AgentInput, iteration: int, tool_calls: list, all_evidence: list) -> str:
+    async def _phase_collide(self, user_input: AgentInput, iteration: int, tool_calls: list, evidence_store: EvidenceStore) -> str:
         observation_parts = []
         tool_tasks = []
 
@@ -218,7 +260,7 @@ class DialecticalEngine:
                         error=f"Unhandled tool exception: {result}"
                     )
 
-                all_evidence.append(result)
+                evidence_store.add(result)
                 await self.logger.log_collision(
                     tool_name,
                     result.success,
@@ -236,7 +278,7 @@ class DialecticalEngine:
 
         return "\n\n".join(observation_parts)
 
-    async def _phase_synthesize(self, user_input: AgentInput, iteration: int, parsed: dict, all_evidence: list) -> AgentOutput:
+    async def _phase_synthesize(self, user_input: AgentInput, iteration: int, parsed: dict, evidence_store: EvidenceStore) -> AgentOutput:
         response_text = parsed.get("response", "")
         self.agent.memory.process_turn(user_input, parsed)
         
@@ -279,25 +321,24 @@ class DialecticalEngine:
 
         return AgentOutput(
             response=response_text,
-            thought=parsed.get("thought", ""),
+            decision=parsed.get("decision", ""),
             hypothesis=hypothesis,
             claims=claims,
             memory_updates=memory_updates,
-            evidence=all_evidence,
+            evidence=evidence_store.all(),
             is_final=True,
         )
 
-    async def _phase_validate(self, claims: list[Claim], all_evidence: list[Evidence], session_id: str) -> list[str]:
+    async def _phase_validate(self, claims: list[Claim], evidence_store: EvidenceStore, session_id: str) -> list[str]:
         validation_errors = []
-        known_evidence_ids = {e.id for e in all_evidence}
 
         for claim in claims:
             for eid in claim.evidence_ids:
-                if eid not in known_evidence_ids:
+                if not evidence_store.exists(eid):
                     validation_errors.append(f"Claim '{claim.text}' refers to unknown evidence_id '{eid}'.")
             
             if claim.requires_validation and self.validator:
-                val_err = await self.validator.validate(claim, all_evidence, session_id=session_id)
+                val_err = await self.validator.validate(claim, evidence_store.all(), session_id=session_id)
                 if val_err:
                     validation_errors.append(val_err)
                     

@@ -52,14 +52,14 @@ async def test_claim_validator_fail():
 async def test_engine_validation_loop():
     # Response 1: Agent gives incorrect ID
     mock_resp_1 = """{
-      "thought": "I think...",
+      "decision": "I think...",
       "tool_calls": [],
       "claims": [{"text": "Test", "evidence_ids": ["nonexistent"]}],
       "response": "Response"
     }"""
     # Response 2: Agent corrects ID (or removes it)
     mock_resp_2 = """{
-      "thought": "Oh yes, mistake.",
+      "decision": "Oh yes, mistake.",
       "tool_calls": [],
       "claims": [{"text": "Test without ID", "evidence_ids": []}],
       "response": "Correct answer"
@@ -79,6 +79,6 @@ async def test_engine_validation_loop():
     
     # Check that there is a message from the user about the error in the history
     history = agent.get_messages()
-    error_msgs = [m["content"] for m in history if "did not pass validation" in m["content"]]
+    error_msgs = [m["content"] for m in history if "The following evidence IDs do not exist" in m["content"]]
     assert len(error_msgs) == 1
     assert "unknown evidence_id 'nonexistent'" in error_msgs[0]
