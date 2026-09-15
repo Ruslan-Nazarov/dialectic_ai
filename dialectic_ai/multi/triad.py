@@ -27,6 +27,10 @@ from dialectic_ai.multi.protocol import AgentResult
     own_contradictions="Requires calling 3 agents for each task — 3 times more expensive and longer. "
                        "Use only for critically important processes",
     layer=4,
+    simplest_process="One agent proposing a solution to the task (Thesis).",
+    opposite_process="An independently generated critical/alternative take (Antithesis) that does not "
+                     "need the Thesis's specific solution to exist — it stands on its own critique of "
+                     "the task.",
 )
 class DialecticalTriad:
     """
@@ -56,9 +60,14 @@ class DialecticalTriad:
         
         antithesis_prompt = (
             f"Original task: {task}\n\n"
-            "Your task is to independently propose a contrarian, critical, or alternative approach to this task. "
-            "Do not try to solve it in the standard way. Find edge cases, potential flaws in obvious solutions, "
-            "and propose a robust alternative."
+            "Do NOT critique any specific existing solution and do NOT propose a mere alternative "
+            "implementation/library/practice for the same need -- that is a weaker move than what is "
+            "being asked here. Instead, independently develop a process that solves this task WITHOUT "
+            "ever needing the most obvious, standard approach most developers would reach for first. "
+            "Find edge cases, vulnerabilities, and failure modes the obvious approach would miss, and "
+            "develop your own process to address them, from abstract to concrete.\n"
+            "State in your decision field, in one sentence, which standard/obvious approach yours does "
+            "not need, then give your concrete solution as the final response."
         )
         antithesis_input = AgentInput(user_message=antithesis_prompt, session_id=session_id)
 
@@ -81,10 +90,13 @@ class DialecticalTriad:
         print("\n  [Triad] Step 3: SYNTHESIS (Conflict resolution and final result)...")
         synthesis_prompt = (
             f"Original task: {task}\n\n"
-            f"Proposed solution (Thesis):\n{draft}\n\n"
-            f"Critique of this solution (Antithesis):\n{critique}\n\n"
-            "Your task is to resolve the conflict. Take the best from the Thesis, correct the mistakes, "
-            "pointed out by the Antithesis, and provide the ideal, final result."
+            f"Simplest process (Thesis) and its concrete solution:\n{draft}\n\n"
+            f"Opposite process (Antithesis), independently developed without needing the Thesis's "
+            f"approach to exist:\n{critique}\n\n"
+            "These two, taken together in the unity of their development, are your `contradiction`. "
+            "Resolve it with your `leap`: take what each was developing toward, correct whatever gap "
+            "the opposite process's existence reveals in the simplest process, and provide the ideal, "
+            "final result as your `response`."
         )
         synthesis_input = AgentInput(user_message=synthesis_prompt, session_id=session_id)
         synthesis_output: AgentOutput = await self.synthesis.run(synthesis_input)

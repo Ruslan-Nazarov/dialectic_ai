@@ -14,6 +14,7 @@ class EvidenceStore:
     """Run-scoped storage for Evidence."""
     def __init__(self):
         self._store: dict[str, Evidence] = {}
+        self._executed_actions: set = set()
 
     def add(self, evidence: Evidence) -> None:
         self._store[evidence.id] = evidence

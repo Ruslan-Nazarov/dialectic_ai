@@ -49,17 +49,6 @@ class SQLiteKnowledgeGraphMemory(BaseMemory):
             ''')
             conn.commit()
 
-    def process_turn(self, user_input: AgentInput, parsed_response: dict) -> None:
-        updates = [
-            MemoryUpdate(
-                concept=u.get("concept", ""),
-                status=u.get("status", "unknown"),
-            )
-            for u in parsed_response.get("knowledge_updates", [])
-            if u.get("concept")
-        ]
-        self.update(updates)
-
     def update(self, updates: list[MemoryUpdate]) -> None:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()

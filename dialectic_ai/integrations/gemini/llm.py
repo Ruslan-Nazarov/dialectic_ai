@@ -1,5 +1,4 @@
 import os
-import time
 import json
 import asyncio
 import urllib.request
@@ -8,6 +7,9 @@ from pathlib import Path
 
 from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.llm import BaseLLM
+from dialectic_ai.core.retry import RetryableError, retry_call
+
+_RETRYABLE_HTTP_CODES = {429, 500, 502, 503, 504}
 
 
 def _load_env_file():
@@ -42,9 +44,32 @@ class GeminiLLM(BaseLLM):
     Uses the standard Python library (urllib).
     """
 
-    def __init__(self, api_key: str = None, model: str = None):
+    def __init__(self, api_key: str = None, model: str = None, max_retries: int = 3):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY", "")
         self.model = model or os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+        self.max_retries = max_retries
+
+    def _do_attempt(self, req: urllib.request.Request) -> dict:
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            err_msg = e.read().decode("utf-8")
+            message = f"Gemini API Error {e.code}: {err_msg}"
+            if e.code in _RETRYABLE_HTTP_CODES:
+                raise RetryableError(message, headers=e.headers) from e
+            raise RuntimeError(message) from e
+        except (urllib.error.URLError, TimeoutError) as e:
+            raise RetryableError(f"Gemini Request Failed: {e}") from e
+
+    def _call_sync(self, req: urllib.request.Request) -> dict:
+        return retry_call(
+            lambda attempt: self._do_attempt(req),
+            max_retries=self.max_retries,
+            on_retry=lambda attempt, e, wait: print(
+                f"\n[GeminiLLM] {e}, retrying in {wait:.1f}s (attempt {attempt + 1}/{self.max_retries})..."
+            ),
+        )
 
     async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
         if not self.api_key:
@@ -70,27 +95,8 @@ class GeminiLLM(BaseLLM):
         data = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
 
-        max_retries = 5
-        
-        def _make_request():
-            for attempt in range(max_retries):
-                try:
-                    with urllib.request.urlopen(req, timeout=60) as resp:
-                        result = json.loads(resp.read().decode("utf-8"))
-                        candidates = result.get("candidates", [])
-                        if not candidates:
-                            return "{}"
-                        return candidates[0]["content"]["parts"][0]["text"]
-                except urllib.error.HTTPError as e:
-                    err_msg = e.read().decode("utf-8")
-                    if e.code in (429, 503) and attempt < max_retries - 1:
-                        time.sleep(3 * (attempt + 1))
-                        continue
-                    raise RuntimeError(f"Gemini API Error {e.code}: {err_msg}")
-                except Exception as e:
-                    if attempt < max_retries - 1:
-                        time.sleep(3 * (attempt + 1))
-                        continue
-                    raise RuntimeError(f"Gemini Request Failed: {e}")
-                    
-        return await asyncio.to_thread(_make_request)
+        result = await asyncio.to_thread(self._call_sync, req)
+        candidates = result.get("candidates", [])
+        if not candidates:
+            return "{}"
+        return candidates[0]["content"]["parts"][0]["text"]

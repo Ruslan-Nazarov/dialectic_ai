@@ -21,6 +21,7 @@ from dialectic_ai.core.schema import ModelResult
 
 
 import asyncio
+import time
 
 class BaseLLM(ABC, DialecticalObject):
     """Abstraction over any language model."""
@@ -154,3 +155,90 @@ class FallbackLLM(BaseLLM):
                 
         # If no provider worked
         raise RuntimeError(f"All {len(self.providers)} LLM providers are unavailable. Last error: {last_error}")
+
+
+@dialectical(
+    origin="A single API provider hits rate limits or introduces bottlenecks",
+    contradiction="We have multiple API keys but the agent only uses one, wasting potential throughput",
+    resolves="Round-robin load balancer that distributes requests evenly across all available LLM providers",
+    generates="Higher overall throughput and speed by parallelizing across rate limits",
+    own_contradictions="Different models might have slightly different reasoning capabilities, causing inconsistent agent behavior",
+    layer=0,
+)
+class BalancingLLM(BaseLLM):
+    """
+    LLM orchestrator (load balancer).
+    Takes a list of providers and distributes requests across them in a round-robin fashion.
+
+    A provider that fails with a rate-limit or auth error twice in a row (across
+    calls, not just within one) is put on cooldown for the rest of the session
+    instead of staying in the rotation and wasting a request every Nth call --
+    see development_log.md 2026-09-15 for the live RuntimeError this fixes.
+    """
+    def __init__(self, providers: list[BaseLLM], cooldown_seconds: float = 300.0):
+        if not providers:
+            raise ValueError("BalancingLLM requires at least one provider")
+        self.providers = providers
+        self.cooldown_seconds = cooldown_seconds
+        self._index = 0
+        self._cooldown_until: dict[int, float] = {}
+        self._consecutive_failures: dict[int, int] = {}
+
+    @staticmethod
+    def _is_rate_or_auth_error(e: Exception) -> bool:
+        err = str(e).lower()
+        return any(token in err for token in ("429", "401", "403", "too many requests", "unauthorized", "forbidden"))
+
+    def _available_providers(self) -> list[BaseLLM]:
+        now = time.time()
+        available = [p for p in self.providers if self._cooldown_until.get(id(p), 0) <= now]
+        # If everyone is cooling down, degrade gracefully rather than hard-failing.
+        return available or self.providers
+
+    async def preflight_health_check(self):
+        working = []
+        for provider in self.providers:
+            try:
+                await provider.generate([{"role": "user", "content": "ping json"}])
+                working.append(provider)
+            except Exception as e:
+                err = str(e).lower()
+                if "404" in err or "400" in err or "decommissioned" in err or "not found" in err:
+                    print(f"  [BalancingLLM] WARNING: Provider {provider.__class__.__name__} is decommissioned/broken (Error: {e}). Evicting from pool.")
+                else:
+                    working.append(provider)
+                    print(f"  [BalancingLLM] Notice: Provider {provider.__class__.__name__} failed check with {e}, but keeping in pool.")
+        self.providers = working
+        if not self.providers:
+            raise RuntimeError("All LLM providers are unavailable. Please check your .env config.")
+
+    async def _call_with_balancing(self, method_name: str, messages: list[dict], tools: list[dict] = None):
+        last_error = None
+        available = self._available_providers()
+        for _ in range(len(available)):
+            provider = available[self._index % len(available)]
+            self._index += 1
+            try:
+                result = await getattr(provider, method_name)(messages, tools=tools)
+                self._consecutive_failures[id(provider)] = 0
+                return result
+            except Exception as e:
+                print(f"  [BalancingLLM] Provider {provider.__class__.__name__} failed: {e}")
+                last_error = e
+                if self._is_rate_or_auth_error(e):
+                    count = self._consecutive_failures.get(id(provider), 0) + 1
+                    self._consecutive_failures[id(provider)] = count
+                    if count >= 2:
+                        self._cooldown_until[id(provider)] = time.time() + self.cooldown_seconds
+                        print(f"  [BalancingLLM] Provider {provider.__class__.__name__} rate/auth-limited "
+                              f"{count}x in a row -- cooling down for {self.cooldown_seconds:.0f}s.")
+                else:
+                    self._consecutive_failures[id(provider)] = 0
+                continue
+        raise RuntimeError(f"All providers failed in BalancingLLM. Last error: {last_error}")
+
+    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+        return await self._call_with_balancing("generate", messages, tools)
+
+    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+        return await self._call_with_balancing("generate_result", messages, tools)

@@ -6,6 +6,7 @@ from pathlib import Path
 from dialectic_ai.core.llm import MockLLM, FallbackLLM
 from dialectic_ai.integrations.gemini.llm import GeminiLLM
 from dialectic_ai.integrations.openai.llm import OpenAILLM
+from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
 from dialectic_ai.agent import DialecticalAgent
 from dialectic_ai.reality import PythonExecutor, HumanRealityCheck, WebFetchCheck
 from dialectic_ai.tools import web_search, read_file, write_file
@@ -39,6 +40,8 @@ def load_agent_from_config(config_path: str) -> DialecticalAgent:
         llm = GeminiLLM()
     elif llm_name == "openai":
         llm = OpenAILLM()
+    elif llm_name == "gigachat":
+        llm = GigaChatLLM()
     else:
         llm = MockLLM()
         

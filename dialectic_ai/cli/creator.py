@@ -1,10 +1,75 @@
 """
 Interactive agent creation wizard (CLI Wizard).
 """
+import asyncio
 import json
 import os
 from pathlib import Path
 from dialectic_ai.cli.config_parser import TOOL_REGISTRY
+
+
+def _build_runtime_llm(llm_choice: str):
+    """
+    Constructs a live LLM instance for the one-off, creation-time design call.
+    Separate from the boilerplate source text generated later for the agent's own
+    runtime script — that text is generated regardless of whether this succeeds.
+    """
+    if llm_choice == "gemini":
+        from dialectic_ai.integrations.gemini.llm import GeminiLLM
+        return GeminiLLM()
+    if llm_choice == "openai":
+        from dialectic_ai.integrations.openai.llm import OpenAILLM
+        return OpenAILLM()
+    if llm_choice == "gigachat":
+        from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
+        return GigaChatLLM()
+    if llm_choice == "fallback":
+        from dialectic_ai.core.llm import FallbackLLM
+        from dialectic_ai.integrations.gemini.llm import GeminiLLM
+        from dialectic_ai.integrations.openai.llm import OpenAILLM
+        return FallbackLLM([GeminiLLM(), OpenAILLM()])
+    return None  # mock, or unrecognized choice
+
+
+def _maybe_refine_goal(llm_choice: str, name: str, goal: str, selected_tools: list) -> tuple:
+    """
+    Plain-language opt-in for the automatic dialectical design pass. On acceptance, runs
+    DialecticalArchitect (Simplest -> Development -> Opposite -> Contradiction -> Leap) once,
+    under the hood — the developer never has to know that vocabulary. Falls back to the raw
+    goal, silently but visibly logged, on any failure (no LLM reachable, bad response, etc.).
+
+    Returns (goal_to_use, design_log_markdown_or_None).
+    """
+    if llm_choice == "mock":
+        return goal, None
+
+    print("\nOptional: the connected AI model can automatically sharpen your goal before generating the agent.")
+    answer = input("Refine the goal automatically now? [y/N]: ").strip().lower()
+    if answer not in ("y", "yes"):
+        return goal, None
+
+    try:
+        runtime_llm = _build_runtime_llm(llm_choice)
+        if runtime_llm is None:
+            return goal, None
+
+        from dialectic_ai.cli.architect import DialecticalArchitect
+
+        tool_descriptions = []
+        for t in selected_tools:
+            try:
+                tool_descriptions.append(TOOL_REGISTRY[t]().description)
+            except Exception:
+                tool_descriptions.append(t)
+
+        architect = DialecticalArchitect(runtime_llm)
+        result = asyncio.run(architect.design(name, goal, tool_descriptions))
+        print("Goal refined.")
+        return result.refined_goal, architect.render_log_entry(name, goal, result)
+    except Exception as e:
+        print(f"[!] Could not refine the goal automatically ({e}); using your goal as written.")
+        return goal, None
+
 
 def run_interactive_creator():
     print("=" * 60)
@@ -77,8 +142,9 @@ def run_interactive_creator():
     print("   [2] OpenAI / OpenRouter (requires OPENAI_API_KEY/OPENROUTER_API_KEY)")
     print("   [3] Mock (for local testing without internet)")
     print("   [4] Fallback Auto (Gemini -> OpenAI)")
-    
-    llm_choice = input("Your choice (1-4) [default 1]: ").strip()
+    print("   [5] GigaChat (requires GIGACHAT_AUTH_KEY)")
+
+    llm_choice = input("Your choice (1-5) [default 1]: ").strip()
     llm = "gemini"
     if llm_choice == "2":
         llm = "openai"
@@ -86,7 +152,11 @@ def run_interactive_creator():
         llm = "mock"
     elif llm_choice == "4":
         llm = "fallback"
-        
+    elif llm_choice == "5":
+        llm = "gigachat"
+
+    goal, design_log = _maybe_refine_goal(llm, name, goal, selected_tools)
+
     # Forming config
     config = {
         "name": name,
@@ -122,6 +192,8 @@ def run_interactive_creator():
             imports.append("from dialectic_ai.integrations.gemini.llm import GeminiLLM")
         elif llm == "openai":
             imports.append("from dialectic_ai.integrations.openai.llm import OpenAILLM")
+        elif llm == "gigachat":
+            imports.append("from dialectic_ai.integrations.gigachat.llm import GigaChatLLM")
         elif llm == "fallback":
             imports.append("from dialectic_ai.core.llm import FallbackLLM\nfrom dialectic_ai.integrations.gemini.llm import GeminiLLM\nfrom dialectic_ai.integrations.openai.llm import OpenAILLM")
         else:
@@ -138,6 +210,8 @@ def run_interactive_creator():
             llm_init = "llm = GeminiLLM()"
         elif llm == "openai":
             llm_init = "llm = OpenAILLM()"
+        elif llm == "gigachat":
+            llm_init = "llm = GigaChatLLM()"
         elif llm == "fallback":
             llm_init = "llm = FallbackLLM([GeminiLLM(), OpenAILLM()])"
         else:
@@ -200,5 +274,12 @@ if __name__ == "__main__":
         print("============================================================")
         print("Now you can run it with the command:")
         print(f"  python -m dialectic_ai.cli.main run {filepath.name}")
+
+    if design_log:
+        log_path = filepath.with_name(f"{filepath.stem}_development_log.md")
+        with open(log_path, "w", encoding="utf-8") as f:
+            f.write(design_log)
+        print(f"📝 Dialectical design log saved to {log_path.absolute()} "
+              f"(readable by: python -m dialectic_ai.cli.main audit --config {filepath.name} --log {log_path.name})")
 
     print("\nGood luck with the dialectical synthesis! 🚀")

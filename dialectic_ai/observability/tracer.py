@@ -47,8 +47,9 @@ class TraceEvent:
 class TraceReader:
     """Reads and analyzes trace.jsonl for the Observability dashboard."""
 
-    def __init__(self, trace_path: str = "trace.jsonl"):
+    def __init__(self, trace_path: str = "trace.jsonl", memory_path: str = "memory_state.json"):
         self.trace_path = Path(trace_path)
+        self.memory_path = Path(memory_path)
 
     def get_all(self) -> list[TraceEvent]:
         """Reads all events from trace.jsonl."""
@@ -87,14 +88,17 @@ class TraceReader:
 
     def get_knowledge_graph(self) -> dict[str, str]:
         """
-        Restores the current knowledge graph from trace events.
-        Searches for 'synthesize' type events and collects memory updates.
+        Restores the current knowledge graph from the memory file, if it exists.
+
+        Only correct for a PersistentMemory(KnowledgeGraphMemory()) agent writing
+        to `self.memory_path` (the default "memory_state.json") -- an agent using
+        SQLiteKnowledgeGraphMemory, or PersistentMemory with a custom storage_path,
+        writes elsewhere and this will silently return {} for it unless constructed
+        with a matching `memory_path`. See CODE_REVIEW.md, Layer 5.
         """
-        # The knowledge graph is taken directly from the memory file if it exists
-        memory_path = Path("memory_state.json")
-        if memory_path.exists():
+        if self.memory_path.exists():
             try:
-                data = json.loads(memory_path.read_text(encoding="utf-8"))
+                data = json.loads(self.memory_path.read_text(encoding="utf-8"))
                 return data.get("graph", {})
             except Exception:
                 pass

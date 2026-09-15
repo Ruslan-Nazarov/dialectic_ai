@@ -47,13 +47,4 @@ class BaseMemory(ABC, DialecticalObject, Memory):
     
     @abstractmethod
     def process_turn(self, user_input: AgentInput, parsed_response: dict) -> None:
-        updates = [
-            MemoryUpdate(
-                concept=u.get("concept", ""),
-                status=u.get("status", "unknown"),
-                details=u.get("details", "")
-            )
-            for u in parsed_response.get("knowledge_updates", [])
-            if u.get("concept")
-        ]
-        self.update(updates)
+        ...

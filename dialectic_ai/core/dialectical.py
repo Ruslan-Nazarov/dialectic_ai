@@ -31,6 +31,11 @@ class DialecticalMetadata:
     own_contradictions: str  # What contradictions it itself enters
     layer: int = 0       # Layer of the framework (0-6)
     name: str = ""       # Automatically filled from the class
+    # Rule 5 (dialectics_rules.md) fields — optional, filled only for components that went
+    # through the full "Simplest -> Development -> Opposite -> Contradiction -> Leap" procedure.
+    # Left empty by default so all pre-existing @dialectical(...) call sites stay valid unchanged.
+    simplest_process: str = ""   # The generative simplest process this component's origin reduces to
+    opposite_process: str = ""   # A process whose development does NOT require this component to exist
 
 
 # Global registry of all dialectically described components
@@ -44,6 +49,8 @@ def dialectical(
     generates: str,
     own_contradictions: str,
     layer: int = 0,
+    simplest_process: str = "",
+    opposite_process: str = "",
 ):
     """
     Decorator that attaches a dialectical description to a class.
@@ -69,6 +76,8 @@ def dialectical(
             own_contradictions=own_contradictions,
             layer=layer,
             name=cls.__name__,
+            simplest_process=simplest_process,
+            opposite_process=opposite_process,
         )
         # Attach metadata to the class
         cls.__dialectical__ = meta
@@ -104,6 +113,10 @@ def print_dialectical_card(cls) -> None:
     print(f"\n  ✅ How it resolves:\n     {meta.resolves}")
     print(f"\n  ➡️  What it leads to (generates):\n     {meta.generates}")
     print(f"\n  🔄 Its own contradictions:\n     {meta.own_contradictions}")
+    if meta.simplest_process:
+        print(f"\n  🌱 Simplest process (Rule 5):\n     {meta.simplest_process}")
+    if meta.opposite_process:
+        print(f"\n  ⚔️  Opposite process (Rule 5):\n     {meta.opposite_process}")
     print(f"{'='*60}\n")
 
 

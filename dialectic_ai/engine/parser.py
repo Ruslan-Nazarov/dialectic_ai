@@ -16,8 +16,10 @@ DIALECTICAL DESCRIPTION:
 """
 import json
 import re
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 from pydantic import BaseModel, Field
+
+LeapType = Literal["decompose_and_act", "ask_only", "fully_resolved", ""]
 
 class ParseError(Exception):
     """Parsing error of the LLM response."""
@@ -47,7 +49,11 @@ class ParsedLLMResponse(BaseModel):
     tool_calls: list[dict] = Field(default_factory=list)
     claims: list[ClaimInput] = Field(default_factory=list)
     response: str = ""
-    
+    opposite_process: str = ""
+    contradiction: str = ""
+    leap: str = ""
+    leap_type: LeapType = ""
+
     def to_dict(self) -> dict:
         return self.model_dump(exclude_unset=True)
 

@@ -15,6 +15,14 @@ DIALECTICAL DESCRIPTION:
   What it leads to: Quantitative quality metrics for the dashboard and automated benchmarks.
   Own contradictions: Static evaluation rules may penalize the agent for a quick
     trivial response (when a confrontation with reality was objectively unnecessary).
+
+  Relationship to DialecticalAuditor (`dialectic audit`, observability/auditor.py): this
+  class is the fast, local, heuristic sibling -- no LLM call, pure trace-counting,
+  including a `rule5_violations` count of `dialectical_resolution_missing`/
+  `leap_action_mismatch` trace events. DialecticalAuditor is the slower, LLM-as-judge
+  sibling -- deeper product+process compliance review, and `investigate_contradiction()`
+  for root-cause hypotheses on a specific contradiction. Run this one first/often; reach
+  for the auditor when you need a judgment call this one's counting can't make.
 """
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
@@ -32,6 +40,7 @@ class EvaluationReport:
     memory_updated: bool
     violations: List[str]
     details: Dict[str, Any]
+    rule5_violations: int = 0  # count of dialectical_resolution_missing / leap_action_mismatch trace events
 
 
 @dialectical(
@@ -79,6 +88,10 @@ class AgentEvaluator:
         collisions = [e for e in events if e.event_type == "collision"]
         syntheses = [e for e in events if e.event_type == "synthesize"]
         errors = [e for e in events if e.event_type in ("parse_error", "tool_error")]
+        # Rule 5 (dialectics_rules.md): a finalized response given without opposite_process/
+        # contradiction/leap, or one whose claimed leap_type doesn't match what evidence_store
+        # shows actually happened -- see engine/executor.py._phase_synthesize.
+        rule5_events = [e for e in events if e.event_type in ("dialectical_resolution_missing", "leap_action_mismatch")]
 
         iterations = max([e.iteration or 1 for e in events], default=1)
 
@@ -98,6 +111,15 @@ class AgentEvaluator:
             e.data.get("memory_updated") or (e.data.get("memory_updates", 0) > 0)
             for e in syntheses
         )
+
+        # 4. Check Rule 5 (dialectics_rules.md): a finalized response without a real
+        # opposite_process/contradiction/leap, or a claimed leap the evidence contradicts,
+        # is a methodology violation even when the session otherwise synthesized cleanly.
+        if rule5_events:
+            violations.append(
+                f"Rule 5 violation: {len(rule5_events)} response(s) finalized without a genuine "
+                f"opposite_process/contradiction/leap, or with a leap claim the evidence contradicts"
+            )
 
         # Calculate the reality grounding metric
         if tool_call_count > 0:
@@ -129,5 +151,7 @@ class AgentEvaluator:
                 "collisions_count": len(collisions),
                 "syntheses_count": len(syntheses),
                 "errors_count": len(errors),
+                "rule5_violations": len(rule5_events),
             },
+            rule5_violations=len(rule5_events),
         )

@@ -30,3 +30,20 @@ class AgentResult:
     success: bool = True
     error: Optional[str] = None
     metadata: dict = field(default_factory=dict)
+
+
+@dataclass
+class DialecticalResolution:
+    """
+    Trace-only record of one Rule 5 pass through DialecticalDebateEngine.
+
+    The single-agent DialecticalEngine loop now carries opposite_process/contradiction/leap
+    natively on every AgentOutput (see core/schema.py) -- this record is just a convenience
+    snapshot of those same structural fields for the debate's Synthesis step, no longer built
+    by regex-extracting a special prefix convention from free text.
+    """
+    simplest_process: str
+    opposite_process: str
+    contradiction: str
+    leap: str
+    resolution: str

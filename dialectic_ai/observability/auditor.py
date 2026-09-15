@@ -16,8 +16,16 @@ DIALECTICAL DESCRIPTION:
     after N iterations of the agent.
   Its own contradictions: The quality of the audit depends on LLM and the completeness of the context.
     An empty development_log gives a blind audit. LLM may agree instead of criticizing.
+
+  Relationship to AgentEvaluator (`dialectic eval`, observability/evaluator.py): that class
+  is the fast, local, heuristic sibling -- no LLM call, pure trace-counting (including a
+  rule5_violations count). This class is the slower, LLM-as-judge sibling -- deeper
+  product+process compliance review, plus investigate_contradiction() for a root-cause
+  hypothesis on one specific contradiction event. Run the evaluator first/often; reach for
+  this one when you need a judgment call trace-counting alone can't make.
 """
 import asyncio
+import json
 from pathlib import Path
 from typing import Optional
 
@@ -27,6 +35,26 @@ from dialectic_ai.core.dialectical import dialectical, get_dialectical_map
 AUDIT_PROMPT_PATH = Path(__file__).parent / "audit_prompt.md"
 DEFAULT_METHODOLOGY_PATH = Path(__file__).parent.parent.parent / "dialectics_rules.md"
 DEFAULT_LOG_PATH = Path(__file__).parent.parent.parent / "development_log.md"
+
+# Framework source relative to the project root that always participates in producing a turn's
+# JSON response -- read by investigate_contradiction() as the standing suspects for any
+# contradiction, regardless of which provider was used.
+_CORE_CHAIN_FILES = [
+    "dialectic_ai/engine/executor.py",
+    "dialectic_ai/engine/repair.py",
+    "dialectic_ai/engine/parser.py",
+    "dialectic_ai/agent/prompt_builder.py",
+]
+# Provider-specific file, added on top of the core chain when the trace event names the class.
+_PROVIDER_FILE_MAP = {
+    "GigaChatLLM": "dialectic_ai/integrations/gigachat/llm.py",
+    "OpenAILLM": "dialectic_ai/integrations/openai/llm.py",
+    "GeminiLLM": "dialectic_ai/integrations/gemini/llm.py",
+    "BalancingLLM": "dialectic_ai/core/llm.py",
+    "FallbackLLM": "dialectic_ai/core/llm.py",
+    "MockLLM": "dialectic_ai/core/llm.py",
+}
+_CONTRADICTION_EVENT_TYPES = ("dialectical_resolution_missing", "leap_action_mismatch")
 
 
 @dialectical(
@@ -171,6 +199,99 @@ class DialecticalAuditor:
         self._iterations_since_audit = 0
         return await self._run_audit(audit_mode, context)
 
+    async def investigate_contradiction(
+        self,
+        trace_path: str = "trace.jsonl",
+        event_index: int = -1,
+        event_type: Optional[str] = None,
+    ) -> str:
+        """
+        Root-cause investigation of ONE specific contradiction event (dialectical_resolution_missing
+        or leap_action_mismatch) from a trace.jsonl.
+
+        This is a developer-facing diagnostic tool, not something the running agent invokes on
+        itself: it does not modify code, does not re-run the agent, and does not resolve anything
+        automatically. It formalizes the same backward-tracing a developer does by hand (as was
+        done manually for the GigaChat repair-schema-blindness bug on 2026-09-13) -- reading the
+        full prompt and raw response that produced the contradiction, plus the actual framework
+        source code in the chain that processed them, and asking for a root-cause hypothesis:
+        is the fault in the prompt wording, the provider's behavior/library limitations, or the
+        parsing/engine code -- not just "the model was wrong."
+
+        Args:
+            trace_path: Path to trace.jsonl (must contain full forensic fields -- raw_response,
+                provider_class, full_prompt -- as written by DialecticalEngine since 2026-09-13;
+                older/thin events without these fields will produce a lower-quality investigation).
+            event_index: Which matching event to investigate (default: -1, the most recent).
+            event_type: Restrict to one event type ("dialectical_resolution_missing" or
+                "leap_action_mismatch"); default None matches either.
+
+        Returns:
+            Text of the root-cause hypothesis from LLM (or the raw collected context if no LLM
+            was configured).
+        """
+        events = self._read_contradiction_events(trace_path, event_type)
+        if not events:
+            return (
+                f"[DialecticalAuditor] No contradiction events "
+                f"({event_type or '/'.join(_CONTRADICTION_EVENT_TYPES)}) found in '{trace_path}'."
+            )
+
+        try:
+            event = events[event_index]
+        except IndexError:
+            return (
+                f"[DialecticalAuditor] event_index {event_index} out of range "
+                f"({len(events)} matching events found)."
+            )
+
+        provider_class = event.get("provider_class", "")
+        source_paths = list(_CORE_CHAIN_FILES)
+        provider_file = _PROVIDER_FILE_MAP.get(provider_class)
+        if provider_file and provider_file not in source_paths:
+            source_paths.append(provider_file)
+        source_context = self._read_source_files(source_paths)
+
+        context = f"""### Contradiction event under investigation ({event.get('event_type', event_type or '?')}):
+- Session: {event.get('session_id', '?')}
+- Iteration: {event.get('iteration', '?')}
+- Reason flagged by the engine: {event.get('reason', '(dialectical_resolution_missing: fields were empty)')}
+- Provider class in use: {provider_class or '(not recorded)'}
+
+### Full raw LLM response that triggered this event:
+{event.get('raw_response', '(not recorded -- this event predates full forensic logging)')}
+
+### Full prompt sent to the LLM for this turn:
+{event.get('full_prompt', '(not recorded -- this event predates full forensic logging)')}
+
+### Framework source code in the chain that produced/processed this response:
+{source_context}
+"""
+
+        prompt = f"""You are investigating the ROOT CAUSE of one specific dialectical contradiction
+that DialecticalEngine detected and could not (or did not) resolve on its own. This is a backward,
+diagnostic investigation, not a fix -- do not propose a full rewrite, propose a specific, falsifiable
+hypothesis: where in the chain (prompt wording, provider/library limitation, parsing code, engine
+logic) did this actually originate? Cite the specific file and line/section if you can identify one.
+Distinguish between "the model reasoned poorly" (not actionable by code changes) and "the framework
+made poor reasoning more likely or failed to catch it" (actionable).
+
+{context}
+
+Report: (1) your root-cause hypothesis, (2) the specific file/mechanism you believe is responsible,
+(3) whether this looks like a one-off model failure or a systemic gap the framework should close.
+"""
+
+        if self.llm is None:
+            return "[DialecticalAuditor] LLM not specified -- context collected, analysis not performed.\n\n" + context
+
+        print(f"\n[DialecticalAuditor] Investigating {event.get('event_type', event_type)} "
+              f"(session={event.get('session_id', '?')}, iteration={event.get('iteration', '?')})...")
+        try:
+            return await self.llm.generate([{"role": "user", "content": prompt}])
+        except Exception as e:
+            return f"[DialecticalAuditor] LLM error: {e}"
+
     def notify_iteration(self) -> Optional[str]:
         """
         Called after each iteration of the agent by the engine.
@@ -266,6 +387,18 @@ Rule 4 — Memory of development:
 From the first step, a continuous light log of architectural decisions is maintained. Before each new
 step, one must check both against the rules of methodology and this log, to not lose the vector.
 
+Rule 5 — Driving to Contradiction (only for significant, Rule-3-level steps):
+Development must be pushed to an explicit contradiction and its resolution, not stopped at
+"problem -> fix." The entry must name: the Simplest process (connected to the task, generative of
+the developing processes, itself connected back to it); the Development chain from abstract to
+concrete (each step already potential in the previous one); the Opposite process (a process whose
+own development does NOT require the simplest process to exist — this is not the same as an
+alternative practice/library considered under Rule 2/3, which merely competes to solve the same
+need); the Contradiction (simplest and opposite taken together in the unity of their development);
+and the Leap (the process that resolves it, either by replacing both while absorbing their
+development, or by making the contradiction's continued existence possible until such a replacement
+appears).
+
 CRITERIA FOR EVIDENCE (what to consider confirmation, not a declaration):
 — Rule 1: in the structure of development_log.md / git history, there is a clear path of dependency
   of the new step on the functionality of the previous ones. Violation — a step without a traceable connection
@@ -279,11 +412,61 @@ CRITERIA FOR EVIDENCE (what to consider confirmation, not a declaration):
 — Rule 4: there is a continuous, chronologically consistent log of decisions (development_log.md),
   updated during development, not written retrospectively. Violation — steps in the code
   or config without a record in the log, absence of dates, clear signs of retrospective recording.
+— Rule 5: for each Rule-3-level significant step, the log names all five elements (Simplest process,
+  Development chain, Opposite process, Contradiction, Leap) — not just a problem and its fix.
+  Violation — a significant step recorded only as "Reality Check -> Transition Evaluation" without an
+  Opposite process distinct from a considered alternative practice/library, or without an explicit
+  Contradiction/Leap; also a violation if the "opposite process" named is actually just a competing
+  implementation option for the same need rather than a process that does not require the simplest
+  process at all.
+— Rule 5 (runtime): since 2026-09-13, DialecticalEngine requires opposite_process/contradiction/leap
+  on every finalized agent response (not only in development_log.md) and marks violations with a
+  "dialectical_resolution_missing" trace event. If a trace.jsonl is provided, treat a nonzero rate of
+  "dialectical_resolution_missing" events among "synthesize" events as direct runtime evidence of a
+  Rule 5 violation, distinct from and complementary to the development-log-based check above.
 """
 
     def _read_log(self, log_path: str) -> str:
         p = Path(log_path)
         return p.read_text(encoding="utf-8") if p.exists() else ""
+
+    def _read_contradiction_events(self, trace_path: str, event_type: Optional[str]) -> list[dict]:
+        """Reads trace.jsonl and returns the events matching the given (or any) contradiction type."""
+        p = Path(trace_path)
+        if not p.exists():
+            return []
+        wanted = (event_type,) if event_type else _CONTRADICTION_EVENT_TYPES
+        events = []
+        for line in p.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if data.get("event_type") in wanted:
+                events.append(data)
+        return events
+
+    def _read_source_files(self, relative_paths: list[str], max_chars_per_file: int = 6000) -> str:
+        """Reads framework source files (relative to the project root) for the investigation prompt."""
+        project_root = Path(__file__).parent.parent.parent
+        parts = []
+        for rel_path in relative_paths:
+            full_path = project_root / rel_path
+            if not full_path.exists():
+                parts.append(f"--- {rel_path} ---\n(file not found)")
+                continue
+            try:
+                text = full_path.read_text(encoding="utf-8")
+            except Exception as e:
+                parts.append(f"--- {rel_path} ---\n(could not read: {e})")
+                continue
+            if len(text) > max_chars_per_file:
+                text = text[:max_chars_per_file] + "\n... (truncated)"
+            parts.append(f"--- {rel_path} ---\n{text}")
+        return "\n\n".join(parts)
 
     def _collect_dialectical_map(self) -> str:
         """Imports all packages so that @dialectical fills the registry, then serializes."""
@@ -304,7 +487,7 @@ CRITERIA FOR EVIDENCE (what to consider confirmation, not a declaration):
 
         lines = []
         for item in items:
-            lines.append(
+            entry = (
                 f"[Layer {item.layer}] {item.name}:\n"
                 f"  Origin: {item.origin}\n"
                 f"  Contradiction: {item.contradiction}\n"
@@ -312,4 +495,9 @@ CRITERIA FOR EVIDENCE (what to consider confirmation, not a declaration):
                 f"  Generates: {item.generates}\n"
                 f"  Own contradictions: {item.own_contradictions}"
             )
+            if item.simplest_process:
+                entry += f"\n  Simplest process (Rule 5): {item.simplest_process}"
+            if item.opposite_process:
+                entry += f"\n  Opposite process (Rule 5): {item.opposite_process}"
+            lines.append(entry)
         return "\n\n".join(lines)

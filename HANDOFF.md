@@ -1,0 +1,62 @@
+# HANDOFF — Start Here
+
+**Date:** 2026-09-15
+**If you are a new AI session (any model, any tool) picking this project up with no memory of prior conversations, read this file first, in full, before touching any code.**
+
+## What this project is
+
+DialecticAI: a framework for building LLM agents whose reasoning is structured according to a specific philosophical method (Hegelian-style dialectics: simplest process → development from abstract to concrete → discovery of an opposite process → their contradiction → resolution by a leap). This is not decorative — it is enforced at the code level: every framework class must carry an `@dialectical(...)` decorator (origin/contradiction/resolves/generates/own_contradictions) or it refuses to instantiate (`dialectic_ai/core/dialectical.py`, `DialecticalObject.__new__`), and as of 2026-09-13/14, every *agent's own runtime reasoning* is required to carry the same structure (`opposite_process`/`contradiction`/`leap`/`leap_type` fields on every finalized response — see `PROMPTS.md` section 1).
+
+The project's own development process follows the same method, on purpose — see `dialectics_rules.md` (the methodology) and `development_log.md` (the running record of every architectural decision, with its own contradiction/leap where applicable). **Before doing any nontrivial work, read `dialectics_rules.md` and skim the most recent ~10 entries of `development_log.md`** — this project holds itself to documenting *why* each decision was made, not just *what* was done, and expects continuations to follow the same discipline.
+
+## Current state (as of this document)
+
+- Core framework (`dialectic_ai/`) is in a stable, heavily-tested state. `python -m pytest tests/ -q` → `75 passed, 1 skipped`. `python tests/local_runner.py` → 3/3 sandbox scenarios `completed`.
+- A full, systematic code review exists: **[CODE_REVIEW.md](CODE_REVIEW.md)**. Read it before making changes to any file it covers — it documents both what's solid and what's fragile, with specific line-level citations.
+- A prioritized refactor plan exists: **[REFACTOR_PLAN.md](REFACTOR_PLAN.md)**. This is the actual to-do list, in priority order, with verification steps for each item. If you're asked "what should I work on next," the answer is: the next unchecked item in that file.
+- Every LLM-facing prompt in the codebase is consolidated, verbatim, in **[PROMPTS.md](PROMPTS.md)**. If you're doing prompt engineering, start there — don't `grep` for prompts from scratch.
+- The project is being benchmarked against GAIA2 (`meta-agents-research-environments/gaia2`, "ambiguity" config) via `benchmarks/gaia2/`. As of this document: **infrastructure-level correctness is achieved** (see incident history below), but the actual task success rate on GAIA2's hardest category is still 0/5 on the last several runs — this is understood to be a model-reasoning-quality gap on a deliberately hard benchmark category, not a framework bug. See `REFACTOR_PLAN.md`'s closing section ("What is explicitly NOT in this plan") for why this is scoped out of the refactor plan itself.
+
+## Incident history — why the code looks the way it does
+
+This project went through an intensive, real-data debugging session (2026-09-13 through 2026-09-15) that found and fixed six confirmed, high-impact bugs, each verified with a live before/after comparison against a real LLM provider (GigaChat) on a real GAIA2 scenario — not just unit tests. **If you are about to "clean up" or "simplify" something in `engine/executor.py`, `engine/repair.py`, `benchmarks/gaia2/adapter.py`, or `agent/prompt_builder.py`, read the relevant `development_log.md` entry for that date range first** — several of these fixes look like they *shouldn't* matter until you see the specific failure they prevent.
+
+In order of discovery:
+
+1. **`JsonRepairer` schema-blindness** (`engine/repair.py`) — the JSON-repair prompt never told the model what schema to repair *into*, so it invented its own field names, silently producing an empty, useless result that the engine then treated as valid. Caused a real ~30-iteration, ~30-minute stall. Fixed by embedding the actual `FORMAT_INSTRUCTION` schema in the repair prompt.
+2. **Silent empty-turn stall** (`engine/executor.py`) — when a turn produced neither `tool_calls` nor `response`, the engine looped back to the LLM with an *unchanged* prompt (nothing appended to history), so the model kept repeating the same non-answer. Fixed with an explicit "empty turn" detector that pushes corrective feedback into history and forces synthesis after 2 repeats.
+3. **The GAIA2 "hard dialectics" gap** — the single-agent engine loop only had *vocabulary* (Thesis/Antithesis/Synthesis labels) without the actual Rule 5 procedure. Fixed by making `opposite_process`/`contradiction`/`leap`/`leap_type` mandatory structural fields on every agent's finalized response, everywhere, not just in the opt-in `Triad`/`Debate` multi-agent modes. See `PROMPTS.md` section 1 for the exact resulting prompt text.
+4. **The "says vs. does" gap** — a model could correctly *name* the right leap ("Decomposition") in words while doing the opposite in its actual `tool_calls`. Fixed with a `leap_type` enum (`decompose_and_act`/`ask_only`/`fully_resolved`) checked against `evidence_store` — if `leap_type="decompose_and_act"` is claimed but nothing was ever actually done, the engine treats this as a second-order contradiction and drives it back into the generative loop (one bounded retry) instead of silently finalizing.
+5. **The GAIA2 date-year bug** — `benchmarks/gaia2/adapter.py` computed the simulated "today" via `scenario.environment.get_time()`, an attribute that **does not exist anywhere in the ARE API** (verified directly against ARE's `Scenario` class). This check was always `False`, silently falling back to a hardcoded `"2023-10-04"` for every single scenario ever run — a full year off from the real dates (e.g., one scenario's real `start_time` was 2024-10-15). Every "this week"/"today" calendar query the agent ever issued in this whole benchmarking effort was silently querying the wrong year. Fixed by using `scenario.start_time` (the real attribute).
+6. **The array/int type-classification bug** — `AREToolWrapper.parameters()` (`benchmarks/gaia2/adapter.py`) classified argument types with an `if/elif` chain that checked `"str" in arg_type` *before* `"list" in arg_type`. Since ARE reports list arguments as the string `"list[str] | none"` (which contains "str" as a substring), every `list[str]` argument — `recipients`, `attendees`, `cc`, etc. — was misclassified as a plain string, silently disabling an array-coercion fix that was *already written and already correct*, just unreachable. This one bug broke email-sending and calendar-attendee tool calls on nearly every scenario, in every run, for the whole session, until caught by direct inspection of `AREToolWrapper(send_email_tool).parameters()`. Fixed by reordering the classification chain (containers before scalars).
+
+A seventh, related fix: the agent was observed inventing unresolved template placeholders (`'{{contacts}}'`, `'{{product_id}}'`) when it wanted to batch a producer and a consumer tool call into the same turn — because tool calls in one turn execute in **parallel** (`asyncio.gather` in `_phase_collide`), not sequentially, so a later call can never see an earlier call's result within that same turn, and nothing ever told the model this. Fixed with (a) explicit documentation of this in the core prompt (`PROMPTS.md` section 1) and (b) a generic `{{...}}` detector in `AREToolWrapper.execute()` that returns a clear corrective error instead of a confusing type error.
+
+**The meta-lesson, stated plainly for whoever continues this work:** every one of these seven bugs was found by a human directing a manual, live run against a real provider on real data — **not** by the existing automated test suite, which is 100% `MockLLM`/mocked-HTTP. See `CODE_REVIEW.md`'s final cross-cutting finding and `REFACTOR_PLAN.md` Phase 4 for a concrete, scoped proposal to close this gap (a small, opt-in "canary" test against a real provider). Do not assume "tests are green" means "this works against a real provider" for this codebase until Phase 4 is done.
+
+## How to verify anything you do
+
+```bash
+# Fast (seconds) — run after every change:
+python -m pytest tests/ -q                    # expect: 75 passed, 1 skipped (as of this doc)
+python tests/local_runner.py                  # expect: 3/3 scenarios status=completed
+
+# Slower (minutes), real API calls — run before claiming a benchmark-affecting fix works:
+python -m benchmarks.gaia2.runner --limit 5
+# Reads /tmp or a local log path you redirect to; grep for "Result: ScenarioValidationResult"
+# and "GAIA2 Validation Report" for the per-scenario and aggregate outcome.
+```
+
+**Provider notes for the real-API runs:**
+- `GIGACHAT_AUTH_KEY` (in `.env`) is the most reliable provider found this session — ample quota, works with the framework's non-native-tool-calling JSON mode. It has **no retry/backoff logic yet** (see `REFACTOR_PLAN.md` Phase 1.1) and **can rate-limit (429) under heavy repeated use** — if you've been running the benchmark many times in a short window, expect this and wait or reduce call volume before assuming a fresh bug.
+- `GEMINI_API_KEY` has an observed free-tier quota as low as 20 requests/day — do not rely on it for repeated runs.
+- `GROQ_API_KEY` has an observed free-tier cap of 8000 tokens/minute — fine for quick smoke tests, not for anything with a large tool schema or long context.
+- `benchmarks/gaia2/adapter.py`'s default provider pool is GigaChat-only; set `GAIA2_EXTRA_PROVIDERS=1` to add Gemini/Groq/Cerebras/OpenRouter back in for comparison (see the code comment at that point in `adapter.py` for why they're excluded by default).
+
+## Where to go from here
+
+1. Read `CODE_REVIEW.md` in full if you haven't (it's organized by the same Layer 0-6 structure the framework uses internally, so it should feel native to navigate).
+2. Work through `REFACTOR_PLAN.md` top to bottom — it is already prioritized and each item has its own verification step. Phase 1 (LLM integration reliability) is the highest-value starting point if you only have time for one phase.
+3. If you change any prompt text, update `PROMPTS.md` in the same session — it is meant to never drift from the actual code.
+4. If you make an architecturally significant change (not just a bug fix), add an entry to `development_log.md` following its own established format (see any 2026-09-1x entry for the pattern: Reality Check → Root cause → Fix → Verification → Own contradictions). This project holds its own changes to this standard; do not skip it for changes you make.
+5. If you are specifically continuing the GAIA2 benchmark-score work (as opposed to general stability/refactoring), re-read the "Incident history" section above in full first — it is very easy to accidentally re-discover (and waste time on) a bug that was already found and fixed, or to mistake "the agent reasoned poorly" for "the framework has a bug" when it's actually the reverse, or vice versa. When in doubt, reproduce the specific failing scenario in isolation first (see the pattern used throughout `development_log.md`'s 2026-09-13/14 entries: a small standalone script with mock tools that mimic the exact real-world condition, so you can inspect the full raw LLM output without wading through a full ARE benchmark run's noise) before changing code.

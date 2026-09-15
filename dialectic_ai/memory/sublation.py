@@ -22,6 +22,9 @@ from dialectic_ai.core.llm import BaseLLM
     generates="The ability to conduct eternal sessions without losing the general context",
     own_contradictions="LLM may lose important minor details during synthesis. Requires an additional API call",
     layer=1,
+    simplest_process="Keeping the raw message history so the agent remembers past turns.",
+    opposite_process="Discarding old messages outright (a sliding window) — a process that needs no "
+                     "memory of the discarded turns to keep running at all.",
 )
 class SublationEngine:
     """

@@ -20,7 +20,9 @@ async def main():
     db_path = "examples_memory.db"
     memory = SQLiteKnowledgeGraphMemory(db_path=db_path)
     
-    # Creating an agent with new features
+    # Note: dialectic_ai.tools.web_search is a MOCK -- it makes no real network
+    # call and returns fixed, fabricated text (see tools/web_search.py). This
+    # example demonstrates the tool-use/memory plumbing, not real news retrieval.
     agent = DialecticalAgent(
         goal="You are an AI reporter. Your task: find fresh news about AI and educate the user.",
         llm=OpenAILLM(),

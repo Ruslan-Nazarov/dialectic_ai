@@ -80,5 +80,8 @@ laos.json
 translate_codebase.py
 scratch/
 test_app.log
-posts/  
+posts/
+
+# Downloaded/prepared benchmark dataset caches (regenerate via prepare_10_scenarios.py)
+benchmarks/gaia2/temp/
  

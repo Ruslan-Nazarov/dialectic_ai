@@ -11,12 +11,14 @@ def mock_inputs():
     # 2. Role: Test Role
     # 3. Tools: empty
     # 4. LLM: 1 (Gemini)
+    # 4.5. Refine goal automatically?: n (declined -> raw goal used, no network call)
     # 5. Filename: test_agent.json
     return [
         "TestAgent",
         "Test Role",
         "",
         "1",
+        "n",
         "2",
         "test_agent.json"
     ]
@@ -44,6 +46,46 @@ def test_create_agent_wizard_success(mock_input, tmp_path, mock_inputs):
     assert config["name"] == "TestAgent"
     assert config["goal"] == "Test Role"
     assert config["llm"] == "gemini"
+
+@patch("dialectic_ai.cli.creator._build_runtime_llm")
+@patch("dialectic_ai.cli.architect.DialecticalArchitect.design")
+@patch("builtins.input")
+def test_create_agent_wizard_refines_goal_when_accepted(mock_input, mock_design, mock_build_llm, tmp_path):
+    # When the developer opts in ("y"), the wizard should run the automatic dialectical
+    # design pass and use its refined goal -- without the developer ever naming dialectics.
+    from dialectic_ai.cli.architect import ArchitectResult
+
+    target_file = tmp_path / "test_agent.json"
+    mock_build_llm.return_value = object()  # any non-None sentinel; design() itself is mocked
+
+    async def _fake_design(name, raw_goal, tool_descriptions):
+        return ArchitectResult(
+            simplest_process="Answering the user's question directly.",
+            development_chain=["Understand the question", "Look up the fact", "Report it"],
+            opposite_process="The user looks the fact up themselves without asking the agent.",
+            contradiction="The agent's reason to exist vs. the user not needing it.",
+            leap="Always cite the source it used, so the agent earns the trust it needs to exist.",
+            refined_goal="You are a Fact Checker. Always cite your source when you answer.",
+        )
+    mock_design.side_effect = _fake_design
+
+    inputs = ["TestAgent", "Test Role", "", "1", "y", "2", str(target_file)]
+    mock_input.side_effect = inputs
+
+    run_interactive_creator()
+
+    assert target_file.exists()
+    with open(target_file, "r", encoding="utf-8") as f:
+        config = json.load(f)
+    assert config["goal"] == "You are a Fact Checker. Always cite your source when you answer."
+
+    log_path = target_file.with_name(f"{target_file.stem}_development_log.md")
+    assert log_path.exists()
+    log_text = log_path.read_text(encoding="utf-8")
+    assert "Simplest process" in log_text
+    assert "Opposite process" in log_text
+    assert "Leap" in log_text
+
 
 @patch("builtins.input")
 def test_create_agent_wizard_abort(mock_input):

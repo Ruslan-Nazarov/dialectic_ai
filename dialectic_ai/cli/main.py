@@ -132,22 +132,45 @@ def cmd_audit(args):
     """
     import asyncio
 
-    # Define LLM (if not --no-llm)
+    # Define LLM (if not --no-llm). GigaChat first: it's the provider this project's
+    # own .env/HANDOFF.md documents as actually reliable; Gemini's free tier was
+    # observed returning 503 UNAVAILABLE under load this session (see CODE_REVIEW.md,
+    # Layer 5), so falling back to it first was likely to silently degrade to
+    # context-only mode on this project's own configured credentials.
     llm = None
     if not args.no_llm:
         try:
-            from dialectic_ai.integrations.gemini.llm import GeminiLLM
-            llm = GeminiLLM()
-            print("[Audit] LLM: Gemini")
+            from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
+            llm = GigaChatLLM()
+            print("[Audit] LLM: GigaChat")
         except Exception:
             try:
-                from dialectic_ai.integrations.openai.llm import OpenAILLM
-                llm = OpenAILLM()
-                print("[Audit] LLM: OpenAI/OpenRouter")
+                from dialectic_ai.integrations.gemini.llm import GeminiLLM
+                llm = GeminiLLM()
+                print("[Audit] LLM: Gemini")
             except Exception:
-                print("[Audit] LLM not found — only the assembled context will be output.")
+                try:
+                    from dialectic_ai.integrations.openai.llm import OpenAILLM
+                    llm = OpenAILLM()
+                    print("[Audit] LLM: OpenAI/OpenRouter")
+                except Exception:
+                    print("[Audit] LLM not found — only the assembled context will be output.")
 
     auditor = DialecticalAuditor(llm=llm)
+
+    if args.investigate is not None:
+        # Root-cause investigation of one contradiction event -- diagnostic only, does not
+        # modify code or re-run the agent.
+        report = asyncio.run(auditor.investigate_contradiction(
+            trace_path=args.trace,
+            event_index=args.investigate,
+        ))
+        print("\n" + "=" * 70)
+        print("  DIALECTICAL AUDIT — CONTRADICTION INVESTIGATION")
+        print("=" * 70)
+        print(report)
+        print("=" * 70 + "\n")
+        return
 
     if args.framework:
         # Audit of the framework itself
@@ -273,6 +296,12 @@ def main():
     p_audit.add_argument(
         "--output", default=None,
         help="Save the report to a file (e.g., audit_report.md)"
+    )
+    p_audit.add_argument(
+        "--investigate", nargs="?", const=-1, type=int, default=None,
+        help="Root-cause investigation of one contradiction event (dialectical_resolution_missing / "
+             "leap_action_mismatch) from --trace, by index (default: most recent, i.e. -1). "
+             "Diagnostic only -- produces a hypothesis, does not modify code or re-run the agent."
     )
 
     # Command: map

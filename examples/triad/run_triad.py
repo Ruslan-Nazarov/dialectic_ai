@@ -1,3 +1,4 @@
+import asyncio
 import os
 from dialectic_ai.core import GeminiLLM
 from dialectic_ai.agent import DialecticalAgent
@@ -47,28 +48,28 @@ def create_triad() -> DialecticalTriad:
         synthesis=synthesis_engine,
     )
 
-def main():
+async def main():
     if not os.environ.get("GEMINI_API_KEY"):
         print("Error: Set the environment variable GEMINI_API_KEY")
         return
 
     triad = create_triad()
-    
+
     task = (
         "Write a function that takes a list of numbers and returns a list of only prime numbers. "
         "Cover the code with type hints."
     )
-    
+
     print("="*60)
     print("RUNNING TRIAD EXAMPLE")
     print("="*60)
-    
-    result = triad.run(task)
-    
+
+    result = await triad.run(task)
+
     print("\n" + "="*60)
     print("FINAL RESULT OF SYNTHESIS:")
     print("="*60)
     print(result.response)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

@@ -79,10 +79,17 @@ class DialecticalAgent(DialecticalObject):
         
         if len(self._history) > self.max_history_length:
             print(f"[Agent] Context overflowed ({len(self._history)} messages). Starting SublationEngine...")
-            synthesis = await self.sublation_engine.sublate(self._history)
+            # Keep the most recent exchanges verbatim (they contain the specific
+            # tool calls/errors the agent needs to avoid repeating) and only
+            # summarize the older tail. Replacing everything with a vague
+            # 1-2 paragraph synthesis was erasing "this exact call already
+            # failed" context, causing the agent to retry the same dead end.
+            keep_tail = 4
+            to_summarize, recent = self._history[:-keep_tail], self._history[-keep_tail:]
+            synthesis = await self.sublation_engine.sublate(to_summarize)
             self._history = [
                 {"role": "user", "content": f"[SYSTEM INTERNAL] Synthesis of past conversations:\n{synthesis}"}
-            ]
+            ] + recent
             print("[Agent] History successfully compressed (Aufheben).")
 
     def get_messages(self) -> list[dict]:

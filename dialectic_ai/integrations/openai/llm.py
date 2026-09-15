@@ -6,7 +6,10 @@ import urllib.error
 
 from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.llm import BaseLLM
+from dialectic_ai.core.retry import RetryableError, retry_call
 from dialectic_ai.core.schema import ModelResult, ModelToolCall, ModelUsage
+
+_RETRYABLE_HTTP_CODES = {429, 500, 502, 503, 504}
 
 
 @dialectical(
@@ -29,10 +32,16 @@ class OpenAILLM(BaseLLM):
         api_key: str = None,
         base_url: str = None,
         model: str = "gpt-4o-mini",
+        max_tokens: int = 4096,
+        timeout: int = 60,
+        max_retries: int = 3,
     ):
         self.api_key = api_key or os.getenv("OPENAI_API_KEY", "")
         self.base_url = (base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")).rstrip("/")
         self.model = model
+        self.max_tokens = max_tokens
+        self.timeout = timeout
+        self.max_retries = max_retries
 
         # Fallbacks for other providers if OPENAI_API_KEY is not set
         if not self.api_key:
@@ -45,18 +54,18 @@ class OpenAILLM(BaseLLM):
                 self.base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
                 self.model = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct")
 
-    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+    def _build_request(self, messages: list[dict], tools: list[dict] = None) -> urllib.request.Request:
         url = f"{self.base_url}/chat/completions"
         payload = {
             "model": self.model,
             "messages": messages,
             "temperature": 0.2,
+            "max_tokens": self.max_tokens,
         }
         if tools:
             payload["tools"] = tools
         else:
             payload["response_format"] = {"type": "json_object"}
-
 
         headers = {
             "Content-Type": "application/json",
@@ -66,92 +75,74 @@ class OpenAILLM(BaseLLM):
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         data = json.dumps(payload).encode("utf-8")
-        req = urllib.request.Request(url, data=data, headers=headers)
+        return urllib.request.Request(url, data=data, headers=headers)
 
-        def _make_request():
-            try:
-                with urllib.request.urlopen(req, timeout=60) as resp:
-                    result = json.loads(resp.read().decode("utf-8"))
-                    message = result["choices"][0]["message"]
-                    
-                    if "tool_calls" in message:
-                        tool_calls = []
-                        for tc in message["tool_calls"]:
-                            if tc["type"] == "function":
-                                tool_calls.append({
-                                    "name": tc["function"]["name"],
-                                    "args": json.loads(tc["function"]["arguments"])
-                                })
-                        return json.dumps({
-                            "thought": "Invoking native tools",
-                            "tool_calls": tool_calls
-                        })
-                    return message.get("content", "{}")
-            except urllib.error.HTTPError as e:
-                err_msg = e.read().decode("utf-8")
-                raise RuntimeError(f"OpenAI API Error {e.code}: {err_msg}")
-                
-        return await asyncio.to_thread(_make_request)
+    def _do_attempt(self, req: urllib.request.Request) -> dict:
+        """Performs a single HTTP attempt, raising RetryableError for transient failures."""
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            err_msg = e.read().decode("utf-8")
+            message = f"OpenAI API Error {e.code}: {err_msg}"
+            if e.code in _RETRYABLE_HTTP_CODES:
+                raise RetryableError(message, headers=e.headers) from e
+            raise RuntimeError(message) from e
+        except (urllib.error.URLError, TimeoutError) as e:
+            raise RetryableError(f"OpenAI API network error: {e}") from e
+
+    def _call_sync(self, req: urllib.request.Request) -> dict:
+        """Performs the HTTP call with retry/backoff on rate limits, transient server errors, and network faults."""
+        return retry_call(
+            lambda attempt: self._do_attempt(req),
+            max_retries=self.max_retries,
+            on_retry=lambda attempt, e, wait: print(
+                f"\n[OpenAILLM] {e}, retrying in {wait:.1f}s (attempt {attempt + 1}/{self.max_retries})..."
+            ),
+        )
+
+    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+        req = self._build_request(messages, tools)
+        result = await asyncio.to_thread(self._call_sync, req)
+        message = result["choices"][0]["message"]
+
+        if "tool_calls" in message:
+            tool_calls = []
+            for tc in message["tool_calls"]:
+                if tc["type"] == "function":
+                    tool_calls.append({
+                        "name": tc["function"]["name"],
+                        "args": json.loads(tc["function"]["arguments"])
+                    })
+            return json.dumps({
+                "thought": "Invoking native tools",
+                "tool_calls": tool_calls
+            })
+        return message.get("content", "{}")
 
     async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
-        url = f"{self.base_url}/chat/completions"
-        payload = {
-            "model": self.model,
-            "messages": messages,
-            "temperature": 0.2,
-        }
-        if tools:
-            payload["tools"] = tools
-        else:
-            payload["response_format"] = {"type": "json_object"}
+        req = self._build_request(messages, tools)
+        result = await asyncio.to_thread(self._call_sync, req)
+        message = result["choices"][0]["message"]
 
-        headers = {
-            "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 DialecticAI/1.0"
-        }
-        if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
+        usage = None
+        if "usage" in result:
+            usage = ModelUsage(
+                prompt_tokens=result["usage"].get("prompt_tokens", 0),
+                completion_tokens=result["usage"].get("completion_tokens", 0),
+                total_tokens=result["usage"].get("total_tokens", 0)
+            )
+            print(f"[LLM] Call Usage: {usage.prompt_tokens} input, {usage.completion_tokens} output, {usage.total_tokens} total tokens.")
 
-        data = json.dumps(payload).encode("utf-8")
-        req = urllib.request.Request(url, data=data, headers=headers)
+        if "tool_calls" in message:
+            tool_calls = []
+            for tc in message["tool_calls"]:
+                if tc["type"] == "function":
+                    tool_calls.append(ModelToolCall(
+                        id=tc.get("id"),
+                        name=tc["function"]["name"],
+                        arguments=json.loads(tc["function"]["arguments"])
+                    ))
+            return ModelResult(tool_calls=tool_calls, usage=usage)
 
-        def _make_request():
-            try:
-                with urllib.request.urlopen(req, timeout=60) as resp:
-                    result = json.loads(resp.read().decode("utf-8"))
-                    message = result["choices"][0]["message"]
-                    
-                    # Extract usage
-                    usage = None
-                    if "usage" in result:
-                        usage = ModelUsage(
-                            prompt_tokens=result["usage"].get("prompt_tokens", 0),
-                            completion_tokens=result["usage"].get("completion_tokens", 0),
-                            total_tokens=result["usage"].get("total_tokens", 0)
-                        )
-
-                    # Extract tool calls directly to ModelToolCall
-                    if "tool_calls" in message:
-                        tool_calls = []
-                        for tc in message["tool_calls"]:
-                            if tc["type"] == "function":
-                                tool_calls.append(ModelToolCall(
-                                    id=tc.get("id"),
-                                    name=tc["function"]["name"],
-                                    arguments=json.loads(tc["function"]["arguments"])
-                                ))
-                        return ModelResult(
-                            tool_calls=tool_calls,
-                            usage=usage
-                        )
-                    
-                    # Text fallback internally
-                    return ModelResult(
-                        text=message.get("content", ""),
-                        usage=usage
-                    )
-            except urllib.error.HTTPError as e:
-                err_msg = e.read().decode("utf-8")
-                raise RuntimeError(f"OpenAI API Error {e.code}: {err_msg}")
-                
-        return await asyncio.to_thread(_make_request)
+        return ModelResult(text=message.get("content", ""), usage=usage)
