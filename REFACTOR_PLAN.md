@@ -125,6 +125,8 @@ These are small, independent, low-risk fixes. Do them in any order; each has its
 
 ## Phase 4 — Make the test suite catch what only manual runs caught this session
 
+**Status: ✅ DONE (2026-09-15)** — 4.1-4.3 done as scoped, including the plan's own "confirm the test can actually fail" requirement: `test_gaia2_adapter.py`'s regression test was verified to fail loudly when the original bug's if/elif order was temporarily reintroduced, then the fix was restored (`git diff` confirmed a clean restore). The canary test was run for real against a live GigaChat credential (not just checked for a clean skip) and passed. See `development_log.md`'s "[2026-09-15] Refactor Phase 4" entry.
+
 **Why this matters most for hackathon credibility:** every high-value bug fixed this session (date-year, type-classification, placeholder-detection, repair-schema-blindness) was found by a human-directed manual run against a real provider on real data — **not** by the existing `pytest` suite, which is 100% `MockLLM`/mocked-HTTP based. See `CODE_REVIEW.md`'s final cross-cutting finding. A test suite that is green while the actual product is broken against real providers is worse than no test suite, because it creates false confidence.
 
 ### 4.1 — Add one cheap, opt-in "canary" test against a real provider
@@ -159,6 +161,8 @@ These are small, independent, low-risk fixes. Do them in any order; each has its
 ---
 
 ## Phase 5 — Tooling and CI consolidation
+
+**Status: ✅ DONE (2026-09-15)** — 5.1, 5.2 done as scoped; 5.3 done as option (a) per this plan's own recommendation (docstring-only, zero-risk; option (b)'s migration remains deliberately deferred). Baseline lint/type debt recorded for future triage: `ruff check .` found 142 findings, `mypy dialectic_ai` found 64 -- both wired into CI as `continue-on-error: true` rather than blocking, exactly as this plan's own 5.1 text anticipated. See `development_log.md`'s "[2026-09-15] Refactor Phase 5" entry.
 
 ### 5.1 — Consolidate the two CI workflows into one
 - Files: `.github/workflows/ci.yml`, `.github/workflows/python-app.yml`

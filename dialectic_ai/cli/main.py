@@ -21,7 +21,7 @@ from pathlib import Path
 
 # Imports will be loaded dynamically where needed
 
-from dialectic_ai.core.dialectical import get_dialectical_map, print_dialectical_card
+from dialectic_ai.core.dialectical import get_dialectical_map, print_dialectical_card, install_dialectical_excepthook
 from dialectic_ai.observability.tracer import TraceReader
 from dialectic_ai.observability.evaluator import AgentEvaluator
 from dialectic_ai.observability.auditor import DialecticalAuditor
@@ -258,6 +258,7 @@ def load_env():
 
 
 def main():
+    install_dialectical_excepthook()
     load_env()
     parser = argparse.ArgumentParser(
         prog="dialectic",

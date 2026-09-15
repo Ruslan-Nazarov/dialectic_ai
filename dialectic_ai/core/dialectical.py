@@ -136,7 +136,20 @@ def custom_excepthook(exc_type, exc_value, traceback):
     else:
         sys.__excepthook__(exc_type, exc_value, traceback)
 
-sys.excepthook = custom_excepthook
+
+def install_dialectical_excepthook() -> None:
+    """
+    Installs custom_excepthook as the process-wide sys.excepthook, for the nicer
+    traceback formatting on DialecticalArchitectureError.
+
+    Explicit opt-in, called by the CLI entry point (cli/main.py) -- NOT run as an
+    import-time side effect of this module. Merely `import`ing this module used to
+    silently rewrite the global exception hook for every importer, which is
+    surprising for anyone embedding the framework inside a larger application with
+    its own exception handling (see CODE_REVIEW.md, Layer 0). Call this yourself if
+    you want the formatting outside the CLI.
+    """
+    sys.excepthook = custom_excepthook
 
 
 class DialecticalObject:

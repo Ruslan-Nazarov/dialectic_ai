@@ -36,11 +36,18 @@ class Memory(Protocol):
         ...
 
 
-# For backward compatibility (DEPRECATED)
+# NOTE: despite the Memory Protocol above existing as the intended lighter-weight
+# contract, every concrete memory implementation in this codebase (KnowledgeGraphMemory,
+# PersistentMemory, SQLiteKnowledgeGraphMemory) still inherits from this class, not from
+# Memory directly -- ConversationMemory is the only one on the newer path. Calling this
+# "deprecated" would be false advertising until that migration actually happens (see
+# REFACTOR_PLAN.md Phase 5.3 for the scoped, deliberately-deferred migration decision).
 class BaseMemory(ABC, DialecticalObject, Memory):
     """
-    DEPRECATED: Use Memory(Protocol).
-    Left for backward compatibility.
+    ABC-based memory contract (nominal typing, requires inheriting DialecticalObject
+    and the @dialectical decorator). Memory (Protocol) above is the newer, lighter-
+    weight structural-typing alternative -- ConversationMemory uses it directly; every
+    other concrete memory class in this codebase still inherits from this one.
     """
     def update(self, updates: list[MemoryUpdate]) -> None:
         pass

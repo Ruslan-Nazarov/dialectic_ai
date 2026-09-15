@@ -27,9 +27,6 @@ def _load_env_file():
                 pass
 
 
-_load_env_file()
-
-
 @dialectical(
     origin="Integration with Google Gemini API for real agent reasoning",
     contradiction="MockLLM is predictable but cannot reason. A real model is needed without bloating dependencies",
@@ -45,6 +42,10 @@ class GeminiLLM(BaseLLM):
     """
 
     def __init__(self, api_key: str = None, model: str = None, max_retries: int = 3):
+        # Loading .env here (once per instantiation, not at import time) matches every
+        # other provider in this codebase -- see CODE_REVIEW.md, Layer 2: importing this
+        # module alone used to silently mutate os.environ as a side effect.
+        _load_env_file()
         self.api_key = api_key or os.getenv("GEMINI_API_KEY", "")
         self.model = model or os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
         self.max_retries = max_retries
