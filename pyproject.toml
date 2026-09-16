@@ -36,6 +36,13 @@ langchain = [
     "langchain>=0.1.0",
     "langchain-openai>=0.0.2",
 ]
+bfcl = [
+    # Only used for its bundled datasets and ground truth (benchmarks/bfcl/); grading itself
+    # uses a vendored copy of its ast_checker (see benchmarks/bfcl/vendored_ast_checker.py's
+    # own docstring) specifically to avoid importing bfcl_eval's full model-handler chain,
+    # which pulls in heavy, irrelevant dependencies (torch/vllm/qwen_agent/soundfile/...).
+    "bfcl-eval>=2026.1.0",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",

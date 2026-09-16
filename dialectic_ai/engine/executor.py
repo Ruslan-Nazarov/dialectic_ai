@@ -245,10 +245,17 @@ class DialecticalEngine:
                 return agent_output
 
         await self.logger.trace_event("max_iterations_reached", {"iterations": self.max_iterations})
+        # 2026-09-16: this used to construct a brand-new AgentOutput with no `evidence` at all,
+        # silently discarding every tool call made during the run (including genuinely successful
+        # ones) the moment max_iterations was hit -- found via benchmarks/ablation/, where a
+        # scenario's real, successful save_note call was invisible in the returned AgentOutput
+        # because the run happened to time out on an unrelated, later part of the task. `thought`
+        # was also being passed here despite not being a real AgentOutput field (silently ignored
+        # by Pydantic's default extra='ignore', not a functional bug, but dead and confusing).
         return AgentOutput(
             status="max_iterations",
             response="[Engine] Maximum number of iterations exceeded. The agent could not generate a response.",
-            thought="",
+            evidence=evidence_store.all(),
             is_final=True,
         )
 

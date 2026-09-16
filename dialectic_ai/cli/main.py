@@ -258,6 +258,13 @@ def load_env():
 
 
 def main():
+    # Several CLI code paths print emoji (creator.py's wizard, dialectical.py's
+    # architectural-error banner). The default console encoding on non-English
+    # Windows locales is a narrow codepage (e.g. cp1251), not UTF-8, which
+    # crashes those prints outright -- see development_log.md, 2026-09-15.
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     install_dialectical_excepthook()
     load_env()
     parser = argparse.ArgumentParser(

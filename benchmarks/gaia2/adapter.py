@@ -273,7 +273,21 @@ class DialecticAREAgent:
         # Pre-execution logging for payload sizing
         print("\n--- LLM PAYLOAD ESTIMATION ---")
         print(f"Scenario ID: {scenario_name}")
-        print("Provider: BalancingLLM (Groq, Cerebras, Gemini)")
+        # This used to unconditionally print "(Groq, Cerebras, Gemini)" regardless of which
+        # providers were actually configured -- misleading, since the real pool below is
+        # GigaChat-only unless GAIA2_EXTRA_PROVIDERS=1 (see development_log.md, 2026-09-15;
+        # this stale string nearly caused a wrong diagnosis of a real-run failure pattern).
+        _active_providers = []
+        if os.getenv("GIGACHAT_AUTH_KEY"):
+            _active_providers.append("GigaChat")
+        if os.getenv("GAIA2_EXTRA_PROVIDERS") == "1":
+            _active_providers += [
+                name for env, name in (
+                    ("GEMINI_API_KEY", "Gemini"), ("GROQ_API_KEY", "Groq"),
+                    ("OPENROUTER_API_KEY", "OpenRouter"), ("CEREBRAS_API_KEY", "Cerebras"),
+                ) if os.getenv(env)
+            ]
+        print(f"Provider: BalancingLLM ({', '.join(_active_providers) or 'NONE CONFIGURED'})")
         print(f"Total ARE tools: {total_tools_count}")
         print(f"Selected apps: {', '.join(sorted(selected_apps))}")
         print(f"Selected tools: {selected_tools_count}")

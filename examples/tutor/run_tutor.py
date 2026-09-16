@@ -22,6 +22,12 @@ import os
 import sys
 from pathlib import Path
 
+# Non-English Windows consoles default to a narrow codepage (e.g. cp1251), not
+# UTF-8 -- this script prints emoji, which crashes outright without this.
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Adding the project root to the module search path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -62,6 +68,10 @@ MOCK_TUTOR_RESPONSES = [
       "thought": "Reality returned an IndentationError. The student did not consider the syntax of blocks in Python. Updating the knowledge graph and asking a Socratic question.",
       "knowledge_updates": [{"concept": "python_indentation", "status": "struggling"}],
       "tool_calls": [],
+      "opposite_process": "Just telling the student the fixed code directly, without them running into the error themselves",
+      "contradiction": "Handing over the fix teaches nothing; staying silent about a confirmed interpreter error abandons the student",
+      "leap": "Report the real interpreter error, then ask a guiding question that lets the student find the fix themselves",
+      "leap_type": "ask_only",
       "response": "I ran your code in a Python environment, and the interpreter returned an error:\\n`IndentationError: expected an indented block after 'for' statement`\\n\\nLook closely at the line `print(i)`. How does Python understand which commands should be executed inside the `for` loop?"
     }"""
 ]

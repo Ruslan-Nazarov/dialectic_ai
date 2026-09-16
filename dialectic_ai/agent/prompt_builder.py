@@ -37,11 +37,33 @@ _AGENT_DIALECTICAL_RULES = """
    or a product ID from a search before adding it to a cart), do NOT invent a placeholder like
    "{{result}}" or "<value>" for it -- call only the producing tool this turn, read its real Observation,
    and call the dependent tool in a later turn with the actual value.
+   **An incomplete, empty, filtered, or erroring tool result is a reason to develop further, not to
+   conclude.** A tool call that used the wrong name, a truncated list, or a search that came back with
+   zero matches are all signals that your OWN attempt so far was incomplete -- not proof the underlying
+   fact is false or the task can't be done. Before reporting "nothing matches," "the tool isn't
+   available," or asking the user to resolve it, try at least one genuinely different concrete step: a
+   different (actually available) tool, a corrected tool name, a narrower or wider filter, an
+   offset/limit/pagination argument if a result was marked truncated. Only conclude something doesn't
+   exist, or ask the user, after an alternative path has actually been tried and also failed -- not after
+   a single attempt.
+   **Never invent a value for a parameter you don't actually have** -- this applies to optional
+   parameters exactly as much as to facts a tool could check. If the request or prior Observations don't
+   give you a real value for an optional argument, omit that argument entirely rather than passing a
+   plausible-looking placeholder, an empty container (`{}`, `[]`), or a guess. A tool call with fewer
+   arguments (only the ones you actually know) is correct; a tool call with a made-up value for an
+   argument you don't know is not "being thorough," it is fabricating input the same way inventing a
+   fact would be.
 3. **Opposite process, Contradiction, Leap -- REQUIRED every time you set `response` (not optional, not only
    for hard cases):**
    - `opposite_process`: name a process that would resolve or dissolve the task WITHOUT needing your
      simplest process at all. This is not "a harder version of the same plan" -- doing nothing, asking the
      user instead of acting, or the user handling it themselves manually are all valid opposite processes.
+     **If none of your available tools are actually relevant to the request, recognizing that plainly is
+     itself a complete, low-effort, fully valid opposite_process/leap -- it is NOT a harder or less
+     complete answer than attempting a call.** Do not call a tool that only superficially resembles what
+     was asked (the wrong entity, the wrong kind of data, a guess at what might be related) just to have
+     called something -- an honest "no available tool answers this" is strictly better than a plausible-
+     looking but wrong or irrelevant tool call, and costs you nothing extra to state.
    - `contradiction`: state, in one sentence, the simplest process and the opposite process taken together
      in the unity of their development -- the actual tension your response has to resolve.
    - `leap`: resolve it in words. The most common correct leap when a request has both a clear,
@@ -76,6 +98,34 @@ empty (0 events).
   email Akira confirming Thursday-only attendance (never conditional on the calendar at all). Call
   the email tool now for (b). Only ask the user about (a), and only about the empty-calendar
   discrepancy specifically -- not about whether to proceed with the email.
+
+WORKED EXAMPLE 2 (a real observed failure, not hypothetical -- see development_log.md, 2026-09-15):
+task includes "reply to my latest email from Warunee" and "save all properties in Oslo under 1000 sqft."
+A first attempt to fetch "the latest email" calls a tool name that does not exist and errors. A property
+search returns a result explicitly marked truncated, and every apartment visible in the untruncated part
+happens to be >= 1000 sqft.
+  WRONG (an actual observed failure): concludes, after these two single attempts, "none of the properties
+  meet the criteria" and effectively gives up on the email too, asking the user to "review the available
+  properties" -- despite `Emails__search_emails`/`Emails__list_emails` being available, untried tools, and
+  despite the property list being marked truncated rather than exhaustive. The oracle's own ground truth
+  had 3 matching properties and 1 expected reply -- the conclusion was not just cautious, it was wrong.
+  RIGHT: when the email tool call errors with "not registered," try a different, actually-available tool
+  for the same goal (`Emails__search_emails` or `Emails__list_emails`) before concluding the email can't be
+  handled. When the property search result says it was truncated, request more of it (pagination/offset,
+  or a narrower query) before concluding no property matches -- a truncation notice is a statement about
+  what you've seen so far, not about what exists.
+
+WORKED EXAMPLE 3 (a real observed failure, not hypothetical -- see development_log.md, 2026-09-15):
+request = "What is the largest planet in the universe?" Available tools include one named
+`space.star_info(star_name, information)` -- nothing about planets, nothing that could compare sizes.
+  WRONG (an actual observed failure): calls `space.star_info(star_name="Jupiter", information="diameter")`
+  anyway -- Jupiter is a planet, not a star, and looking up one object's diameter doesn't answer a
+  question that requires comparing across many objects regardless. The tool was called because it was
+  the closest-sounding thing available, not because it could actually resolve the request.
+  RIGHT: recognize that no available tool is relevant to this request, say so directly as `response`, and
+  set `opposite_process` to naming that absence plainly (e.g. "answer from what I already know, since no
+  tool here can compare planet sizes") -- this is a complete, correctly-resolved turn, not an incomplete
+  one. Reaching for the nearest superficially-related tool is the failure this rule exists to prevent.
 """
 
 _DIALECTICAL_RULES_MD = _AGENT_DIALECTICAL_RULES
@@ -131,7 +181,16 @@ def build_system_prompt(goal: str, memory: BaseMemory, tools: list = None, nativ
         # When the LLM supports native tool calling, tool schemas are sent via the
         # API's `tools` field. Duplicating them here as text wastes the token budget.
         tools_lines = "\n".join(t.to_prompt_description() for t in tools_to_use)
-        tools_section = f"\n## Available tools (Confrontation with reality)\n{tools_lines}\n"
+        tools_section = (
+            "\n## Available tools (Confrontation with reality)\n"
+            "Each tool below is listed as `name`, a description, and an `Arguments` JSON Schema -- the "
+            "schema describes the SHAPE and TYPE your `args` must have (e.g. `{\"type\": \"string\"}` "
+            "means \"put a string value here\"), it is not itself a value to copy. When you call a tool, "
+            "`args` must be the actual values for THIS request (e.g. `{\"image_url\": \"the-real-url\"}`), "
+            "never a restatement of the schema (`{\"type\": \"object\", \"properties\": {...}}`) -- that is "
+            "a malformed call, not a cautious or complete one.\n"
+            f"{tools_lines}\n"
+        )
 
     format_instruction = FORMAT_INSTRUCTION
     if native_tool_calling:

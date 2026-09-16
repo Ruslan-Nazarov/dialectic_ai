@@ -1,0 +1,46 @@
+{
+  "seed": 42,
+  "limit_per_category": 25,
+  "model": "GigaChat (GigaChat)",
+  "elapsed_seconds": 378.9016306400299,
+  "total_cases": 125,
+  "overall_raw_accuracy": 82.4,
+  "overall_framework_accuracy": 80.0,
+  "per_category": [
+    {
+      "category": "simple_python",
+      "total": 25,
+      "raw_correct": 23,
+      "framework_correct": 21,
+      "errors": []
+    },
+    {
+      "category": "multiple",
+      "total": 25,
+      "raw_correct": 21,
+      "framework_correct": 21,
+      "errors": []
+    },
+    {
+      "category": "parallel",
+      "total": 25,
+      "raw_correct": 18,
+      "framework_correct": 19,
+      "errors": []
+    },
+    {
+      "category": "parallel_multiple",
+      "total": 25,
+      "raw_correct": 20,
+      "framework_correct": 19,
+      "errors": []
+    },
+    {
+      "category": "irrelevance",
+      "total": 25,
+      "raw_correct": 21,
+      "framework_correct": 20,
+      "errors": []
+    }
+  ]
+}

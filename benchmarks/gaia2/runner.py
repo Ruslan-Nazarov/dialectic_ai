@@ -33,7 +33,18 @@ def main():
     parser = argparse.ArgumentParser(description="GAIA2 Runner for DialecticAI")
     parser.add_argument("--limit", type=int, default=11, help="Number of tasks to run")
     parser.add_argument("--dry-run", action="store_true", help="Run without calling LLM")
-    
+    parser.add_argument(
+        "--config", default="ambiguity",
+        choices=["adaptability", "ambiguity", "demo", "execution", "mini", "search", "time"],
+        help=(
+            "GAIA2 capability config to run. 'ambiguity' (the default) is the hardest category -- it "
+            "specifically tests recognizing under-specification, and is where every failure investigated "
+            "in development_log.md's 2026-09-14/15 entries came from. 'execution' tests straightforward, "
+            "clearly-specified tool use and is a fairer test of 'does the agent do useful things correctly' "
+            "without also demanding it correctly judge what's ambiguous. 'demo' is a 3-scenario smoke check."
+        ),
+    )
+
     # Parse known args so we don't crash on other args we might add later
     args, unknown = parser.parse_known_args()
     
@@ -48,7 +59,7 @@ def main():
         "-a", "default",
         "--hf-dataset", "meta-agents-research-environments/gaia2",
         "--hf-split", "validation",
-        "--config", "ambiguity",
+        "--config", args.config,
         "--limit", str(args.limit),
         "--num_runs", "1",
         "--executor_type", "thread",
@@ -63,7 +74,7 @@ def main():
         "--judge_provider", "groq",
     ]
     
-    print(f"Starting GAIA2 benchmark via ARE (limit={args.limit}, dry-run={args.dry_run})")
+    print(f"Starting GAIA2 benchmark via ARE (config={args.config}, limit={args.limit}, dry-run={args.dry_run})")
     
     # Monkey patch the AgentBuilder to return our agent
     with patch.object(AgentBuilder, 'build', new=custom_agent_build):
