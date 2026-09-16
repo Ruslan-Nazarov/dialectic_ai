@@ -126,7 +126,7 @@ request = "What is the largest planet in the universe?" Available tools include 
 
 **Provenance:** Step 0 and the parallel-execution paragraph in step 2 were added 2026-09-14/15, cheap and universal, never independently A/B tested (see `CODE_REVIEW.md`). Step 1 is original. Step 3 (opposite_process/contradiction/leap/leap_type) and Worked Example 1 were added 2026-09-13/14 in direct response to a live-reproduced failure (see `HANDOFF.md` — the "Yoga scenario" incident) and the worked example specifically **was** measured before/after: 0/3 correct email sends before, 3/3 after, on the exact same reproduction script. The "incomplete tool result" paragraph and Worked Example 2 were added 2026-09-15, in direct response to a real `scenario_universe_26_n5mmwn` GAIA2 transcript (run7, see `development_log.md`) where the agent hallucinated a tool name, hit a truncated search result, and gave up on both instead of trying an alternative path -- not yet independently re-verified live as of this document (see `development_log.md` for whether/how it was checked).
 
-The "never invent a value for a parameter you don't actually have" paragraph (step 2), the "if none of your available tools are actually relevant..." paragraph (step 3), and Worked Example 3 were all added 2026-09-15 in direct response to a real BFCL raw-vs-framework comparison (`benchmarks/bfcl/`, 125 cases x 2 conditions, seed=42): the framework condition scored measurably *worse* than a bare baseline prompt on the same model on BFCL's "irrelevance" category (76% vs 84%) and showed a real fabricated tool call (`space.star_info` called on a planet to answer a question no available tool could answer) plus a distinct pattern of inventing values for optional parameters instead of omitting them. As of this document, these three additions have NOT yet been re-verified against a fresh BFCL run — see `development_log.md`'s own follow-up entry for whether/how that verification happened; do not assume they fixed the regression until that entry says so.
+The "never invent a value for a parameter you don't actually have" paragraph (step 2), the "if none of your available tools are actually relevant..." paragraph (step 3), and Worked Example 3 were all added 2026-09-15 in direct response to a real raw-vs-framework function-calling comparison (since removed from the repo, see `HANDOFF.md`): the framework condition scored measurably *worse* than a bare baseline prompt on the same model on an "irrelevance" category (76% vs 84%) and showed a real fabricated tool call (`space.star_info` called on a planet to answer a question no available tool could answer) plus a distinct pattern of inventing values for optional parameters instead of omitting them. A properly-powered re-run (750 calls, 3 repeats) afterward found the OVERALL framework-vs-raw difference was not statistically significant either way (Wilcoxon p=0.582) — these three fixes were not shown to have moved that specific aggregate number, though the individual fabricated-tool-call pattern they target is a real, cited failure mode regardless. See `development_log.md`'s 2026-09-15/16 entries for the full reasoning.
 
 ### 1b. `FORMAT_INSTRUCTION` (the JSON contract)
 
@@ -177,7 +177,7 @@ never a restatement of the schema (`{"type": "object", "properties": {...}}`) --
 a malformed call, not a cautious or complete one.
 {one line per tool, from Tool.to_prompt_description(): "- `{name}`: {description}\n  Arguments: {json schema}"}
 ```
-**History:** the clarifying paragraph above (schema vs. values) was added 2026-09-15 after a real BFCL comparison run (`benchmarks/bfcl/`) caught the model echoing a tool's own parameter schema back as `args` instead of extracting real values from the question -- see development_log.md, 2026-09-15.
+**History:** the clarifying paragraph above (schema vs. values) was added 2026-09-15 after a real function-calling comparison run (since removed from the repo, see `HANDOFF.md`) caught the model echoing a tool's own parameter schema back as `args` instead of extracting real values from the question -- see development_log.md, 2026-09-15.
 
 ### 1d. Memory section (always included)
 ```
@@ -390,29 +390,11 @@ RESPOND STRICTLY IN JSON FORMAT:
 
 ---
 
-## 7. GAIA2 benchmark adapter's task-specific goal — `benchmarks/gaia2/adapter.py` (`DialecticAREAgent.run_scenario`)
-
-This is **not** a separate LLM call — it's additional text prepended to the `goal` parameter passed into the ordinary `DialecticalAgent` constructor, so it becomes part of the `# Your goal` section at the very top of the core prompt (section 1), ahead of the framework's own rules.
-
-```
-You are an AI assistant that executes tasks strictly using the provided tools. Respond with a final answer when done.
-[System] Current simulated date and time is: {env_time}
-[!] Rule: Never claim a product, contact, or email was not found until you explicitly verify all fields in the tool Observation output. Do not hallucinate truncations.
-[!] CRITICAL RULE: A single ambiguous sub-item must never block unrelated sub-items. If you need to ask the user a clarifying question (e.g. via AgentUserInterface__send_message_to_user), do NOT stop and do NOT generate a final response! You MUST immediately continue using tools to execute EVERY other unrelated planned action. Only provide a final response when ALL possible actions have been completed.
-[!] Rule: If you are forced to stop or ask the user a question, you MUST summarize all partial progress you have already achieved.
-```
-
-**Important:** `{env_time}` was, for the entire duration of this project until 2026-09-14, **always wrong by exactly one year** (hardcoded fallback `"2023-10-04 12:00:00"` because the `hasattr(scenario, "environment")` check that was supposed to compute it correctly was checking an attribute that does not exist anywhere in the ARE API). See `HANDOFF.md` for the full incident. If you are debugging *any* date/calendar-related agent behavior on this benchmark, verify `env_time` is actually correct for the specific scenario first, before assuming the agent's reasoning is at fault.
-
-**Overlap with the core prompt's own rules:** the "CRITICAL RULE" here (decompose, don't block on ambiguity) is conceptually the same instruction as section 1's step 3/worked-example, written independently, before the core prompt had its own version. They are not contradictory, but they are two different people's wording of the same idea living in two different files — worth consolidating (see `REFACTOR_PLAN.md`) so a future prompt-quality fix doesn't have to be made in two places to actually take effect end-to-end for GAIA2 runs.
-
----
-
-## 8. Framework/agent methodology audit prompt — `dialectic_ai/observability/audit_prompt.md`
+## 7. Framework/agent methodology audit prompt — `dialectic_ai/observability/audit_prompt.md`
 
 Loaded as a template by `DialecticalAuditor._load_prompt_template()`, with `{METHODOLOGY_PRODUCT}`, `{METHODOLOGY_PROCESS}`, `{AUDIT_MODE}`, `{CONTEXT}` substituted before sending. This is a **file**, not inline Python — edit `dialectic_ai/observability/audit_prompt.md` directly to change it; do not look for this text in any `.py` file. See that file directly for the current full text (it is long — a role statement, two analysis sections with a required summary-table format, and an explicit "do not evaluate code style/performance/beauty, only the 4 [now 5] rules" scope limiter). `{METHODOLOGY_PROCESS}` is generated by `DialecticalAuditor._get_process_methodology()` in `dialectic_ai/observability/auditor.py` — this is the one place Rule 5 (added 2026-09-13/14) is spelled out for the audit LLM; see that method directly for its current full text, which is too long to usefully duplicate here without drifting out of sync — treat `auditor.py` as the source of truth and this file as a pointer to it.
 
-## 9. Contradiction root-cause investigation prompt — `dialectic_ai/observability/auditor.py` (`DialecticalAuditor.investigate_contradiction`)
+## 8. Contradiction root-cause investigation prompt — `dialectic_ai/observability/auditor.py` (`DialecticalAuditor.investigate_contradiction`)
 
 Also long (embeds the full raw LLM response, full prompt, and relevant framework source files for one specific contradiction event) — see `auditor.py`'s `investigate_contradiction` method directly for the current exact text rather than duplicating it here. The structure is: role statement (root-cause investigator, not a fixer) → the specific event's forensic data → the relevant source files (`_CORE_CHAIN_FILES` plus a provider-specific file from `_PROVIDER_FILE_MAP`) → a three-part reporting format (hypothesis, responsible file/mechanism, one-off-vs-systemic judgment).
 
@@ -425,8 +407,3 @@ Every `Tool.to_prompt_description()` call (used when `native_tool_calling=False`
 - `{tool.name}`: {tool.description}
   Arguments: {json.dumps(tool.parameters())}
 ```
-`AREToolWrapper.description` (in `benchmarks/gaia2/adapter.py`) additionally appends a return-type hint and, for any tool whose name contains `list_`, this extra line:
-```
-[!] Use this ONLY to list all items without filtering. For searching/filtering, use the corresponding search_* tool.
-```
-This is the *only* place in the codebase that proactively steers the model away from an expensive/bloated tool call toward a cheaper one — worth knowing about if you're trying to reduce token usage on other tool-heavy scenarios, since the same pattern could be generalized (see `REFACTOR_PLAN.md`).
