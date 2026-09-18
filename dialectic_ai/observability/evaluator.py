@@ -25,9 +25,10 @@ DIALECTICAL DESCRIPTION:
   for the auditor when you need a judgment call this one's counting can't make.
 """
 from dataclasses import dataclass
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
 from dialectic_ai.core.dialectical import dialectical
-from dialectic_ai.observability.tracer import TraceEvent, TraceReader
+from dialectic_ai.observability.tracer import TraceReader
 
 
 @dataclass

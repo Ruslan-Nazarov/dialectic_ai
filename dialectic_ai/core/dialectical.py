@@ -16,9 +16,8 @@ DIALECTICAL DESCRIPTION:
     the developer is OBLIGED to fill it out. Without enforcement, it will remain
     a recommendation rather than a law of the framework.
 """
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
-import functools
 
 
 @dataclass
@@ -110,7 +109,7 @@ def print_dialectical_card(cls) -> None:
     print(f"{'='*60}")
     print(f"  📍 Origin:\n     {meta.origin}")
     print(f"\n  ⚡ The contradiction it solves:\n     {meta.contradiction}")
-    print(f"\n  ✅ How it resolves:\n     {meta.resolves}")
+    print(f"\n  [OK] How it resolves:\n     {meta.resolves}")
     print(f"\n  ➡️  What it leads to (generates):\n     {meta.generates}")
     print(f"\n  🔄 Its own contradictions:\n     {meta.own_contradictions}")
     if meta.simplest_process:
@@ -121,6 +120,7 @@ def print_dialectical_card(cls) -> None:
 
 
 import sys
+
 
 class DialecticalArchitectureError(Exception):
     pass

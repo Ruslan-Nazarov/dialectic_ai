@@ -15,6 +15,7 @@ DIALECTICAL DESCRIPTION:
     and network overhead (via stdio or sse).
 """
 import uuid
+
 from dialectic_ai.core.schema import Evidence
 from dialectic_ai.core.tool import ActionTool
 
@@ -29,6 +30,7 @@ except ImportError:
 
 
 from dialectic_ai.core.dialectical import dialectical
+
 
 @dialectical(
     origin="The ecosystem of AI tools is fragmented. For each database, search engine, or API, a separate `ActionTool` class must be written.",

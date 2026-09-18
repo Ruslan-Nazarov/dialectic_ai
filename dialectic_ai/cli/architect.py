@@ -28,7 +28,7 @@ import re
 
 from pydantic import BaseModel, Field
 
-from dialectic_ai.core.dialectical import dialectical, DialecticalObject
+from dialectic_ai.core.dialectical import DialecticalObject, dialectical
 from dialectic_ai.core.llm import BaseLLM
 
 try:

@@ -13,8 +13,8 @@ DIALECTICAL DESCRIPTION:
   Its own contradictions: The logger writes to a file — this is an I/O operation in the critical
     path. Under high load, it creates a bottleneck. An async variant is needed.
 """
-import json
 import asyncio
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 

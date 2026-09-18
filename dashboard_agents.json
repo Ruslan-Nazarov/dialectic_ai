@@ -1,0 +1,18 @@
+[
+  {
+    "id": "257659a9",
+    "name": "Agent-5877",
+    "type": "Conversational",
+    "complexity": "Medium",
+    "description": "создай агента для кода",
+    "status": "Ready"
+  },
+  {
+    "id": "1cf44a79",
+    "name": "ресеч",
+    "type": "Generated",
+    "complexity": "Dialectical",
+    "description": "искать факты в интернете",
+    "status": "Ready"
+  }
+]

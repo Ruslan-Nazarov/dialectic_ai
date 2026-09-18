@@ -17,8 +17,9 @@ DIALECTICAL DESCRIPTION:
 """
 import json
 from pathlib import Path
+
 from dialectic_ai.core.dialectical import dialectical
-from dialectic_ai.core.schema import MemoryUpdate, AgentInput
+from dialectic_ai.core.schema import AgentInput, MemoryUpdate
 from dialectic_ai.memory.base import BaseMemory
 
 
@@ -81,7 +82,7 @@ class KnowledgeGraphMemory(BaseMemory):
             return "The knowledge graph is empty — this is the first contact with the user."
         lines = ["Current knowledge graph of the user:"]
         for concept, status in self.graph.items():
-            emoji = {"learned": "✅", "struggling": "⚠️", "unknown": "❓", "introduced": "📖"}.get(status, "•")
+            emoji = {"learned": "[OK]", "struggling": "[!]", "unknown": "[?]", "introduced": "[i]"}.get(status, "-")
             lines.append(f"  {emoji} {concept}: {status}")
         return "\n".join(lines)
 

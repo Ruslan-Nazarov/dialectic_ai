@@ -15,17 +15,40 @@ DIALECTICAL DESCRIPTION:
     providers (function calling, vision, embeddings). Interface extensions
     or specialized subclasses are needed.
 """
+import time
 from abc import ABC, abstractmethod
-from dialectic_ai.core.dialectical import dialectical, DialecticalObject
+
+from dialectic_ai.core.dialectical import DialecticalObject, dialectical
 from dialectic_ai.core.schema import ModelResult
 
-
-import asyncio
-import time
 
 class BaseLLM(ABC, DialecticalObject):
     """Abstraction over any language model."""
     supports_native_tool_calling: bool = False
+
+    def __new__(cls, *args, **kwargs):
+        import os
+        override = os.getenv("DIALECTIC_LLM_OVERRIDE", "").lower().strip()
+        if override and not getattr(cls, "_in_override", False):
+            try:
+                cls._in_override = True
+                if override == "gemini" and cls.__name__ != "GeminiLLM":
+                    from dialectic_ai.integrations.gemini.llm import GeminiLLM
+                    return GeminiLLM()
+                elif override == "gigachat" and cls.__name__ != "GigaChatLLM":
+                    from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
+                    return GigaChatLLM()
+                elif override in ("openai", "groq", "openrouter", "cerebras") and cls.__name__ != "OpenAILLM":
+                    from dialectic_ai.integrations.openai.llm import OpenAILLM
+                    return OpenAILLM()
+                elif override == "mock" and cls.__name__ != "MockLLM":
+                    from dialectic_ai.core.llm import MockLLM
+                    return MockLLM()
+            except Exception:
+                pass
+            finally:
+                cls._in_override = False
+        return super().__new__(cls)
 
     @abstractmethod
     async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
@@ -93,6 +116,7 @@ class MockLLM(BaseLLM):
 
 
 import warnings
+
 
 def __getattr__(name):
     if name == "GeminiLLM":

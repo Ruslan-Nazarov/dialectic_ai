@@ -3,13 +3,14 @@ Configuration parser for Declarative Agents (Layer 7)
 """
 import json
 from pathlib import Path
-from dialectic_ai.core.llm import MockLLM, FallbackLLM
-from dialectic_ai.integrations.gemini.llm import GeminiLLM
-from dialectic_ai.integrations.openai.llm import OpenAILLM
-from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
+
 from dialectic_ai.agent import DialecticalAgent
-from dialectic_ai.reality import PythonExecutor, HumanRealityCheck, WebFetchCheck
-from dialectic_ai.tools import web_search, read_file, write_file
+from dialectic_ai.core.llm import FallbackLLM, MockLLM
+from dialectic_ai.integrations.gemini.llm import GeminiLLM
+from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
+from dialectic_ai.integrations.openai.llm import OpenAILLM
+from dialectic_ai.reality import HumanRealityCheck, PythonExecutor, WebFetchCheck
+from dialectic_ai.tools import read_file, web_search, write_file
 
 TOOL_REGISTRY = {
     "python_executor": PythonExecutor,
@@ -55,7 +56,8 @@ def load_agent_from_config(config_path: str) -> DialecticalAgent:
         
     # 3. Assemble the agent
     goal = config.get("goal", "You are a helpful AI assistant.")
-    agent_name = config.get("name", "DeclarativeAgent")
+    # agent_name is parsed but DialecticalAgent has no .name field yet -- see CODE_REVIEW.md [SMELL]
+    # agent_name = config.get("name", "DeclarativeAgent")
     
     agent = DialecticalAgent(
         goal=goal,

@@ -16,16 +16,16 @@ DIALECTICAL DESCRIPTION:
   Own contradictions: The forced cycle creates latency — each tool call = additional LLM request. 
     The agent may get stuck in an infinite loop of tool_calls. max_iterations is a safety net, not a solution.
 """
-import json
-from dialectic_ai.core.dialectical import dialectical
-from dialectic_ai.core.schema import AgentInput, AgentOutput, MemoryUpdate, Evidence, Claim, Hypothesis
-from dialectic_ai.core.logger import DevelopmentLogger
-from dialectic_ai.engine.parser import parse_llm_response, ParseError
-from dialectic_ai.engine.repair import JsonRepairer, ControlledRepairError
-from dialectic_ai.engine.evidence_store import EvidenceStore
-from dialectic_ai.engine.validator import ClaimValidator
 import asyncio
-import uuid
+from typing import Any, Dict, List, Literal, Optional
+
+from dialectic_ai.core.dialectical import dialectical
+from dialectic_ai.core.logger import DevelopmentLogger
+from dialectic_ai.core.schema import AgentInput, AgentOutput, Claim, Evidence, Hypothesis, MemoryUpdate
+from dialectic_ai.engine.evidence_store import EvidenceStore
+from dialectic_ai.engine.parser import ParseError, parse_llm_response
+from dialectic_ai.engine.repair import ControlledRepairError, JsonRepairer
+from dialectic_ai.engine.validator import ClaimValidator
 
 
 @dialectical(
@@ -66,12 +66,14 @@ class DialecticalEngine:
         max_iterations: int = 5,
         validator: ClaimValidator = None,
         debug_mode: bool = False,
+        tool_calling_mode: Optional[str] = None,
     ):
         self.agent = agent
         self.logger = logger or DevelopmentLogger()
         self.max_iterations = max_iterations
         self.validator = validator
         self.debug_mode = debug_mode
+        self.tool_calling_mode = tool_calling_mode or getattr(agent, "tool_calling_mode", "dialectic_json")
 
         # Building the tool registry: name -> Tool
         self._tool_registry = {t.name: t for t in agent.tools}
@@ -224,7 +226,7 @@ class DialecticalEngine:
                 validation_errors = await self._phase_validate(agent_output.claims, evidence_store, user_input.session_id)
                 if validation_errors:
                     if validation_retries >= 1:
-                        print(f"  [Validation] FAILED. Limit reached.")
+                        print("  [Validation] FAILED. Limit reached.")
                         agent_output.status = "validation_failed"
                         return agent_output
                         
@@ -261,7 +263,7 @@ class DialecticalEngine:
 
     async def _phase_generate(self, user_input: AgentInput, iteration: int) -> dict | None:
         tools_payload = None
-        if self._tool_registry:
+        if self.tool_calling_mode == "native" and self._tool_registry:
             tools_payload = []
             for name, tool in self._tool_registry.items():
                 tools_payload.append({
@@ -272,10 +274,10 @@ class DialecticalEngine:
                         "parameters": tool.parameters()
                     }
                 })
-                
+
         result = await self.agent.llm.generate_result(self.agent.get_messages(), tools=tools_payload)
-        
-        if result.tool_calls:
+
+        if self.tool_calling_mode == "native" and result.tool_calls:
             # Bypass parser for native tool calls
             parsed = {
                 "decision": "Invoking native tools",
@@ -323,7 +325,7 @@ class DialecticalEngine:
         if hyp_raw:
             print(f"  [Hypothesis] {hyp_raw.get('assumption', '')}")
             if hyp_raw.get("plan_steps"):
-                print(f"  [Plan] " + ", ".join(hyp_raw.get("plan_steps", [])))
+                print("  [Plan] " + ", ".join(hyp_raw.get("plan_steps", [])))
 
         print(f"  [Decision] {decision[:100]}")
         await self.logger.trace_event("generate", {
@@ -342,13 +344,12 @@ class DialecticalEngine:
         any_failed = False
 
         for call in tool_calls:
-            import json
             tool_name = call.get("name", "")
             tool_args = call.get("args", {})
             
             action_hash = hash(json.dumps(tool_args, sort_keys=True))
             if (tool_name, action_hash) in evidence_store._executed_actions:
-                obs = f"[Error] Action already successfully executed with these exact arguments"
+                obs = "[Error] Action already successfully executed with these exact arguments"
                 print(f"  [!] {obs}")
                 observation_parts.append(obs)
                 any_failed = True
@@ -417,7 +418,6 @@ class DialecticalEngine:
                               f"instead of requesting everything at once.)"
                         )
                     obs = f"[Evidence ID: {result.id} | Tool '{tool_name}'] Result:\n{content_str}"
-                    import json
                     evidence_store._executed_actions.add((tool_name, hash(json.dumps(result.tool_calls_args if hasattr(result, 'tool_calls_args') else call.get("args", {}), sort_keys=True))))
                 else:
                     obs = f"[Evidence ID: {result.id} | Tool '{tool_name}'] Error:\n{result.error}"

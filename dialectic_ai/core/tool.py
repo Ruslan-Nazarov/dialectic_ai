@@ -14,10 +14,12 @@ DIALECTICAL DESCRIPTION:
   Own contradictions: Currently returns raw CollisionResult. In the next
     stage, the Tool should return Evidence.
 """
-from abc import ABC, abstractmethod
 import json
-from dialectic_ai.core.schema import Evidence
+from abc import ABC, abstractmethod
+
 from dialectic_ai.core.dialectical import DialecticalObject
+from dialectic_ai.core.schema import Evidence
+
 
 class Tool(ABC, DialecticalObject):
     """

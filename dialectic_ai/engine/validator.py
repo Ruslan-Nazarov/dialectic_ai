@@ -19,9 +19,10 @@ DIALECTICAL DESCRIPTION:
     is not perfect, but better than no validation).
 """
 import json
-from dialectic_ai.core.schema import Claim, Evidence
-from dialectic_ai.core.llm import BaseLLM
+
 from dialectic_ai.core.dialectical import dialectical
+from dialectic_ai.core.llm import BaseLLM
+from dialectic_ai.core.schema import Claim, Evidence
 
 
 @dialectical(

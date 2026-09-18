@@ -15,12 +15,12 @@ DIALECTICAL DESCRIPTION:
     possible agents. The more universal it is, the more it accumulates
     optional parameters. Strict discipline of extension is needed.
 """
-from dialectic_ai.core.dialectical import dialectical, DialecticalObject
+from dialectic_ai.agent.prompt_builder import build_system_prompt
+from dialectic_ai.core.dialectical import DialecticalObject, dialectical
 from dialectic_ai.core.llm import BaseLLM, MockLLM
 from dialectic_ai.memory.base import BaseMemory
 from dialectic_ai.memory.knowledge_graph import KnowledgeGraphMemory
 from dialectic_ai.memory.sublation import SublationEngine
-from dialectic_ai.agent.prompt_builder import build_system_prompt
 
 
 @dialectical(
@@ -55,11 +55,13 @@ class DialecticalAgent(DialecticalObject):
         llm: BaseLLM = None,
         memory: BaseMemory = None,
         tools: list = None,
+        tool_calling_mode: str = "dialectic_json",
     ):
         self.goal = goal
         self.llm = llm or MockLLM()
         self.memory = memory or KnowledgeGraphMemory()
         self.tools: list = tools if tools is not None else []
+        self.tool_calling_mode = tool_calling_mode
         self._history: list[dict] = []  # History of messages for LLM
         self.max_history_length = 10
         self.sublation_engine = SublationEngine(llm=self.llm)
@@ -70,7 +72,7 @@ class DialecticalAgent(DialecticalObject):
             self.goal, 
             self.memory, 
             tools=self.tools,
-            native_tool_calling=self.llm.supports_native_tool_calling
+            tool_calling_mode=self.tool_calling_mode,
         )
 
     async def add_to_history(self, role: str, content: str) -> None:

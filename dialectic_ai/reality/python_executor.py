@@ -14,13 +14,13 @@ DIALECTICAL DESCRIPTION:
     code can harm the system. Isolation is needed (Docker/RestrictedPython).
     Timeout does not protect against memory leaks and fork-bomb.
 """
-import subprocess
+import ast
+import asyncio
+import os
 import sys
 import tempfile
-import os
 import uuid
-import asyncio
-import ast
+
 
 def _check_ast(code: str) -> str | None:
     try:

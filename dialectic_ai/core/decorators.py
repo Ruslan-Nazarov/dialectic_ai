@@ -13,7 +13,7 @@ DIALECTICAL DESCRIPTION:
     only basic types of arguments.
 """
 import inspect
-from typing import Callable, Type, Any
+from typing import Callable, Type
 
 from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.schema import Evidence
@@ -37,12 +37,14 @@ def dialectical_tool(
         properties = {}
         required = []
         for name, param in sig.parameters.items():
+            # NOTE: only basic types supported; list[str] / Optional etc. fall back to "string".
+            # See CODE_REVIEW.md [SMELL] core/decorators.py for the full caveat.
             param_type = "string"
-            if param.annotation == int:
+            if param.annotation is int:
                 param_type = "integer"
-            elif param.annotation == bool:
+            elif param.annotation is bool:
                 param_type = "boolean"
-            elif param.annotation == float:
+            elif param.annotation is float:
                 param_type = "number"
                 
             properties[name] = {"type": param_type, "description": f"Parameter {name}"}

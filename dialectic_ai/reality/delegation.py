@@ -14,8 +14,9 @@ DIALECTICAL DESCRIPTION:
     Difficult to debug distributed state.
 """
 import uuid
+
 from dialectic_ai.core.dialectical import dialectical
-from dialectic_ai.core.schema import Evidence, AgentInput
+from dialectic_ai.core.schema import AgentInput, Evidence
 from dialectic_ai.core.tool import AgentTool
 from dialectic_ai.engine.executor import DialecticalEngine
 

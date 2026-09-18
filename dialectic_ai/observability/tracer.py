@@ -15,9 +15,10 @@ DIALECTICAL DESCRIPTION:
     With large logs — slow. Indexing or streaming is needed.
 """
 import json
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
+
 from dialectic_ai.core.dialectical import dialectical
 
 

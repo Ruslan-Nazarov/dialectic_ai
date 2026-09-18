@@ -1,0 +1,20 @@
+{
+  "prompt_tokens": 1949143,
+  "completion_tokens": 1097155,
+  "total_tokens": 3046298,
+  "total_calls": 6096,
+  "by_provider": {
+    "gigachat": {
+      "prompt_tokens": 1949129,
+      "completion_tokens": 1096993,
+      "total_tokens": 3046122,
+      "calls": 6094
+    },
+    "mock": {
+      "prompt_tokens": 14,
+      "completion_tokens": 162,
+      "total_tokens": 176,
+      "calls": 2
+    }
+  }
+}

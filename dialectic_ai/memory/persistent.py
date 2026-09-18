@@ -18,7 +18,7 @@ import json
 from pathlib import Path
 
 from dialectic_ai.core.dialectical import dialectical
-from dialectic_ai.core.schema import MemoryUpdate, AgentInput
+from dialectic_ai.core.schema import AgentInput, MemoryUpdate
 from dialectic_ai.memory.base import BaseMemory
 from dialectic_ai.memory.knowledge_graph import KnowledgeGraphMemory
 

@@ -19,8 +19,8 @@ DIALECTICAL DESCRIPTION:
     effects that must run before every attempt (e.g. refreshing an OAuth token) --
     callers must fold those into their own attempt function, not into this module.
 """
-import time
 import random
+import time
 from typing import Callable, Optional, TypeVar
 
 T = TypeVar("T")

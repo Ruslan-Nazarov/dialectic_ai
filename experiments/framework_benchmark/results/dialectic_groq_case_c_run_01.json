@@ -1,0 +1,254 @@
+[
+  {
+    "event_type": "run_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.218152+00:00",
+    "agent": null,
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "mode": "clean_triad",
+      "case_id": "case_c"
+    }
+  },
+  {
+    "event_type": "engine_execution_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.225000+00:00",
+    "agent": "thesis",
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "start_time": "2026-09-17T09:37:44.225000+00:00"
+    }
+  },
+  {
+    "event_type": "engine_execution_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.225500+00:00",
+    "agent": "antithesis",
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "start_time": "2026-09-17T09:37:44.225500+00:00"
+    }
+  },
+  {
+    "event_type": "dialectic_iteration_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.230000+00:00",
+    "agent": "thesis",
+    "phase": "iteration_start",
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "iteration": 1
+    }
+  },
+  {
+    "event_type": "dialectic_phase_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.231000+00:00",
+    "agent": "thesis",
+    "phase": "generate",
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "iteration": 1,
+      "phase": "generate"
+    }
+  },
+  {
+    "event_type": "dialectic_iteration_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.232000+00:00",
+    "agent": "antithesis",
+    "phase": "iteration_start",
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "iteration": 1
+    }
+  },
+  {
+    "event_type": "dialectic_phase_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.233000+00:00",
+    "agent": "antithesis",
+    "phase": "generate",
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "iteration": 1,
+      "phase": "generate"
+    }
+  },
+  {
+    "event_type": "llm_request_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.235000+00:00",
+    "agent": "thesis",
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "messages_count": 2,
+      "has_tools": true
+    }
+  },
+  {
+    "event_type": "llm_request_start",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:44.236000+00:00",
+    "agent": "antithesis",
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "messages_count": 2,
+      "has_tools": true
+    }
+  },
+  {
+    "event_type": "rate_limit_exceeded",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:37:46.500000+00:00",
+    "agent": "antithesis",
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": false,
+    "error": "Rate limit reached for model openai/gpt-oss-120b in organization org_01kpfn1h5rf9wstm4fp5vsx38e service tier on_demand on tokens per minute (TPM): Limit 8000, Used 5931, Requested 5734. Please try again in 27.4875s.",
+    "metadata": {
+      "http_code": 429,
+      "retry_wait_sec": 44.5,
+      "attempt": 1
+    }
+  },
+  {
+    "event_type": "llm_request_failed",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:39:15.800000+00:00",
+    "agent": "antithesis",
+    "phase": "generate",
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": false,
+    "error": "OpenAI API Error 400: Tool call validation failed: tool call validation failed: attempted to call tool 'json' which was not in request.tools",
+    "metadata": {
+      "http_code": 400,
+      "code": "tool_use_failed",
+      "failed_generation": "{\"name\": \"json\", \"arguments\": {\"decision\": \"We avoid the obvious approach of assuming equal means guarantee similarity without examining dispersion or distribution shape.\", \"hypothesis\": {\"assumption\": \"Obtain descriptive statistics for datasets A and B and compare them to evaluate whether equal means are sufficient for statistical similarity.\", \"plan_steps\": [\"Calculate full set of statistics (count, mean, median, min, max, range, std_dev) for dataset A using calculate_statistics.\", \"Calculate full set of statistics (count, mean, median, min, max, range, std_dev) for dataset B using calculate_statistics.\", \"Compare the two datasets directly with compare_datasets to obtain numeric deltas for each statistic.\"]}, \"knowledge_updates\": [], \"claims\": [], \"response\": \"\", \"tool_calls\": [{\"name\": \"calculate_statistics\", \"arguments\": {\"dataset_id\": \"A\"}}, {\"name\": \"calculate_statistics\", \"arguments\": {\"dataset_id\": \"B\"}}, {\"name\": \"compare_datasets\", \"arguments\": {\"dataset_id_a\": \"A\", \"dataset_id_b\": \"B\"}}]}}"
+    }
+  },
+  {
+    "event_type": "run_error",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:39:15.900000+00:00",
+    "agent": "DialecticalTriad",
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": false,
+    "error": "RuntimeError: OpenAI API Error 400: {\"error\":{\"message\":\"Tool call validation failed: tool call validation failed: attempted to call tool 'json' which was not in request.tools\",\"type\":\"invalid_request_error\",\"code\":\"tool_use_failed\"}}",
+    "metadata": {}
+  },
+  {
+    "event_type": "run_end",
+    "framework": "dialectic_ai",
+    "run_id": "dialectic_groq_case_c_run_01",
+    "case_id": "CASE_C",
+    "timestamp": "2026-09-17T09:39:15.950000+00:00",
+    "agent": "DialecticalTriad",
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": "Failed with error: RuntimeError: OpenAI API Error 400: Tool call validation failed: attempted to call tool 'json' which was not in request.tools",
+    "evidence_id": null,
+    "claim": null,
+    "success": false,
+    "error": null,
+    "metadata": {}
+  }
+]

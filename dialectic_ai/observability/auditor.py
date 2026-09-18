@@ -24,13 +24,11 @@ DIALECTICAL DESCRIPTION:
   hypothesis on one specific contradiction event. Run the evaluator first/often; reach for
   this one when you need a judgment call trace-counting alone can't make.
 """
-import asyncio
 import json
 from pathlib import Path
 from typing import Optional
 
 from dialectic_ai.core.dialectical import dialectical, get_dialectical_map
-
 
 AUDIT_PROMPT_PATH = Path(__file__).parent / "audit_prompt.md"
 DEFAULT_METHODOLOGY_PATH = Path(__file__).parent.parent.parent / "dialectics_rules.md"
@@ -471,13 +469,13 @@ CRITERIA FOR EVIDENCE (what to consider confirmation, not a declaration):
     def _collect_dialectical_map(self) -> str:
         """Imports all packages so that @dialectical fills the registry, then serializes."""
         try:
-            import dialectic_ai.core
             import dialectic_ai.agent
-            import dialectic_ai.memory
-            import dialectic_ai.reality
+            import dialectic_ai.core
             import dialectic_ai.engine
+            import dialectic_ai.memory
             import dialectic_ai.multi
             import dialectic_ai.observability
+            import dialectic_ai.reality  # noqa: F401 — side-effect: fills @dialectical registry
         except ImportError:
             pass
 

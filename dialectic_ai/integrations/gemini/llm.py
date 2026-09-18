@@ -1,8 +1,8 @@
-import os
-import json
 import asyncio
-import urllib.request
+import json
+import os
 import urllib.error
+import urllib.request
 from pathlib import Path
 
 from dialectic_ai.core.dialectical import dialectical

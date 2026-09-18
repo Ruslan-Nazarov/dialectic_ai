@@ -3,8 +3,18 @@ Interactive agent creation wizard (CLI Wizard).
 """
 import asyncio
 import json
-import os
 from pathlib import Path
+import sys
+
+# Ensure UTF-8 output encoding across Windows consoles
+for stream_name in ("stdout", "stderr"):
+    stream = getattr(sys, stream_name, None)
+    if stream and hasattr(stream, "reconfigure"):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
 from dialectic_ai.cli.config_parser import TOOL_REGISTRY
 
 
@@ -31,7 +41,7 @@ def _build_runtime_llm(llm_choice: str):
     return None  # mock, or unrecognized choice
 
 
-def _maybe_refine_goal(llm_choice: str, name: str, goal: str, selected_tools: list) -> tuple:
+def _maybe_refine_goal(llm_choice: str, name: str, goal: str, selected_tools: list, force_refine: bool = False) -> tuple:
     """
     Plain-language opt-in for the automatic dialectical design pass. On acceptance, runs
     DialecticalArchitect (Simplest -> Development -> Opposite -> Contradiction -> Leap) once,
@@ -43,8 +53,12 @@ def _maybe_refine_goal(llm_choice: str, name: str, goal: str, selected_tools: li
     if llm_choice == "mock":
         return goal, None
 
-    print("\nOptional: the connected AI model can automatically sharpen your goal before generating the agent.")
-    answer = input("Refine the goal automatically now? [y/N]: ").strip().lower()
+    if force_refine:
+        answer = "y"
+    else:
+        print("\nOptional: the connected AI model can automatically sharpen your goal before generating the agent.")
+        answer = input("Refine the goal automatically now? [y/N]: ").strip().lower()
+    
     if answer not in ("y", "yes"):
         return goal, None
 
@@ -103,6 +117,7 @@ def run_interactive_creator():
     
     # Grouping by categories
     from collections import defaultdict
+
     from dialectic_ai.core.dialectical import DialecticalArchitectureError
     
     categories = defaultdict(list)
@@ -157,15 +172,6 @@ def run_interactive_creator():
 
     goal, design_log = _maybe_refine_goal(llm, name, goal, selected_tools)
 
-    # Forming config
-    config = {
-        "name": name,
-        "goal": goal,
-        "tools": selected_tools,
-        "llm": llm,
-        "max_iterations": 3
-    }
-    
     # 5. Save format
     print("\n5. In what format to save the agent?")
     print("   [1] Python script (Recommended, easy to add your own code)")
@@ -176,13 +182,45 @@ def run_interactive_creator():
     # 6. File name
     ext = ".py" if is_python else ".json"
     default_filename = f"{name.lower().replace(' ', '_')}{ext}"
-    print(f"\n6. Saving.")
+    print("\n6. Saving.")
     filename = input(f"Enter file name [default {default_filename}]: ").strip()
     if not filename:
         filename = default_filename
     if not filename.endswith(ext):
         filename += ext
-        
+
+    generate_agent(
+        name, goal, selected_tools, llm, is_python, filename,
+        skip_refine=True, design_log_already_generated=design_log
+    )
+
+def generate_agent(
+    name: str,
+    goal: str,
+    selected_tools: list,
+    llm: str,
+    is_python: bool,
+    filename: str,
+    force_refine: bool = False,
+    design_log_already_generated: str = None,
+    skip_refine: bool = False,
+) -> tuple[Path, str]:
+    """Generates the agent files and returns (filepath, design_log_content)."""
+    
+    if skip_refine or design_log_already_generated is not None:
+        design_log = design_log_already_generated
+    else:
+        goal, design_log = _maybe_refine_goal(llm, name, goal, selected_tools, force_refine=force_refine)
+
+    # Forming config
+    config = {
+        "name": name,
+        "goal": goal,
+        "tools": selected_tools,
+        "llm": llm,
+        "max_iterations": 10
+    }
+    
     filepath = Path(filename)
     
     if is_python:
@@ -218,6 +256,23 @@ def run_interactive_creator():
             llm_init = "llm = MockLLM()"
 
         py_content = f'''import asyncio
+import sys
+
+# Ensure UTF-8 output encoding across Windows consoles
+for stream_name in ("stdout", "stderr"):
+    stream = getattr(sys, stream_name, None)
+    if stream and hasattr(stream, "reconfigure"):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from dialectic_ai.core.schema import AgentInput
 from dialectic_ai.agent import DialecticalAgent
 from dialectic_ai.engine import DialecticalEngine
@@ -259,7 +314,7 @@ if __name__ == "__main__":
             f.write(py_content)
             
         print("=" * 60)
-        print(f"✅ Done! The agent has been successfully generated and saved to {filepath.absolute()}")
+        print(f"[OK] Done! The agent has been successfully generated and saved to {filepath.absolute()}")
         print("============================================================")
         print("Now you can run it with the command:")
         print(f"  python {filepath.name}")
@@ -270,7 +325,7 @@ if __name__ == "__main__":
             json.dump(config, f, indent=2, ensure_ascii=False)
             
         print("=" * 60)
-        print(f"✅ Done! The agent has been successfully generated and saved to {filepath.absolute()}")
+        print(f"[OK] Done! The agent has been successfully generated and saved to {filepath.absolute()}")
         print("============================================================")
         print("Now you can run it with the command:")
         print(f"  python -m dialectic_ai.cli.main run {filepath.name}")
@@ -279,7 +334,9 @@ if __name__ == "__main__":
         log_path = filepath.with_name(f"{filepath.stem}_development_log.md")
         with open(log_path, "w", encoding="utf-8") as f:
             f.write(design_log)
-        print(f"📝 Dialectical design log saved to {log_path.absolute()} "
+        print(f"Dialectical design log saved to {log_path.absolute()} "
               f"(readable by: python -m dialectic_ai.cli.main audit --config {filepath.name} --log {log_path.name})")
 
-    print("\nGood luck with the dialectical synthesis! 🚀")
+    print("\nGood luck with the dialectical synthesis!")
+    
+    return filepath, design_log

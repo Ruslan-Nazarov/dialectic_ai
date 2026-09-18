@@ -14,10 +14,11 @@ DIALECTICAL DESCRIPTION:
     No built-in vector semantics (need to connect sqlite-vss).
 """
 import sqlite3
-import json
+
 from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.schema import AgentInput, MemoryUpdate
 from dialectic_ai.memory.base import BaseMemory
+
 
 @dialectical(
     origin="PersistentMemory (JSON) does not support atomicity and concurrent access of a swarm of agents.",

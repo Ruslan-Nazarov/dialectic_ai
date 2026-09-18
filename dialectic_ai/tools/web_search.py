@@ -1,5 +1,6 @@
 from dialectic_ai.core.decorators import dialectical_tool
 
+
 # NOT a real search: this tool does not make a network call. It returns a fixed,
 # fabricated string so the *shape* of a "search then reason over results" agent
 # can be built and tested without a search API key. Any agent that uses it for

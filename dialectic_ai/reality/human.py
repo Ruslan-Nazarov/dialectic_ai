@@ -7,11 +7,12 @@ DIALECTICAL DESCRIPTION:
   Resolution: HumanRealityCheck makes the human the highest form of "Reality". The agent can delegate the question to a human.
   Outcome: Safe execution (human-in-the-loop) and assistance in deadlocks.
 """
+import asyncio
+import uuid
+
 from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.schema import Evidence
 from dialectic_ai.core.tool import ActionTool
-import uuid
-import asyncio
 
 
 @dialectical(

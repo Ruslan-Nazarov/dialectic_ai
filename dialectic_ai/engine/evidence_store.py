@@ -1,6 +1,8 @@
 from typing import Optional
-from dialectic_ai.core.schema import Evidence
+
 from dialectic_ai.core.dialectical import dialectical
+from dialectic_ai.core.schema import Evidence
+
 
 @dialectical(
     origin="Evidence was just a flat list inside the run() function, making it hard to manage and query.",

@@ -1,8 +1,9 @@
+from dialectic_ai.agent.prompt_builder import FORMAT_INSTRUCTION
+from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.llm import BaseLLM
 from dialectic_ai.core.schema import ModelResult
-from dialectic_ai.engine.parser import parse_llm_response, ParseError
-from dialectic_ai.core.dialectical import dialectical
-from dialectic_ai.agent.prompt_builder import FORMAT_INSTRUCTION
+from dialectic_ai.engine.parser import ParseError, parse_llm_response
+
 
 class ControlledRepairError(Exception):
     def __init__(self, message: str, original_error: ParseError, repair_error: Exception, raw_response: str):

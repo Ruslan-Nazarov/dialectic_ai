@@ -16,7 +16,8 @@ DIALECTICAL DESCRIPTION:
 """
 import json
 import re
-from typing import Any, Literal, Optional
+from typing import Literal, Optional
+
 from pydantic import BaseModel, Field
 
 LeapType = Literal["decompose_and_act", "ask_only", "fully_resolved", ""]

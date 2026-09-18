@@ -1,5 +1,7 @@
 import os
+
 from dialectic_ai.core.decorators import dialectical_tool
+
 
 @dialectical_tool(
     origin="The agent could only talk but could not save artifacts",

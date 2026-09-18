@@ -3,7 +3,6 @@ dialectic_ai/memory/conversation.py
 
 Simple memory that stores the history of the dialogue, without being tied to a knowledge graph.
 """
-from dialectic_ai.memory.base import Memory
 from dialectic_ai.core.schema import AgentInput
 
 

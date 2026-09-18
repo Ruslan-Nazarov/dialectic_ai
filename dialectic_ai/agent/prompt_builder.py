@@ -15,9 +15,7 @@ DIALECTICAL DESCRIPTION:
   Own contradictions: The prompt grows along with the memory. With a large knowledge graph,
     it may exceed the model's context window. A compression strategy is needed.
 """
-from pathlib import Path
 from dialectic_ai.memory.base import BaseMemory
-
 
 _AGENT_DIALECTICAL_RULES = """
 ## How you should think (mandatory dialectical procedure, not a suggestion)
@@ -130,16 +128,21 @@ request = "What is the largest planet in the universe?" Available tools include 
 
 _DIALECTICAL_RULES_MD = _AGENT_DIALECTICAL_RULES
 
-FORMAT_INSTRUCTION = """
+from typing import Literal, Optional
+
+FORMAT_INSTRUCTION_DIALECTIC_JSON = """
 ## Response format (STRICTLY JSON)
 You must respond with a JSON object containing the following structure. Do not use conversational text outside the JSON.
 
+IMPORTANT LANGUAGE & SPACING RULE:
+All string fields ("decision", "assumption", "plan_steps", "opposite_process", "contradiction", "leap", "response") MUST be written in natural human language WITH NORMAL SPACES between words (раздельными словами с пробелами, полными предложениями). Never concatenate or glue words together without spaces!
+
 ```json
 {
-  "decision": "<string: short rationale for the chosen action>",
+  "decision": "<string: short rationale for the chosen action, written with spaces between words>",
   "hypothesis": {
-    "assumption": "<string: current hypothesis>",
-    "plan_steps": ["<string: step description>"]
+    "assumption": "<string: current hypothesis, natural sentence with spaces>",
+    "plan_steps": ["<string: step description with spaces>"]
   },
   "knowledge_updates": [
     {"concept": "<string>", "status": "<string: learned|struggling|unknown>"}
@@ -149,65 +152,97 @@ You must respond with a JSON object containing the following structure. Do not u
   ],
   "claims": [
     {
-      "text": "<string: claim statement>",
+      "text": "<string: claim statement with spaces>",
       "evidence_ids": ["<string: id of evidence>"],
       "requires_validation": <boolean>
     }
   ],
-  "response": "<string: final answer to the user, only if tool_calls is empty>",
-  "opposite_process": "<string: REQUIRED whenever 'response' is set -- a process that resolves/dissolves the task WITHOUT your simplest process>",
-  "contradiction": "<string: REQUIRED whenever 'response' is set -- simplest process and opposite process, in one sentence, taken together>",
-  "leap": "<string: REQUIRED whenever 'response' is set -- how you resolved it (prefer decomposing: act on the clear part, ask only about the unclear part)>",
+  "response": "<string: final answer to the user with spaces, only if tool_calls is empty>",
+  "opposite_process": "<string: REQUIRED whenever 'response' is set -- written with spaces between words>",
+  "contradiction": "<string: REQUIRED whenever 'response' is set -- natural sentence with spaces>",
+  "leap": "<string: REQUIRED whenever 'response' is set -- written with spaces between words>",
   "leap_type": "<REQUIRED whenever 'response' is set -- EXACTLY one of: 'decompose_and_act' | 'ask_only' | 'fully_resolved'>"
 }
 ```
 """
 
+FORMAT_INSTRUCTION_NATIVE = """
+## Response format (STRICTLY JSON)
+You must respond with a JSON object containing the following structure. Do not use conversational text outside the JSON.
+When tool execution is required, invoke the available tools natively via provider function calling; do NOT include a "tool_calls" key in the JSON object.
+
+IMPORTANT LANGUAGE & SPACING RULE:
+All string fields ("decision", "assumption", "plan_steps", "opposite_process", "contradiction", "leap", "response") MUST be written in natural human language WITH NORMAL SPACES between words (раздельными словами с пробелами, полными предложениями). Never concatenate or glue words together without spaces!
+
+```json
+{
+  "decision": "<string: short rationale for the chosen action, written with spaces between words>",
+  "hypothesis": {
+    "assumption": "<string: current hypothesis, natural sentence with spaces>",
+    "plan_steps": ["<string: step description with spaces>"]
+  },
+  "knowledge_updates": [
+    {"concept": "<string>", "status": "<string: learned|struggling|unknown>"}
+  ],
+  "claims": [
+    {
+      "text": "<string: claim statement with spaces>",
+      "evidence_ids": ["<string: id of evidence>"],
+      "requires_validation": <boolean>
+    }
+  ],
+  "response": "<string: final answer to the user with spaces>",
+  "opposite_process": "<string: REQUIRED whenever 'response' is set -- written with spaces between words>",
+  "contradiction": "<string: REQUIRED whenever 'response' is set -- natural sentence with spaces>",
+  "leap": "<string: REQUIRED whenever 'response' is set -- written with spaces between words>",
+  "leap_type": "<REQUIRED whenever 'response' is set -- EXACTLY one of: 'decompose_and_act' | 'ask_only' | 'fully_resolved'>"
+}
+```
+"""
+
+FORMAT_INSTRUCTION = FORMAT_INSTRUCTION_DIALECTIC_JSON
 
 
+def build_system_prompt(
+    goal: str,
+    memory: BaseMemory,
+    tools: list = None,
+    tool_calling_mode: Literal["dialectic_json", "native"] = "dialectic_json",
+    native_tool_calling: Optional[bool] = None,
+) -> str:
+    """Assembles the system prompt from the goal, rules, memory, and tools.
 
-def build_system_prompt(goal: str, memory: BaseMemory, tools: list = None, native_tool_calling: bool = False) -> str:
-    """Assembles the system prompt from the goal, rules, memory, and tools."""
-    
-    rules = []
-    
-    # Base rules
-    rules.append("1. STRUCTURE: You must always respond strictly in JSON format. Do not add markdown like ```json, just the pure object.")
-    
+    Modes:
+    - 'dialectic_json' (default): System prompt includes the full textual tool_calls specification
+      and describes available tools. The engine acts as the sole dispatcher.
+    - 'native': System prompt excludes textual tool_calls to avoid conflicting with provider
+      native function calling schemas passed via API.
+    """
+    if native_tool_calling is not None:
+        tool_calling_mode = "native" if native_tool_calling else "dialectic_json"
+
     tools_to_use = tools if tools is not None else []
 
-    tools_section = ""
-    if tools_to_use and not native_tool_calling:
-        # When the LLM supports native tool calling, tool schemas are sent via the
-        # API's `tools` field. Duplicating them here as text wastes the token budget.
-        tools_lines = "\n".join(t.to_prompt_description() for t in tools_to_use)
-        tools_section = (
-            "\n## Available tools (Confrontation with reality)\n"
-            "Each tool below is listed as `name`, a description, and an `Arguments` JSON Schema -- the "
-            "schema describes the SHAPE and TYPE your `args` must have (e.g. `{\"type\": \"string\"}` "
-            "means \"put a string value here\"), it is not itself a value to copy. When you call a tool, "
-            "`args` must be the actual values for THIS request (e.g. `{\"image_url\": \"the-real-url\"}`), "
-            "never a restatement of the schema (`{\"type\": \"object\", \"properties\": {...}}`) -- that is "
-            "a malformed call, not a cautious or complete one.\n"
-            f"{tools_lines}\n"
-        )
-
-    format_instruction = FORMAT_INSTRUCTION
-    if native_tool_calling:
-        # Remove tool_calls from textual JSON requirement
-        # Simple string manipulation since it's a static format
-        lines = format_instruction.splitlines()
-        filtered_lines = []
-        skip = False
-        for line in lines:
-            if '"tool_calls": [' in line:
-                skip = True
-            elif skip and '],' in line:
-                skip = False
-                continue
-            elif not skip:
-                filtered_lines.append(line)
-        format_instruction = "\n".join(filtered_lines)
+    if tool_calling_mode == "dialectic_json":
+        format_instruction = FORMAT_INSTRUCTION_DIALECTIC_JSON
+        tools_section = ""
+        if tools_to_use:
+            tools_lines = "\n".join(t.to_prompt_description() for t in tools_to_use)
+            tools_section = (
+                "\n## Available tools (Confrontation with reality)\n"
+                "Each tool below is listed as `name`, a description, and an `Arguments` JSON Schema -- the "
+                "schema describes the SHAPE and TYPE your `args` must have (e.g. `{\"type\": \"string\"}` "
+                "means \"put a string value here\"), it is not itself a value to copy. When you call a tool, "
+                "`args` must be the actual values for THIS request (e.g. `{\"image_url\": \"the-real-url\"}`), "
+                "never a restatement of the schema (`{\"type\": \"object\", \"properties\": {...}}`) -- that is "
+                "a malformed call, not a cautious or complete one.\n"
+                f"{tools_lines}\n"
+            )
+    elif tool_calling_mode == "native":
+        format_instruction = FORMAT_INSTRUCTION_NATIVE
+        tools_section = ""
+    else:
+        raise ValueError(f"Unknown tool_calling_mode: '{tool_calling_mode}'. Must be 'dialectic_json' or 'native'.")
 
     memory_context = memory.get_context()
 

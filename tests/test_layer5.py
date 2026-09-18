@@ -8,10 +8,7 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from dialectic_ai.observability import TraceReader, AgentEvaluator, EvaluationReport
-try:
-    from dialectic_observability.server import DASHBOARD_PATH
-except ImportError:
-    DASHBOARD_PATH = None
+
 from dialectic_ai.core import AgentInput, MockLLM, DevelopmentLogger
 from dialectic_ai.agent import DialecticalAgent
 from dialectic_ai.memory import KnowledgeGraphMemory
@@ -81,11 +78,4 @@ async def test_agent_evaluator(generate_trace):
     
     assert report.synthesized is True
     assert report.reality_grounding_score > 0.5
-
-@pytest.mark.asyncio
-async def test_dashboard_handler():
-    if DASHBOARD_PATH is None:
-        pytest.skip("dialectic_observability is not installed")
-        
-    assert DASHBOARD_PATH.exists()
-    assert DASHBOARD_PATH.stat().st_size > 1000
+

@@ -14,10 +14,12 @@ DIALECTICAL DESCRIPTION:
     turns out to be either too simple (lacking methods) or too complex
     (not all implementations are needed by all agents).
 """
-from typing import Protocol, Any, runtime_checkable
 from abc import ABC, abstractmethod
-from dialectic_ai.core.schema import AgentInput, MemoryUpdate
+from typing import Protocol, runtime_checkable
+
 from dialectic_ai.core.dialectical import DialecticalObject
+from dialectic_ai.core.schema import AgentInput, MemoryUpdate
+
 
 @runtime_checkable
 class Memory(Protocol):

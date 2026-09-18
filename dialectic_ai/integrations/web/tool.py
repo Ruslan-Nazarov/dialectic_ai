@@ -4,14 +4,15 @@ dialectic_ai/integrations/web/tool.py
 Reality Check Tool: Reading web pages.
 Demonstrates how easy it is to extend the framework with new capabilities.
 """
-import urllib.request
-import urllib.error
-import uuid
 import asyncio
+import urllib.error
+import urllib.request
+import uuid
+
+from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.schema import Evidence
 from dialectic_ai.core.tool import ObservationTool
 
-from dialectic_ai.core.dialectical import dialectical
 
 @dialectical(
     origin="The agent must be able to interact with the internet",

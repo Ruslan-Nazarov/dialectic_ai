@@ -14,9 +14,10 @@ DIALECTICAL DESCRIPTION:
     infinite cycle of argument if the number of iterations (rounds) is not limited.
 """
 import asyncio
-from dialectic_ai.core.dialectical import dialectical, DialecticalObject
-from dialectic_ai.core.schema import AgentInput
+
 from dialectic_ai.agent.base import DialecticalAgent
+from dialectic_ai.core.dialectical import DialecticalObject, dialectical
+from dialectic_ai.core.schema import AgentInput
 from dialectic_ai.engine.executor import DialecticalEngine
 from dialectic_ai.multi.protocol import AgentResult, DialecticalResolution
 

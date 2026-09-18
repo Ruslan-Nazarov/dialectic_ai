@@ -1,0 +1,100 @@
+[
+  {
+    "event_type": "run_start",
+    "framework": "stage4_smoke_test",
+    "run_id": "stage4-test",
+    "case_id": "TEST",
+    "timestamp": "2026-09-17T06:43:18.718386+00:00",
+    "agent": null,
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {
+      "description": "Stage 4 logger test"
+    }
+  },
+  {
+    "event_type": "tool_call",
+    "framework": "stage4_smoke_test",
+    "run_id": "stage4-test",
+    "case_id": "TEST",
+    "timestamp": "2026-09-17T06:43:18.718386+00:00",
+    "agent": "test_agent",
+    "phase": null,
+    "tool": "calculate_statistics",
+    "arguments": {
+      "dataset_id": "A"
+    },
+    "result": null,
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {}
+  },
+  {
+    "event_type": "tool_result",
+    "framework": "stage4_smoke_test",
+    "run_id": "stage4-test",
+    "case_id": "TEST",
+    "timestamp": "2026-09-17T06:43:18.718386+00:00",
+    "agent": "test_agent",
+    "phase": null,
+    "tool": "calculate_statistics",
+    "arguments": null,
+    "result": {
+      "count": 5,
+      "mean": 50.0,
+      "median": 50.0,
+      "min": 40.0,
+      "max": 60.0,
+      "range": 20.0,
+      "std_dev": 7.9057,
+      "dataset_id": "A"
+    },
+    "evidence_id": null,
+    "claim": null,
+    "success": true,
+    "error": null,
+    "metadata": {}
+  },
+  {
+    "event_type": "evidence_created",
+    "framework": "stage4_smoke_test",
+    "run_id": "stage4-test",
+    "case_id": "TEST",
+    "timestamp": "2026-09-17T06:43:18.718386+00:00",
+    "agent": "test_agent",
+    "phase": null,
+    "tool": "calculate_statistics",
+    "arguments": null,
+    "result": null,
+    "evidence_id": "ev-stage4-uuid-123",
+    "claim": null,
+    "success": true,
+    "error": null,
+    "metadata": {}
+  },
+  {
+    "event_type": "run_end",
+    "framework": "stage4_smoke_test",
+    "run_id": "stage4-test",
+    "case_id": "TEST",
+    "timestamp": "2026-09-17T06:43:18.718386+00:00",
+    "agent": "test_agent",
+    "phase": null,
+    "tool": null,
+    "arguments": null,
+    "result": "Test completed.",
+    "evidence_id": null,
+    "claim": null,
+    "success": null,
+    "error": null,
+    "metadata": {}
+  }
+]

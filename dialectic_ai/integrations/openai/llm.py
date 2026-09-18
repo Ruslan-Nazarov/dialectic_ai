@@ -1,8 +1,8 @@
-import os
-import json
 import asyncio
-import urllib.request
+import json
+import os
 import urllib.error
+import urllib.request
 
 from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.llm import BaseLLM
@@ -48,7 +48,7 @@ class OpenAILLM(BaseLLM):
             if os.getenv("GROQ_API_KEY"):
                 self.api_key = os.getenv("GROQ_API_KEY")
                 self.base_url = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
-                self.model = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
+                self.model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
             elif os.getenv("OPENROUTER_API_KEY"):
                 self.api_key = os.getenv("OPENROUTER_API_KEY")
                 self.base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")

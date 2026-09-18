@@ -8,39 +8,27 @@ DIALECTICAL DESCRIPTION:
     The user is forced to understand the code of each module instead of solving applied tasks.
   How it solves: A single entry point in the CLI (`dialectic` or `python -m dialectic_ai.cli.main`):
     - `map`: displays the philosophical-dialectical map of all layers of the system;
-    - `dashboard`: launches the observability web interface;
     - `eval`: performs an automatic audit of dialectical compliance based on traces;
     - `tutor`: launches a ready-made tutor agent in interactive mode.
   What it leads to: Quick deployment, convenient demonstration at hackathons, high DX.
   Its own contradictions: The CLI interface abstracts the internals; a developer may
     lose direct understanding of component interactions if they only use the CLI.
 """
-import sys
 import argparse
+import sys
 from pathlib import Path
 
 # Imports will be loaded dynamically where needed
-
-from dialectic_ai.core.dialectical import get_dialectical_map, print_dialectical_card, install_dialectical_excepthook
-from dialectic_ai.observability.tracer import TraceReader
-from dialectic_ai.observability.evaluator import AgentEvaluator
+from dialectic_ai.core.dialectical import get_dialectical_map, install_dialectical_excepthook
 from dialectic_ai.observability.auditor import DialecticalAuditor
-try:
-    from dialectic_observability.server import run as run_dashboard_server
-except ImportError:
-    run_dashboard_server = None
+from dialectic_ai.observability.evaluator import AgentEvaluator
+from dialectic_ai.observability.tracer import TraceReader
+
 
 
 def cmd_map(args):
     """Outputs the dialectical map of the framework architecture."""
     # Ensure all modules are imported to fill the dialectical metadata registry
-    import dialectic_ai.core
-    import dialectic_ai.agent
-    import dialectic_ai.memory
-    import dialectic_ai.reality
-    import dialectic_ai.engine
-    import dialectic_ai.multi
-    import dialectic_ai.observability
     
     items = get_dialectical_map()
     if args.layer is not None:
@@ -73,20 +61,13 @@ def cmd_map(args):
         print(f"\n📦 Class: {item.name}")
         print(f"  📍 Origin:   {item.origin}")
         print(f"  ⚡ Contradiction:    {item.contradiction}")
-        print(f"  ✅ Resolution:      {item.resolves}")
+        print(f"  [OK] Resolution:      {item.resolves}")
         print(f"  ➡️  Generates:       {item.generates}")
         print(f"  🔄 Own Contradictions:    {item.own_contradictions}")
 
     print("\n" + "=" * 70 + "\n")
 
 
-def cmd_dashboard(args):
-    """Launches the web dashboard."""
-    if run_dashboard_server is None:
-        print("[-] The dialectic_observability package is not installed.")
-        print("    Install it to run the dashboard (e.g., pip install dialectic-observability).")
-        sys.exit(1)
-    run_dashboard_server(host=args.host, port=args.port, trace_file=args.trace)
 
 
 def cmd_eval(args):
@@ -106,14 +87,14 @@ def cmd_eval(args):
     print(f"Session:                  {report.session_id}")
     print(f"Dialectical Score:        {report.dialectical_score * 100:.1f}%")
     print(f"Reality Grounding:       {report.reality_grounding_score * 100:.1f}%")
-    print(f"Synthesis achieved:       {'Yes ✅' if report.synthesized else 'No ❌'}")
+    print(f"Synthesis achieved:       {'Yes [OK]' if report.synthesized else 'No [FAIL]'}")
     print(f"Iterations:               {report.iterations_count}")
-    print(f"Memory enriched:          {'Yes ✅' if report.memory_updated else 'No ❌'}")
+    print(f"Memory enriched:          {'Yes [OK]' if report.memory_updated else 'No [FAIL]'}")
 
     if report.violations:
         print("\nDetected violations of the dialectical method:")
         for v in report.violations:
-            print(f"  ⚠️ {v}")
+            print(f"  [!] {v}")
     else:
         print("\nNo violations detected. The dialectical cycle was executed flawlessly. ✨")
 
@@ -199,10 +180,11 @@ def cmd_audit(args):
 
 def cmd_run(args):
     """Launches a declarative agent from the config file."""
-    from dialectic_ai.cli.config_parser import load_agent_from_config
-    from dialectic_ai.engine import DialecticalEngine
-    from dialectic_ai.core.schema import AgentInput
     import uuid
+
+    from dialectic_ai.cli.config_parser import load_agent_from_config
+    from dialectic_ai.core.schema import AgentInput
+    from dialectic_ai.engine import DialecticalEngine
     
     try:
         agent = load_agent_from_config(args.config)
@@ -262,9 +244,13 @@ def main():
     # architectural-error banner). The default console encoding on non-English
     # Windows locales is a narrow codepage (e.g. cp1251), not UTF-8, which
     # crashes those prints outright -- see development_log.md, 2026-09-15.
-    if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        if stream and hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except Exception:
+                pass
     install_dialectical_excepthook()
     load_env()
     parser = argparse.ArgumentParser(
@@ -273,8 +259,8 @@ def main():
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # Command: create
-    p_create = subparsers.add_parser("create", help="Interactive wizard for creating a new agent")
+    # Command: create — p_create not assigned (add_parser registers it as a side effect)
+    subparsers.add_parser("create", help="Interactive wizard for creating a new agent")
 
     # Command: audit
     p_audit = subparsers.add_parser(
@@ -316,11 +302,6 @@ def main():
     p_map = subparsers.add_parser("map", help="Output the philosophical-dialectical map of all components")
     p_map.add_argument("--layer", type=int, default=None, help="Filter by layer number (0-6)")
 
-    # Command: dashboard
-    p_dash = subparsers.add_parser("dashboard", help="Launch the Observability web dashboard")
-    p_dash.add_argument("--port", type=int, default=7860, help="Server port (default: 7860)")
-    p_dash.add_argument("--host", default="localhost", help="Server host")
-    p_dash.add_argument("--trace", default="trace.jsonl", help="Path to the trace file")
 
     # Command: eval
     p_eval = subparsers.add_parser("eval", help="Evaluate the quality of adherence to the dialectical cycle")
@@ -338,8 +319,7 @@ def main():
         cmd_audit(args)
     elif args.command == "map":
         cmd_map(args)
-    elif args.command == "dashboard":
-        cmd_dashboard(args)
+
     elif args.command == "eval":
         cmd_eval(args)
     elif args.command == "run":
