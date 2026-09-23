@@ -103,6 +103,9 @@ class MockLLM(BaseLLM):
     keys and zero token cost.
     """
 
+    # The autopilot reads the RUNTIME_JSON snapshot, which prompts omit for real models.
+    reads_runtime_json = True
+
     def __init__(self, responses: Optional[list[str]] = None):
         """
         Args:

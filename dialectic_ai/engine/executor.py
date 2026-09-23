@@ -140,6 +140,7 @@ class DialecticalEngine:
                 self.state, goal, allowed_moves_names,
                 iteration=iteration, max_iterations=self.max_iterations,
                 agent_goal=getattr(self.agent, "goal", ""), tools=list(self._tool_registry.values()),
+                include_runtime_json=getattr(self.agent.llm, "reads_runtime_json", False),
             )
 
             # The static "Core Dialectical Moves" section always lists every move

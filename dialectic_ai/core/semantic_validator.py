@@ -113,7 +113,7 @@ Return exactly JSON {"accepted": boolean, "reason": "nonempty explanation", "iss
 """
         context = {"goal": asdict(goal), "proposal": asdict(proposal),
                    "move_contract": MOVE_SPECIFICATIONS[proposal.move_type.value],
-                   "runtime": RuntimeReadModel(state).get_snapshot(),
+                   "runtime": RuntimeReadModel(state).get_prompt_snapshot(),
                    "role": getattr(self, "agent_goal", "")}
         prompt += "\nDATA:\n" + json.dumps(context, ensure_ascii=False)
         import re

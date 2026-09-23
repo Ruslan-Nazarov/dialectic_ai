@@ -161,3 +161,13 @@ class RuntimeReadModel:
             "completion": self.get_completions(),
             "timeline": self.get_timeline()
         }
+
+    def get_prompt_snapshot(self) -> Dict[str, Any]:
+        """The current graph only, for model prompts. Drops the event timeline and each
+        roadmap's frozen copy of the graph: both grow with every move, neither is needed
+        to judge or propose the next one, and together they were most of the payload."""
+        snapshot = self.get_snapshot()
+        snapshot.pop("timeline")
+        for roadmap in snapshot["roadmaps"]:
+            roadmap.pop("snapshot", None)
+        return snapshot

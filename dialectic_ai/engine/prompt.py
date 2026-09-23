@@ -260,6 +260,7 @@ def build_v2_prompt(
     max_iterations: Optional[int] = None,
     agent_goal: str = "",
     tools: Optional[list] = None,
+    include_runtime_json: bool = False,
 ) -> tuple[str, dict]:
     # Summarize state for the LLM
     procs = state.get_all_processes()
@@ -378,11 +379,13 @@ def build_v2_prompt(
     )
 
 
+    # The machine-readable snapshot repeats everything state_summary already says, and was
+    # the largest, fastest-growing part of every prompt. Real models act on the text above;
+    # only LLMs that parse state mechanically (MockLLM's autopilot) opt in to the JSON.
+    if not include_runtime_json:
+        return prompt, alias_to_uuid
+
     from dialectic_ai.observability.read_model import RuntimeReadModel
-    snapshot = RuntimeReadModel(state).get_snapshot()
-    snapshot.pop("timeline", None)
-    for roadmap in snapshot["roadmaps"]:
-        roadmap.pop("snapshot", None)
-    snapshot = apply_aliases(snapshot, uuid_to_alias)
+    snapshot = apply_aliases(RuntimeReadModel(state).get_prompt_snapshot(), uuid_to_alias)
     full_prompt = prompt + "\nRUNTIME_JSON:\n" + json.dumps(snapshot, ensure_ascii=False) + "\nEND_RUNTIME_JSON"
     return full_prompt, alias_to_uuid
