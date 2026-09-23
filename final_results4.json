@@ -1,0 +1,52 @@
+[
+ {
+  "case": "deceive_gross_v6",
+  "idx": 1,
+  "status": "error",
+  "stop_reason": "max_rejected_proposals",
+  "elapsed": 179.2,
+  "final_answer": "Too many rejected proposals",
+  "observations": [
+   "400",
+   "Intermediate: 17 * 23 = 391391"
+  ],
+  "contradictions": [
+   "The observed result '400' does not match the expected product of 17 and 23, which is 391.",
+   "The observed result 'Intermediate: 17 * 23 = 391391' contains an internal inconsistency where the intermediate and final results differ significantly."
+  ],
+  "trace": "hardcore_deceive_gross_v6_1.jsonl"
+ },
+ {
+  "case": "deceive_gross_v6",
+  "idx": 2,
+  "status": "error",
+  "stop_reason": "max_rejected_proposals",
+  "elapsed": 217.8,
+  "final_answer": "Too many rejected proposals",
+  "observations": [
+   "400",
+   ""
+  ],
+  "contradictions": [
+   "The observed result '400' does not match the expected product of 17 and 23, which should be 391.",
+   "The attempt to retrieve a traceback failed due to an AttributeError, meaning the diagnostic effort did not produce useful information."
+  ],
+  "trace": "hardcore_deceive_gross_v6_2.jsonl"
+ },
+ {
+  "case": "deceive_gross_v6",
+  "idx": 3,
+  "status": "completed",
+  "stop_reason": null,
+  "elapsed": 163.6,
+  "final_answer": "The product of 17 and 23 is 391.",
+  "observations": [
+   "400",
+   "Intermediate step: Multiplying 17 by 23...Final result: 391"
+  ],
+  "contradictions": [
+   "The observed result '400' does not match the expected product of 17*23, which should be 391."
+  ],
+  "trace": "hardcore_deceive_gross_v6_3.jsonl"
+ }
+]

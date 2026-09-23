@@ -1,0 +1,22 @@
+=== hard_arith_2 ===
+REJECT: Semantic: The proposal describes the simplest generative process as directly computing the product, but the role explicitly requires that any arithmetic claim be verified using the Python tool before 
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal describes the simplest generative process as directly computing 19 × 27, but the role explicitly requires that any arithmetic claim be verified with the Python tool before final
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal defines the simplest generative process as merely computing 19 × 27, but the role explicitly requires that any arithmetic claim be verified using the Python tool before finalizi
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal defines the simplest generative process as merely computing the product of 19 and 27, but the role explicitly requires that any arithmetic claim be verified using the Python too
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal defines the simplest generative process as merely computing the product of 19 and 27, but the role explicitly requires that any arithmetic claim be verified using the Python too
+  move: PROPOSE_SIMPLEST
+=== hard_batball_1 ===
+REJECT: Semantic: The proposal does not constitute the required simplest generative process for the task. The role explicitly demands that the simplest step be to solve the arithmetic problem (determine the b
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal merely states to "solve the given equations algebraically" without actually performing the calculation or providing the ball's cost, and it omits the required verification of th
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal only states to set up algebraic equations and solve them, but it does not actually compute the ball's cost nor verify the arithmetic using the Python tool as required by the rol
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal does not satisfy the role-defined SIMPLEST constraint. It merely describes setting up and solving equations abstractly, without actually computing the ball's cost nor verifying 
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal fails the role-defined SIMPLEST constraint: it provides an incorrect answer ($0.10 instead of the correct $0.05) and does not include the required verification of the arithmetic
+  move: PROPOSE_SIMPLEST

@@ -1,0 +1,25 @@
+ALLOWED 1 planning ['PROPOSE_SIMPLEST']
+  COMMIT: PROPOSE_SIMPLEST
+ALLOWED 2 planning ['ASSESS_SIMPLEST', 'DEVELOP_PROCESS']
+  COMMIT: ASSESS_SIMPLEST
+ALLOWED 3 planning ['DEVELOP_PROCESS', 'DESIGNATE_OPPOSITE']
+  COMMIT: DEVELOP_PROCESS
+ALLOWED 4 planning ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE']
+  COMMIT: DESIGNATE_OPPOSITE
+ALLOWED 5 planning ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE']
+  COMMIT: DEVELOP_PROCESS
+ALLOWED 6 planning ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE', 'ESTABLISH_CONTRADICTION']
+  REJECT: Semantic: The proposal tries to establish a contradiction, but it misidentifies the SIMPLEST process. According to the domain‑specific meaning, the SIMPLEST must be the appeal/complaint itself, while 
+    move: ESTABLISH_CONTRADICTION
+ALLOWED 7 planning ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE', 'ESTABLISH_CONTRADICTION']
+  REJECT: Semantic: The proposal misidentifies the SIMPLEST process. According to the task‑specific definition, the SIMPLEST must be the user's appeal (the complaint about cold food), but the roadmap designates
+    move: ESTABLISH_CONTRADICTION
+ALLOWED 8 planning ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE', 'ESTABLISH_CONTRADICTION']
+  REJECT: Semantic: The proposal misidentifies the SIMPLEST process. According to the domain‑specific definition, the SIMPLEST must be the user's appeal (the complaint about cold food), but the roadmap designat
+    move: ESTABLISH_CONTRADICTION
+ALLOWED 9 planning ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE', 'ESTABLISH_CONTRADICTION']
+  REJECT: Semantic: The proposal misidentifies the SIMPLEST process: according to the domain‑specific definition, the SIMPLEST must be the user's appeal (the complaint about cold food), but the roadmap designat
+    move: ESTABLISH_CONTRADICTION
+ALLOWED 10 planning ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE', 'ESTABLISH_CONTRADICTION']
+  REJECT: Semantic: The ESTABLISH_CONTRADICTION proposal misidentifies the SIMPLEST process. According to the task‑specific definition, the SIMPLEST must be the user's appeal (the complaint about cold food). Th
+    move: ESTABLISH_CONTRADICTION
