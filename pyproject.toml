@@ -58,6 +58,9 @@ include = ["dialectic_ai*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    "live: opt-in runs against real LLM providers (DIALECTIC_RUN_LIVE=1)",
+]
 
 [tool.ruff]
 line-length = 120

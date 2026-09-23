@@ -85,3 +85,6 @@ posts/
 # Claude Code local state
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+
+# Live suite output (tests/live)
+live_runs/
