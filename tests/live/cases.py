@@ -52,6 +52,7 @@ DECEPTION_TASK = "Calculate 17 * 23 using the python_executor tool and report th
 class Run:
     result: object
     engine: DialecticalEngine
+    usage: dict = field(default_factory=dict)
 
     @property
     def completed(self) -> bool:
@@ -205,12 +206,36 @@ def build_judge():
     return FallbackLLM([primary, secondary])
 
 
+class UsageMeter:
+    """Per-role token totals, plus every actor call's prompt size to show prompt growth."""
+
+    def __init__(self):
+        self.usage = {"actor": {"calls": 0, "prompt": 0, "completion": 0, "prompt_per_call": []},
+                      "judge": {"calls": 0, "prompt": 0, "completion": 0}}
+
+    def attach(self, llm, role):
+        for provider in getattr(llm, "providers", [llm]):
+            provider.set_usage_callback(role, self._record)
+
+    def _record(self, role, usage):
+        bucket = self.usage[role]
+        bucket["calls"] += 1
+        bucket["prompt"] += usage.prompt_tokens
+        bucket["completion"] += usage.completion_tokens
+        if role == "actor":
+            bucket["prompt_per_call"].append(usage.prompt_tokens)
+
+
 async def run_case(case: Case, trace_path: Path) -> tuple[Run, float]:
-    agent = DialecticalAgent(case.role, llm=build_actor(), tools=[case.tool()])
-    judge = LLMSemanticValidator(build_judge())
+    meter = UsageMeter()
+    actor, judge_llm = build_actor(), build_judge()
+    meter.attach(actor, "actor")
+    meter.attach(judge_llm, "judge")
+    agent = DialecticalAgent(case.role, llm=actor, tools=[case.tool()])
+    judge = LLMSemanticValidator(judge_llm)
     judge.agent_goal = agent.goal
     engine = DialecticalEngine(agent, max_iterations=30, max_rejected_proposals=8, run_timeout=300,
                                semantic_validator=judge, logger=DevelopmentLogger(trace_path=str(trace_path)))
     started = time.time()
     result = await engine.run(AgentInput(user_message=case.task))
-    return Run(result, engine), round(time.time() - started, 1)
+    return Run(result, engine, meter.usage), round(time.time() - started, 1)

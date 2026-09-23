@@ -54,11 +54,17 @@ async def test_live_case(case, idx, live_dir, report):
     trace = live_dir / f"{case.name}_{idx}.jsonl"
     run, elapsed = await run_case(case, trace)
     problems = case.check(run)
+    # A judge that could not answer fails closed as a rejection; count those so a run
+    # exhausted by provider outages is not read as the engine's own failure.
+    judge_outages = sum("Validation error:" in (getattr(e, "validation_error", "") or "")
+                        for e in run.engine.state._trace)
     report.append({
         "case": case.name, "idx": idx, "status": run.result.status, "stop_reason": run.result.stop_reason,
         "elapsed": elapsed, "clear_path": run.clear_path, "response": run.response[:300],
         "contradictions": len(run.engine.state.get_all_contradictions()),
         "actions": len(run.engine.state.get_all_actions()),
-        "facts": case.observe(run), "problems": problems, "trace": str(trace),
+        "facts": case.observe(run), "usage": run.usage, "judge_outages": judge_outages, "problems": problems, "trace": str(trace),
     })
+    if run.result.stop_reason == "provider_error":
+        pytest.skip(f"provider unavailable, not an engine result: {run.response[:200]}")
     assert not problems, f"{problems} -- trace: {trace}"
