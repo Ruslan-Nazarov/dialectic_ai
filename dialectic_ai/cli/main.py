@@ -25,7 +25,6 @@ from dialectic_ai.observability.evaluator import AgentEvaluator
 from dialectic_ai.observability.tracer import TraceReader
 
 
-
 def cmd_map(args):
     """Outputs the dialectical map of the framework architecture."""
     # Ensure all modules are imported to fill the dialectical metadata registry
@@ -85,18 +84,18 @@ def cmd_eval(args):
     print("  DIALECTICAL AUDIT REPORT OF SESSION")
     print("=" * 60)
     print(f"Session:                  {report.session_id}")
-    print(f"Dialectical Score:        {report.dialectical_score * 100:.1f}%")
+    print(f"Trace structure score:        {report.dialectical_score * 100:.1f}%")
     print(f"Reality Grounding:       {report.reality_grounding_score * 100:.1f}%")
-    print(f"Synthesis achieved:       {'Yes [OK]' if report.synthesized else 'No [FAIL]'}")
+    print(f"Run completed:       {'Yes [OK]' if report.completed else 'No [FAIL]'}")
     print(f"Iterations:               {report.iterations_count}")
-    print(f"Memory enriched:          {'Yes [OK]' if report.memory_updated else 'No [FAIL]'}")
+    print("Scope: structural trace inspection, not proof of semantic correctness.")
 
     if report.violations:
         print("\nDetected violations of the dialectical method:")
         for v in report.violations:
             print(f"  [!] {v}")
     else:
-        print("\nNo violations detected. The dialectical cycle was executed flawlessly. ✨")
+        print("\nNo structural trace violations detected. Task quality needs separate evaluation.")
 
     print(f"\nCall details: {report.details}")
     print("=" * 60 + "\n")
@@ -192,7 +191,7 @@ def cmd_run(args):
         import json
         with open(args.config, "r", encoding="utf-8") as f:
             config = json.load(f)
-        max_iterations = config.get("max_iterations", 3)
+        max_iterations = config.get("max_iterations", 30)
         
         engine = DialecticalEngine(agent, max_iterations=max_iterations)
         
@@ -332,3 +331,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -8,6 +8,7 @@ from pathlib import Path
 from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.llm import BaseLLM
 from dialectic_ai.core.retry import RetryableError, retry_call
+from typing import Optional
 
 _RETRYABLE_HTTP_CODES = {429, 500, 502, 503, 504}
 
@@ -41,13 +42,13 @@ class GeminiLLM(BaseLLM):
     Uses the standard Python library (urllib).
     """
 
-    def __init__(self, api_key: str = None, model: str = None, max_retries: int = 3):
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None, max_retries: int = 3):
         # Loading .env here (once per instantiation, not at import time) matches every
         # other provider in this codebase -- see CODE_REVIEW.md, Layer 2: importing this
         # module alone used to silently mutate os.environ as a side effect.
         _load_env_file()
         self.api_key = api_key or os.getenv("GEMINI_API_KEY", "")
-        self.model = model or os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+        self.model = model or os.getenv("GEMINI_MODEL", "")
         self.max_retries = max_retries
 
     def _do_attempt(self, req: urllib.request.Request) -> dict:
@@ -72,9 +73,12 @@ class GeminiLLM(BaseLLM):
             ),
         )
 
-    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+    async def generate(self, messages: list[dict], tools: Optional[list[dict]] = None) -> str:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY is not set in arguments or in environment variables / .env")
+
+        if not self.model:
+            raise ValueError("GEMINI_MODEL is not configured")
 
         # Collecting context from all messages in dialogue format
         prompt_parts = []
@@ -97,6 +101,7 @@ class GeminiLLM(BaseLLM):
         req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
 
         result = await asyncio.to_thread(self._call_sync, req)
+        self._record_usage(result.get("usageMetadata"))
         candidates = result.get("candidates", [])
         if not candidates:
             return "{}"

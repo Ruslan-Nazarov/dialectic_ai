@@ -1,3 +1,7 @@
+> Current runtime contract (2026-09-19): see [RUNTIME_CONTRACT.md](RUNTIME_CONTRACT.md).
+> The material below is retained as historical context and may describe removed implementations.
+> Active prompts: `engine/prompt.py`, `core/proposal_schema.py`, `core/semantic_validator.py`.
+
 # DialecticAI — Architecture & Usage Guide
 
 **Date:** 2026-09-16
@@ -16,7 +20,7 @@ If you only read one section before writing code, read **"How to build an agent"
 
 ## 1. What this is, in one paragraph
 
-DialecticAI is a Python framework for building LLM agents whose reasoning process is structured according to a specific philosophical method (Hegelian-style dialectics), and — this is the distinctive part — that structure is **enforced at the code level**, not just suggested in a prompt. A framework class that lacks a `@dialectical(...)` decorator physically refuses to instantiate (raises `DialecticalArchitectureError`). Every agent's own runtime reasoning is required to carry the same five-part structure on every finalized turn (see Rule 5 below), checked against what the agent actually did, not just what it claims. The project's own development process follows the same method on purpose (see `development_log.md`).
+DialecticAI is a Python framework for building LLM agents whose reasoning process is structured according to a specific philosophical method (structured dialectical development), and — this is the distinctive part — that structure is **enforced at the code level**, not just suggested in a prompt. A framework class that lacks a `@dialectical(...)` decorator physically refuses to instantiate (raises `DialecticalArchitectureError`). Every agent's own runtime reasoning is required to carry the same five-part structure on every finalized turn (see Rule 5 below), checked against what the agent actually did, not just what it claims. The project's own development process follows the same method on purpose (see `development_log.md`).
 
 ## 2. The philosophical foundation (condensed — read `dialectics_rules.md` for the real text)
 
@@ -24,7 +28,7 @@ Five rules, in increasing order of how much they demand:
 
 1. **Generative Principle (Derivation):** each step of development must organically derive from the one before it, inheriting its features and limits — not be bolted on independently.
 2. **Confrontation with Reality (Practice and Correction):** every significant step must be checked against a real run, not just reasoned about on paper. When reality reveals a problem, fix it while consciously deciding whether an industry "best practice" actually applies here.
-3. **Reflection on the Leap:** when transitioning to a genuinely new architectural step (not routine work), pause and evaluate the *nature* of the transition itself, not just the code.
+3. **Evaluation of the Transition Itself:** when transitioning to a genuinely new architectural step (not routine work), pause and evaluate the *nature* of the transition itself, not just the code.
 4. **Development Memory:** keep a continuous, dated log of architectural decisions (`development_log.md`) — every new step should look back at this history before proceeding.
 5. **Driving to Contradiction** (the rule with real teeth in this codebase — see `dialectics_rules.md` §5 for the full definition): for significant steps, push development all the way through five named elements — **simplest process** (generative, connected back to itself) → **development** (abstract to concrete, "becoming" not mere succession) → **opposite process** (a process whose own development does *not* need the simplest process to exist — not merely "a different way to do the same thing") → **contradiction** (the two, in the unity of their development) → **leap** (the move that resolves it, either subsuming both or letting them coexist until a later leap resolves them).
 
@@ -37,11 +41,10 @@ The framework organizes itself into numbered layers (0-6), matching the `layer=N
 | Layer | Directory | What lives here |
 |---|---|---|
 | 0 — Foundation | `dialectic_ai/core/` | The `@dialectical` decorator + `DialecticalObject` enforcement, Pydantic schemas, `BaseLLM` + providers, `Tool` base classes, `DevelopmentLogger`, shared retry logic |
-| 1 — Agent & Memory | `dialectic_ai/agent/`, `dialectic_ai/memory/` | `DialecticalAgent`, system-prompt assembly, all memory implementations |
+| 1 — Agent | `dialectic_ai/agent/` | `DialecticalAgent`, system-prompt assembly |
 | 2 — Confronting Reality | `dialectic_ai/reality/`, `dialectic_ai/tools/`, `dialectic_ai/integrations/` | Tools that actually touch the outside world: code execution, human-in-the-loop, web fetch, MCP, LLM provider integrations |
-| 3 — Orchestration Engine | `dialectic_ai/engine/` | `DialecticalEngine` (the turn loop), JSON parsing/repair, evidence store, claim validation |
-| 4 — Multi-Agent | `dialectic_ai/multi/` | `AgentRouter`, `DialecticalTriad`, `DialecticalDebateEngine` |
-| 5 — Observability | `dialectic_ai/observability/` | `DevelopmentLogger`'s reader (`TraceReader`), `AgentEvaluator` (fast heuristic scoring), `DialecticalAuditor` (LLM-as-judge + root-cause investigation) |
+| 3 — Orchestration Engine | `dialectic_ai/engine/` | `DialecticalEngine` (the turn loop), json parsing |
+| 4 — Observability | `dialectic_ai/observability/` | `DevelopmentLogger`'s reader (`TraceReader`), `AgentEvaluator` (fast heuristic scoring), `DialecticalAuditor` (LLM-as-judge + root-cause investigation) |
 | 6 — Developer Experience | `dialectic_ai/cli/`, `examples/`, packaging | The `dialectic` CLI, the interactive agent-creation wizard, runnable examples |
 
 Outside this numbered scheme: `dialectic_observability/` (an optional FastAPI dashboard, a separate installable extra).
@@ -93,31 +96,24 @@ Retry/backoff (`core/retry.py`, `RetryableError` + `retry_call` + `compute_backo
 - `@dialectical_tool(origin=..., contradiction=..., resolves=...)` (`core/decorators.py`) — turns a plain typed function into a `Tool` subclass automatically (schema inferred from type hints). Calling the decorated name (e.g. `web_search()`) constructs an instance of the generated class — a common point of confusion the first time you see it.
 - Built-in tools: `reality.PythonExecutor` (sandboxed code exec — denylist-based, **not** production-grade isolation, says so in its own docstring), `reality.HumanRealityCheck` (ask a human, blocking on `input()` in a thread), `reality.WebFetchCheck` (real HTTP GET of one URL), `reality.SubAgentTool` (delegate to another agent — implemented, never actually exercised by any test/example), `tools.web_search` (**a mock — makes no real network call, clearly labeled `[MOCK]` as of 2026-09-15**, don't mistake it for working search), `tools.read_file`/`write_file` (no path sandboxing — don't expose to untrusted input), `integrations.mcp` (Model Context Protocol tools, optional dependency).
 
-### 4e. Memory — `memory/`
+### 4e. `DialecticalAgent` — `agent/base.py`
 
-Two coexisting contracts: `Memory` (a `Protocol` — structural typing, no inheritance needed: `process_turn`, `get_context`, `clear`) and `BaseMemory` (an ABC requiring `DialecticalObject`/`@dialectical`). Despite `Memory` being the newer, lighter-weight option, every concrete memory class except `ConversationMemory` still inherits `BaseMemory` — a known, deliberately-deferred inconsistency (see `REFACTOR_PLAN.md` Phase 5.3).
-
-- `KnowledgeGraphMemory` — in-RAM concept→status graph, optional JSON persistence via `storage_path`. Default memory if none is given to `DialecticalAgent`.
-- `SQLiteKnowledgeGraphMemory` — same idea, backed by SQLite for atomic, concurrent-safe updates (import directly: `dialectic_ai.memory.sqlite_graph`, not exported from the package `__init__`).
-- `PersistentMemory` — wraps another memory and persists it to a JSON file; **only fully round-trips `KnowledgeGraphMemory`** — wrapping anything else saves a string blob that never gets read back correctly (see `CODE_REVIEW.md`, Layer 1).
-- `ConversationMemory` — plain conversation buffer, the one class already on the `Memory` Protocol path (import from `dialectic_ai.memory.conversation`).
-
-### 4f. `DialecticalAgent` — `agent/base.py`
-
-The container: `goal` (the only thing you're required to set), `llm`, `memory`, `tools`. `get_system_prompt()` calls `agent/prompt_builder.build_system_prompt(goal, memory, tools, native_tool_calling)`, which assembles, in order: the goal text → `_AGENT_DIALECTICAL_RULES` (the mandatory "how you should think" block, see `PROMPTS.md` §1a for the exact, current text — it's the single most load-bearing prompt in the whole framework) → the JSON response-format contract → the tools section (schema + an explicit "this is shape, not values to copy" clarification added 2026-09-15) → the current memory context. `add_to_history` triggers `SublationEngine` (`memory/sublation.py`) once history exceeds 10 messages: keeps the last 4 verbatim, summarizes the rest via one extra LLM call (Aufheben — sublation, not deletion).
+The container: `goal` (the only thing you're required to set), `llm`, `tools`. `get_system_prompt()` calls `agent/prompt_builder.build_system_prompt(goal, tools, native_tool_calling)`, which assembles, in order: the goal text → `_AGENT_DIALECTICAL_RULES` (the mandatory "how you should think" block, see `PROMPTS.md` §1a for the exact, current text — it's the single most load-bearing prompt in the whole framework) → the JSON response-format contract → the tools section (schema + an explicit "this is shape, not values to copy" clarification added 2026-09-15) → the current state context.
 
 ### 4g. `DialecticalEngine` — `engine/executor.py`
 
-The orchestrator. `DialecticalEngine(agent, logger=None, max_iterations=5, validator=None, debug_mode=False)`. `await engine.run(AgentInput(...)) -> AgentOutput` runs a forced cycle per iteration:
+The orchestrator. `DialecticalEngine(agent, logger=None, max_iterations=30, max_rejected_proposals=5, semantic_validator=None, model_timeout=90, tool_timeout=30, run_timeout=300)`. `await engine.run(AgentInput(...)) -> RuntimeResult` (`.status` is `"completed"` or `"error"`, `.response`, `.stop_reason`, `.validation_mode`) runs one bounded loop, each turn asking the model for exactly ONE `Proposal` (`move_type` + `payload`) and pushing it through:
 
-1. **`_phase_generate`** — calls the LLM with the full message history, parses the JSON response (`engine/parser.py`; on failure, one controlled repair attempt via `engine/repair.py`'s `JsonRepairer`, which re-prompts with the actual schema embedded — never a second silent retry loop).
-2. **`_phase_collide`** — executes every requested `tool_calls` entry **in parallel** (`asyncio.gather` — a later call in the same turn can never see an earlier call's result; this is explicitly taught to the agent in the prompt), records each result as `Evidence` in the run-scoped `EvidenceStore`, caps injected observation text at 6000 characters with a truncation note.
-3. **`_phase_synthesize`** — once the agent gives a final `response` (no more tool calls), computes `dialectical_resolution_missing`/`leap_action_mismatch` from the parsed fields vs. `evidence_store`, and packages `AgentOutput`.
-4. **`_phase_validate`** — checks any `Claim` marked `requires_validation` against its cited `Evidence` (`engine/validator.py`'s `ClaimValidator`, LLM-as-fact-checker, rate-limited per session).
+1. **Legality** — `AllowedMovesResolver.allowed_moves(state)` computes, from the *current* graph state (not a fixed script), which `MoveType`s are legal right now (`PROPOSE_SIMPLEST → ASSESS_SIMPLEST → DEVELOP_PROCESS/CONNECT_DEVELOPMENT → DESIGNATE_OPPOSITE → ESTABLISH_CONTRADICTION → PROPOSE_LEAP → BEGIN_EXECUTION → PROPOSE_ACTION → ASSESS_PRACTICE → ASSESS_LEAP/REVISE_WORLD → COMPLETE`). This is the load-bearing difference from earlier engine generations: the model chooses a move from a dynamically computed legal set, it doesn't fill in slots a Python script already decided in advance.
+2. **Structural validation** (`StructuralValidator`, jsonschema against `core/proposal_schema.py`) — rejects malformed JSON or a payload that references nonexistent/wrong-role entities (e.g. a `DESIGNATE_OPPOSITE.simplest_id` must be a *Designation* id with role `simplest`, not that designation's `process_id` — a genuine, repeatedly-observed model confusion, see the field descriptions in `proposal_schema.py`).
+3. **Semantic validation** — a distinct LLM judges content, never the acting model itself (self-judgment measurably causes near-certain self-rejection loops; see `_build_default_semantic_validator`'s docstring). Judge selection prefers a provider proven reliable on a point-test over one merely available and error-free — see `.env.example`'s comment on why Groq is excluded from judging.
+4. **Commit** (`CommitLayer`) — mutates `RuntimeState` only after both checks pass; `PROPOSE_ACTION` additionally executes the named tool and records an `Observation`.
 
-Two engine-level self-corrections worth knowing about, both bounded to avoid infinite loops:
-- **Empty-turn nudge:** if a turn has neither `tool_calls` nor `response`, the engine pushes a corrective message into history instead of silently repeating the same prompt (this was a real, previously-unfixed stall — see `development_log.md`, 2026-09-13).
-- **Second-order contradiction loop-back:** if `leap_type == "decompose_and_act"` but `evidence_store` is empty (the agent *claims* it already acted but never called a tool), the engine treats this as a contradiction the agent must resolve, not a fact to log — it pushes the discrepancy back into the generative loop for one bounded retry (`development_log.md`, 2026-09-13/14).
+Two bounded self-corrections, both transparent in the trace rather than silent:
+- **Repeated-invalid-move correction:** if the model proposes the same (currently illegal) `move_type` twice in a row, the next prompt is prefixed with an explicit "STOP, you must pick a different move" banner before the usual state dump.
+- **Budget awareness:** the prompt reports `iteration N of max_iterations` and escalates urgency past 60%/80% used, nudging the model toward `COMPLETE` before it runs out of turns.
+
+`max_rejected_proposals` is a hard stop, not a nudge — the engine reports `error`/`max_rejected_proposals` rather than hang if a model can't produce a legal move within that budget.
 
 ### 4h. Observability — `observability/`
 
@@ -149,21 +145,19 @@ Loaded by `cli/config_parser.py`'s `load_agent_from_config` — good for agents 
 import asyncio
 from dialectic_ai.agent import DialecticalAgent
 from dialectic_ai.engine import DialecticalEngine
-from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
-from dialectic_ai.memory.sqlite_graph import SQLiteKnowledgeGraphMemory
+from dialectic_ai.integrations.providers import build_llm  # picks up *_MODEL / *_API_KEY from .env
 from dialectic_ai.reality import PythonExecutor, WebFetchCheck
 from dialectic_ai.core.schema import AgentInput
 
 async def main():
     agent = DialecticalAgent(
         goal="You are a research assistant. Confirm facts by fetching real pages before answering.",
-        llm=GigaChatLLM(),                              # picks up GIGACHAT_AUTH_KEY from .env
-        memory=SQLiteKnowledgeGraphMemory(db_path="agent_memory.db"),
+        llm=build_llm("gigachat"),
         tools=[PythonExecutor(timeout=5), WebFetchCheck()],
     )
-    engine = DialecticalEngine(agent, max_iterations=10)  # default is 5 -- too low for most real multi-step tasks
-    output = await engine.run(AgentInput(user_message="..."))
-    print(output.response, output.status)
+    engine = DialecticalEngine(agent, max_iterations=25)  # semantic_validator picked automatically if omitted
+    result = await engine.run(AgentInput(user_message="..."))
+    print(result.response, result.status)
 
 asyncio.run(main())
 ```
@@ -174,17 +168,7 @@ This is exactly what the wizard's generated boilerplate and every `examples/*.py
 - `native_tool_calling` is read from `llm.supports_native_tool_calling` automatically — `OpenAILLM` supports it, `GigaChatLLM`/`GeminiLLM` do not (they get the JSON-text tool-calling convention instead). You never set this by hand.
 - If you see `DialecticalArchitectureError` on a class you wrote, you forgot the `@dialectical(...)` decorator — this is Rule 1 enforcement, not a bug.
 
-## 6. Multi-agent patterns — `dialectic_ai/multi/`
-
-**Not exported from the package `__init__`** — import directly from the submodule.
-
-- **`AgentRouter`** (`multi/router.py`) — register named agents, add keyword/manual routing rules, dispatches one incoming message to the right one. Deliberately simple (its own `own_contradictions` says so).
-- **`DialecticalTriad`** (`multi/triad.py`) — Thesis (generator) + Antithesis (independent critic, run in parallel via `asyncio.gather`, never sees the Thesis draft) + Synthesis (resolves the two into a final answer). Good for code/artifact-quality tasks where edge-case discovery matters. Antithesis's prompt was rewritten 2026-09-15 to match Debate's rigor (see `PROMPTS.md` §5's own history note).
-- **`DialecticalDebateEngine`** (`multi/debate.py`) — the fuller Rule 5 procedure across three agents: Thesis names/develops the simplest process, Antithesis independently develops a process that does *not* need the Thesis's approach, Synthesis names the `contradiction` and resolves it with a `leap` — reading these directly off the core schema's structural fields (no regex parsing).
-
-Both cost ~3x the tokens/latency of a single agent — reserve for tasks where that's worth it.
-
-## 7. The `dialectic` CLI — `cli/main.py`
+## 6. The `dialectic` CLI — `cli/main.py`
 
 ```
 dialectic create                 # interactive agent-creation wizard (§5, Option A)

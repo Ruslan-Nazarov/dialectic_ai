@@ -1,2 +1,0 @@
-openai-agents>=0.22.0
-pydantic>=2.10.0

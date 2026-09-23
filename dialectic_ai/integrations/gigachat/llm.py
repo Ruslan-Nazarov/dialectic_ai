@@ -11,13 +11,14 @@ from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.llm import BaseLLM
 from dialectic_ai.core.retry import RetryableError, retry_call
 from dialectic_ai.core.schema import ModelResult
+from typing import Optional
 
 _RETRYABLE_HTTP_CODES = {401, 429, 500, 502, 503, 504}
 
 @dialectical(
     origin="Integration with Sberbank GigaChat API",
     contradiction="GigaChat requires a 2-step auth (OAuth token) and specific SSL certificates",
-    resolves="Internal automatic token management and unverified SSL context for the OAuth endpoint",
+    resolves="Internal automatic token management and configurable CA trust for the OAuth endpoint",
     generates="Seamless usage of GigaChat just like any OpenAI-compatible provider",
     own_contradictions="Token caching is basic and tied to the instance lifetime",
     layer=0,
@@ -29,7 +30,7 @@ class GigaChatLLM(BaseLLM):
     """
     supports_native_tool_calling = False
 
-    def __init__(self, auth_key: str = None, model: str = "GigaChat", max_tokens: int = 4096, max_retries: int = 3):
+    def __init__(self, auth_key: Optional[str] = None, model: str = "GigaChat", max_tokens: int = 4096, max_retries: int = 3):
         self.auth_key = auth_key or os.getenv("GIGACHAT_AUTH_KEY", "")
         self.model = model
         self.max_tokens = max_tokens
@@ -58,10 +59,8 @@ class GigaChatLLM(BaseLLM):
         
         req = urllib.request.Request(url, data=data, headers=headers)
         
-        # Bypass SSL verification for Russian certs if not installed
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+        # Use system trust or an explicitly configured CA bundle; never disable TLS verification.
+        ctx = ssl.create_default_context(cafile=os.getenv("GIGACHAT_CA_BUNDLE") or None)
 
         try:
             with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
@@ -100,14 +99,13 @@ class GigaChatLLM(BaseLLM):
         data = json.dumps(payload).encode('utf-8')
         req = urllib.request.Request(url, data=data, headers=headers)
 
-        # Bypass SSL verification for Russian certs if not installed
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+        # Use system trust or an explicitly configured CA bundle; never disable TLS verification.
+        ctx = ssl.create_default_context(cafile=os.getenv("GIGACHAT_CA_BUNDLE") or None)
 
         try:
             with urllib.request.urlopen(req, context=ctx, timeout=60) as resp:
                 result = json.loads(resp.read().decode("utf-8"))
+                self._record_usage(result.get("usage"))
                 choices = result.get("choices", [])
                 if not choices:
                     return "{}"
@@ -134,9 +132,10 @@ class GigaChatLLM(BaseLLM):
             ),
         )
 
-    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+    async def generate(self, messages: list[dict], tools: Optional[list[dict]] = None) -> str:
         return await asyncio.to_thread(self._call_sync, messages)
 
-    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+    async def generate_result(self, messages: list[dict], tools: Optional[list[dict]] = None) -> ModelResult:
         text = await self.generate(messages, tools)
         return ModelResult(text=text)
+

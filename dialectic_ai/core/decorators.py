@@ -12,6 +12,7 @@ DIALECTICAL DESCRIPTION:
   Own contradictions: Hidden "magic" of class creation under the hood. Supports
     only basic types of arguments.
 """
+import asyncio
 import inspect
 from typing import Callable, Type
 
@@ -54,7 +55,8 @@ def dialectical_tool(
         schema = {
             "type": "object",
             "properties": properties,
-            "required": required
+            "required": required,
+            "additionalProperties": False
         }
         
         class DynamicTool(Tool):
@@ -75,7 +77,7 @@ def dialectical_tool(
                     if inspect.iscoroutinefunction(func):
                         result = await func(**args)
                     else:
-                        result = func(**args)
+                        result = await asyncio.to_thread(func, **args)
                     return Evidence(content=str(result), source=self.name, tool_name=self.name)
                 except Exception as e:
                     return Evidence(content=str(e), source=self.name, tool_name=self.name, success=False, error=str(e))
@@ -97,3 +99,4 @@ def dialectical_tool(
         return DynamicTool
 
     return wrapper
+

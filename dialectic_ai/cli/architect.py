@@ -199,3 +199,4 @@ class DialecticalArchitect(DialecticalObject):
 - **Leap:** {result.leap}
 - **Refined goal (used in the generated agent):** {result.refined_goal}
 """
+

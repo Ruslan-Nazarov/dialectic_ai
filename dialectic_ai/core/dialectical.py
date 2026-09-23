@@ -168,3 +168,4 @@ class DialecticalObject:
                 f"please create an Issue on GitHub."
             )
         return super().__new__(cls)
+

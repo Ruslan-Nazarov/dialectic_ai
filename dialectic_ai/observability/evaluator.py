@@ -11,7 +11,7 @@ DIALECTICAL DESCRIPTION:
     1. Check the dialectical cycle (Generate -> Collide -> Synthesize).
     2. Reality grounding: were tools invoked in case of doubt/code?
     3. Memory enrichment: was the knowledge/memory graph updated?
-    4. Convergence: did the session end with a stable synthesis, not by timeout/max_iterations?
+    4. Convergence: did the session end with a stable completion, not by timeout/max_iterations?
   What it leads to: Quantitative quality metrics for the dashboard and automated benchmarks.
   Own contradictions: Static evaluation rules may penalize the agent for a quick
     trivial response (when a confrontation with reality was objectively unnecessary).
@@ -36,7 +36,7 @@ class EvaluationReport:
     session_id: str
     dialectical_score: float  # 0.0 to 1.0
     reality_grounding_score: float  # 0.0 to 1.0
-    synthesized: bool
+    completed: bool
     iterations_count: int
     memory_updated: bool
     violations: List[str]
@@ -46,7 +46,7 @@ class EvaluationReport:
 
 @dialectical(
     origin="Logs and traces are collected, but without automatic evaluation, it is impossible to judge the quality of adherence to dialectics.",
-    contradiction="The agent may respond plausibly on the surface but bypass reality checks or get stuck without synthesis.",
+    contradiction="The agent may respond plausibly on the surface but bypass reality checks or get stuck without completion.",
     resolves="AgentEvaluator conducts an automatic audit of adherence to the dialectical cycle and calculates metrics.",
     generates="Quantitative quality metrics for the dashboard and automated benchmarks.",
     own_contradictions="Heuristic evaluation may penalize for trivial sessions where reality checks were not required.",
@@ -66,6 +66,8 @@ class AgentEvaluator:
         If session_id is not provided, all available events are analyzed.
         """
         events = self.reader.get_by_session(session_id) if session_id else self.reader.get_all()
+        if any(e.event_type == "run_started" for e in events):
+            return self._evaluate_runtime(events, session_id)
         violations = []
 
         if not events:
@@ -73,7 +75,7 @@ class AgentEvaluator:
                 session_id=session_id or "unknown",
                 dialectical_score=0.0,
                 reality_grounding_score=0.0,
-                synthesized=False,
+                completed=False,
                 iterations_count=0,
                 memory_updated=False,
                 violations=["No events in the trace for analysis"],
@@ -88,6 +90,8 @@ class AgentEvaluator:
 
         collisions = [e for e in events if e.event_type == "collision"]
         syntheses = [e for e in events if e.event_type == "synthesize"]
+        synthesized = len(syntheses) > 0
+        completions = [e for e in events if e.event_type == "completed"]
         errors = [e for e in events if e.event_type in ("parse_error", "tool_error")]
         # Rule 5 (dialectics_rules.md): a finalized response given without opposite_process/
         # contradiction/leap, or one whose claimed leap_type doesn't match what evidence_store
@@ -102,10 +106,10 @@ class AgentEvaluator:
                 f"Tools were invoked ({tool_call_count}), but not all confronted reality ({len(collisions)})"
             )
 
-        # 2. Check synthesis: did the work end with synthesis
-        synthesized = len(syntheses) > 0
-        if not synthesized:
-            violations.append("The cycle ended without synthesis (possibly, the iteration limit was exhausted)")
+        # 2. Check completion: did the work end with completion
+        completed = len(completions) > 0
+        if not completed:
+            violations.append("The cycle ended without completion (possibly, the iteration limit was exhausted)")
 
         # 3. Check memory
         memory_updated = any(
@@ -143,7 +147,7 @@ class AgentEvaluator:
             session_id=session_id or "global",
             dialectical_score=round(score, 2),
             reality_grounding_score=round(grounding, 2),
-            synthesized=synthesized,
+            completed=completed,
             iterations_count=iterations,
             memory_updated=memory_updated,
             violations=violations,
@@ -156,3 +160,37 @@ class AgentEvaluator:
             },
             rule5_violations=len(rule5_events),
         )
+
+
+    def _evaluate_runtime(self, events, session_id):
+        # Never merge several runs into one apparent success. Default to the latest run.
+        run_id = session_id or next(e.data["run_id"] for e in reversed(events) if e.event_type == "run_started")
+        events = [e for e in events if e.data.get("run_id") == run_id]
+        violations, accepted = [], False
+        actions, observations, proposals, rejected = 0, 0, 0, 0
+        for event in events:
+            if event.event_type == "roadmap_accepted":
+                accepted = True
+            if event.event_type == "proposal_committed":
+                proposals += 1
+                move = event.data.get("proposal", {}).get("move_type")
+                if move == "REVISE_WORLD":
+                    accepted = False
+                if move == "PROPOSE_ACTION":
+                    actions += 1
+                    if not accepted:
+                        violations.append("Action occurred without an accepted roadmap")
+            if event.event_type == "observation":
+                observations += 1
+            if event.event_type == "proposal_rejected":
+                rejected += 1
+        completed = bool(events and events[-1].event_type == "run_finished" and events[-1].data.get("status") == "completed")
+        if not completed:
+            violations.append("Run did not complete")
+        if actions != observations:
+            violations.append("Action/observation count mismatch")
+        return EvaluationReport(run_id, float(not violations), observations / actions if actions else 0.0,
+                                completed, proposals + rejected, False, violations,
+                                {"protocol": "world-roadmap", "accepted_roadmaps": sum(e.event_type == "roadmap_accepted" for e in events),
+                                 "actions": actions, "observations": observations, "rejected_proposals": rejected,
+                                 "limitation": "Trace structure only; does not prove semantic correctness or task quality."})

@@ -431,4 +431,56 @@
 - **Contradiction:** Rich visual communication (emojis, status indicators) vs Windows console codepage constraints (`cp1251`/`cp866`).
 - **Leap:** Enforce resilient UTF-8 stream handling with fallback replacement at all framework boundaries, entrypoints, and generated scripts rather than restricting content.
 - **Reality Check:** Full test suite passed: 74 passed, 2 skipped in 2.81s. `test_layer6_creator.py` passes 3/3.
-
+
+
+## [2026-09-18] Stage 3 Migration: Core Runtime Data Model
+
+- **Goal:** Implementing the new state-driven runtime model (Stage 3) representing structural dialectics without breaking the legacy executor baseline.
+- **Implementation:** 
+  1. Implemented dialectic_ai/core/runtime.py with RuntimeState, Proposal, Process, DevelopmentRelation, DialecticalDesignation, Action, Observation, PracticeAssessment, Contradiction, ResolutionRelation, Completion.
+  2. Implemented StructuralValidator, CommitLayer, and AllowedMovesResolver to enforce strict Separation of Concerns (Framework structure vs LLM semantics).
+  3. Added architectural invariant tests in 	ests/test_runtime_v2.py.
+  4. Legacy executor is intact, legacy baseline (124 passed, 8 failed, 2 skipped) is maintained.
+- **Preserved behavior:** Overwriting the old engine (DialecticalEngine.run) prematurely and breaking the current test baseline before the new state invariants are fully proven was avoided.
+- **Validation:** Proved a new rigorous architectural core while the existing tests rely on the old executor parsing JSON.
+- **Result:** A side-by-side implementation of the physics of DialecticAI (Stage 3) independently verified via pure unit tests, preparing for the semantic integration in Stage 4.
+- **Remaining work:** pytest tests/test_runtime_v2.py passes all structural invariants. Legacy test suite passes baseline.
+
+## [2026-09-18] Stage 3.2: Core Runtime Architecture Fixes
+
+- **Goal:** Resolve structural gaps and enforcement leaks identified during Stage 3.1 audit before integrating with LLM and executor.
+- **Implementation:**
+  1. **Multiple-source Development**: Added CONNECT_DEVELOPMENT move type to decouple Process creation from Relation creation, allowing convergence.
+  2. **Provisional Lifecycle**: Replaced global provisional_entity_ids.clear() with a candidate ownership map (provisional_owners), preventing cross-candidate state corruption on assessment.
+  3. **String Validation**: Replaced naive truthiness checks with is_valid_str (strips whitespace) to block empty justifications.
+  4. **Ownership Validation**: Added structural traversal (elongs_to_development_line) for Contradiction branches, checking that simplest_dev_ref_ids strictly belong to the Simplest branch, and similar checks for Completion goal ownership.
+  5. **Encapsulation**: Privatized RuntimeState collections (_processes, etc.) to prevent public dictionary mutation, enforcing all state updates through CommitLayer.
+  6. **Direction Snapshot**: Formalized DirectionSnapshot explicitly decoupling structural AllowedMovesResolver from the contextual active frontier of development.
+  7. **Cross-link & Atomicity**: Fixed ASSESS_PRACTICE cross-observation bug, and deferred state.trace updates to the end of commit block.
+- **Validation:** Wrote 19 new negative and structural tests in 	est_runtime_v2.py.
+- **Result:** Pure runtime test suite expanded to 49 robust tests. pytest tests/test_runtime_v2.py 49 passed. Legacy tests pass unaffected.
+
+
+## 2026-09-19 — Runtime world-roadmap enforcement and audit repairs
+
+- Owner clarification: every task first constructs its full world-roadmap IN THOUGHT,
+  before domain tool use; practice then follows and revises that road. This supersedes
+  the prior interpretation of optional significant-step cycles and forced convergence.
+- Simplest process: derive an actionable task-world from the task's generative process.
+- Development: explicit graph/proposal contracts expose the route to the model; typed
+  transitions bind real actions and observations to accepted roadmap versions.
+- Opposite process: domain practice develops under actual external conditions whether
+  or not the model's envisaged roadmap exists or is accepted.
+- Contradiction: the unity of the envisaged development and independent actual conditions
+  requires retaining both a coherent plan and observations capable of disproving it.
+- Leap: separate construction/acceptance from execution, and planned leaps from assessed
+  realization. Revision preserves earlier maps and binds new actions to a changed map.
+  Budgets stop unfinished work without force-approving or pretending resolution.
+- Audit repairs: fresh run identity/state, bounded malformed-proposal rejection, exact
+  schema and tool-argument validation, no false subagent success, explicit provider routing,
+  verified GigaChat TLS, real runtime snapshots/traces, confined file tools and current docs.
+- Verification: deterministic runtime/engine/API/provider tests and explicit simulation
+  runner. Real provider outcomes and remaining limitations are recorded in VERIFICATION.md.
+- Own contradictions: semantic judges remain fallible; strict structure adds inference
+  cost and does not establish benchmark superiority. Persistent resume and secure remote
+  execution are not implemented. PythonExecutor remains trusted-local-only.

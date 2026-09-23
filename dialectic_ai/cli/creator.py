@@ -3,8 +3,9 @@ Interactive agent creation wizard (CLI Wizard).
 """
 import asyncio
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
+from typing import Optional
 
 # Ensure UTF-8 output encoding across Windows consoles
 for stream_name in ("stdout", "stderr"):
@@ -202,7 +203,7 @@ def generate_agent(
     is_python: bool,
     filename: str,
     force_refine: bool = False,
-    design_log_already_generated: str = None,
+    design_log_already_generated: Optional[str] = None,
     skip_refine: bool = False,
 ) -> tuple[Path, str]:
     """Generates the agent files and returns (filepath, design_log_content)."""
@@ -218,42 +219,21 @@ def generate_agent(
         "goal": goal,
         "tools": selected_tools,
         "llm": llm,
-        "max_iterations": 10
+        "max_iterations": 30
     }
     
     filepath = Path(filename)
     
     if is_python:
         # Generate Python boilerplate
-        imports = []
-        if llm == "gemini":
-            imports.append("from dialectic_ai.integrations.gemini.llm import GeminiLLM")
-        elif llm == "openai":
-            imports.append("from dialectic_ai.integrations.openai.llm import OpenAILLM")
-        elif llm == "gigachat":
-            imports.append("from dialectic_ai.integrations.gigachat.llm import GigaChatLLM")
-        elif llm == "fallback":
-            imports.append("from dialectic_ai.core.llm import FallbackLLM\nfrom dialectic_ai.integrations.gemini.llm import GeminiLLM\nfrom dialectic_ai.integrations.openai.llm import OpenAILLM")
-        else:
-            imports.append("from dialectic_ai.core.llm import MockLLM")
-            
+        imports = ["import os", "from dialectic_ai.integrations.providers import build_llm"]
         tool_imports = ""
         if selected_tools:
             tool_imports = f"from dialectic_ai.cli.config_parser import TOOL_REGISTRY\n\n# Initializing tools\nmy_tools = [TOOL_REGISTRY[t]() for t in {selected_tools}]"
         else:
             tool_imports = "my_tools = []"
             
-        llm_init = ""
-        if llm == "gemini":
-            llm_init = "llm = GeminiLLM()"
-        elif llm == "openai":
-            llm_init = "llm = OpenAILLM()"
-        elif llm == "gigachat":
-            llm_init = "llm = GigaChatLLM()"
-        elif llm == "fallback":
-            llm_init = "llm = FallbackLLM([GeminiLLM(), OpenAILLM()])"
-        else:
-            llm_init = "llm = MockLLM()"
+        llm_init = f"llm = build_llm(os.getenv('DIALECTIC_LLM_OVERRIDE') or {llm!r})"
 
         py_content = f'''import asyncio
 import sys
@@ -276,21 +256,18 @@ except ImportError:
 from dialectic_ai.core.schema import AgentInput
 from dialectic_ai.agent import DialecticalAgent
 from dialectic_ai.engine import DialecticalEngine
-from dialectic_ai.memory.sqlite_graph import SQLiteKnowledgeGraphMemory
 {chr(10).join(imports)}
 
 {tool_imports}
 
 async def main():
-    print("Initializing agent {name}...")
-    
+    print({("Initializing agent " + name + "...")!r})
+
     {llm_init}
-    memory = SQLiteKnowledgeGraphMemory(db_path="{name.lower()}_memory.db")
-    
+
     agent = DialecticalAgent(
-        goal="{goal}",
+        goal={goal!r},
         llm=llm,
-        memory=memory,
         tools=my_tools
     )
     

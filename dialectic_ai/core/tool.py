@@ -83,3 +83,4 @@ class AgentTool(Tool):
     @property
     def category(self) -> str:
         return "Agent"
+

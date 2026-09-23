@@ -1,3 +1,7 @@
+> Current runtime contract (2026-09-19): see [RUNTIME_CONTRACT.md](RUNTIME_CONTRACT.md).
+> The material below is retained as historical context and may describe removed implementations.
+> Active prompts: `engine/prompt.py`, `core/proposal_schema.py`, `core/semantic_validator.py`.
+
 # DialecticAI — Every Prompt in the System, Verbatim
 
 **Date:** 2026-09-15
@@ -275,96 +279,6 @@ Respond with STRICT JSON only, no markdown fences, matching exactly:
 
 ---
 
-## 4. Multi-agent debate prompts — `dialectic_ai/multi/debate.py` (`DialecticalDebateEngine.run_debate`)
-
-Three separate `DialecticalAgent`/`DialecticalEngine` instances, each still gets the *full* core prompt from section 1 (goal + rules + format) — these are **additional** user-message content layered on top, not replacements.
-
-### 4a. Thesis prompt
-```
-Task: {user_topic}
-
-Step 1 (Simplest process): Identify the simplest process connected to this task — one that
-is generative (the full solution can be approached by developing it) and that every part of
-your eventual solution will stay connected back to.
-Step 2 (Development): Develop that simplest process from abstract to concrete — each step
-of your plan should already be contained, in potential form, in the step before it. Use your
-hypothesis.plan_steps for this chain.
-Provide your concrete solution as the final response.
-```
-
-### 4b. Antithesis prompt
-```
-Task: {user_topic}
-
-Do NOT critique any specific existing solution and do NOT propose a mere alternative
-implementation/library/practice for the same need — that is a different, weaker move.
-Instead, find and develop a process that solves or dissolves this task WITHOUT ever needing
-the most obvious, simplest starting process most people would reach for. Your process's own
-development must not require that simplest process to exist at all.
-State in your decision field, in one sentence, which simplest process yours does not need,
-then develop your own process from abstract to concrete and give your solution as the final response.
-```
-
-### 4c. Synthesis prompt
-```
-Task: {user_topic}
-
-Simplest process (Thesis) and its concrete solution:
-- Simplest process: {simplest_process}
-- Solution: {thesis_output.response}
-
-Opposite process (Antithesis) and its concrete solution:
-- Opposite process: {opposite_process}
-- Solution: {antithesis_output.response}
-
-These two, taken together in the unity of their development, are your `contradiction`. Resolve
-it with your `leap`: either a process that replaces both, absorbing what each was developing
-toward into its own development, or a process that makes it possible for both to keep existing
-side by side until a later process replaces them. State your final answer as `response`.
-```
-
-**Note:** the Synthesis role does **not** need any special instruction to produce `contradiction`/`leap`/`leap_type` — those come from the *core* prompt (section 1) that every agent already has. This is a deliberate simplification made 2026-09-14: an earlier version of this file asked Synthesis to prefix its answer with regex-parseable `LEAP: ...` / `CONTRADICTION: ...` lines; that convention was deleted once the core schema carried the same fields natively for every agent, not just this one.
-
----
-
-## 5. Multi-agent triad prompts — `dialectic_ai/multi/triad.py` (`DialecticalTriad.run`)
-
-Only the Antithesis and Synthesis roles get extra prompt text; Thesis just receives the raw task as-is. Updated 2026-09-15 (Refactor Phase 3) to match Debate's rigor — see the note below for what changed and why.
-
-### 5a. Antithesis prompt
-```
-Original task: {task}
-
-Do NOT critique any specific existing solution and do NOT propose a mere alternative
-implementation/library/practice for the same need -- that is a weaker move than what is
-being asked here. Instead, independently develop a process that solves this task WITHOUT
-ever needing the most obvious, standard approach most developers would reach for first.
-Find edge cases, vulnerabilities, and failure modes the obvious approach would miss, and
-develop your own process to address them, from abstract to concrete.
-State in your decision field, in one sentence, which standard/obvious approach yours does
-not need, then give your concrete solution as the final response.
-```
-**History:** until 2026-09-15 this prompt read "propose a contrarian, critical, or alternative approach" — the weaker "alternative practice" framing that `debate.py`'s own docstring and prompt (4b) were written specifically to move past. That was a real inconsistency: `DialecticalTriad`'s own `@dialectical` decorator (`multi/triad.py`) already claimed an opposite process "that does not need the Thesis's specific solution to exist," but the actual prompt sent to the LLM never asked for that — exactly the "says vs. does" pattern this project spent the 2026-09-13/14 entries teaching *agents* not to do, found here in the framework's own source instead. Fixed by porting prompt 4b's wording, adapted to Triad's own purpose (code/artifact quality via edge-case discovery, not open-ended task dissolution).
-
-### 5b. Synthesis prompt
-```
-Original task: {task}
-
-Simplest process (Thesis) and its concrete solution:
-{draft}
-
-Opposite process (Antithesis), independently developed without needing the Thesis's
-approach to exist:
-{critique}
-
-These two, taken together in the unity of their development, are your `contradiction`.
-Resolve it with your `leap`: take what each was developing toward, correct whatever gap
-the opposite process's existence reveals in the simplest process, and provide the ideal,
-final result as your `response`.
-```
-**History:** until 2026-09-15 this called the Antithesis's output a "critique of this solution" — inaccurate, since Antithesis runs in parallel with Thesis (`asyncio.gather`) and never sees its draft, so nothing about it is actually a critique of anything. Renamed to "opposite process" and explicitly named `contradiction`/`leap` as the fields Synthesis should fill, matching Debate's prompt (4c) and the core schema's Rule 5 fields.
-
----
 
 ## 6. Claim validation ("fact-checker") prompt — `dialectic_ai/engine/validator.py` (`ClaimValidator.validate`)
 

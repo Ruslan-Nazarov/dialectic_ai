@@ -89,7 +89,8 @@ class SubAgentTool(AgentTool):
                 source=self.name,
                 content=output.response,
                 tool_name=self.name,
-                success=True,
+                success=output.status == "completed",
+                error=None if output.status == "completed" else f"{output.stop_reason}: {output.response}",
             )
         except Exception as e:
             return Evidence(
@@ -100,3 +101,4 @@ class SubAgentTool(AgentTool):
                 success=False,
                 error=f"Error executing the sub-agent: {str(e)}",
             )
+

@@ -8,6 +8,7 @@ from dialectic_ai.core.dialectical import dialectical
 from dialectic_ai.core.llm import BaseLLM
 from dialectic_ai.core.retry import RetryableError, retry_call
 from dialectic_ai.core.schema import ModelResult, ModelToolCall, ModelUsage
+from typing import Optional
 
 _RETRYABLE_HTTP_CODES = {429, 500, 502, 503, 504}
 
@@ -29,32 +30,21 @@ class OpenAILLM(BaseLLM):
 
     def __init__(
         self,
-        api_key: str = None,
-        base_url: str = None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
         model: str = "gpt-4o-mini",
         max_tokens: int = 4096,
         timeout: int = 60,
         max_retries: int = 3,
     ):
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY", "")
+        self.api_key = api_key if api_key is not None else os.getenv("OPENAI_API_KEY", "")
         self.base_url = (base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")).rstrip("/")
         self.model = model
         self.max_tokens = max_tokens
         self.timeout = timeout
         self.max_retries = max_retries
 
-        # Fallbacks for other providers if OPENAI_API_KEY is not set
-        if not self.api_key:
-            if os.getenv("GROQ_API_KEY"):
-                self.api_key = os.getenv("GROQ_API_KEY")
-                self.base_url = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
-                self.model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
-            elif os.getenv("OPENROUTER_API_KEY"):
-                self.api_key = os.getenv("OPENROUTER_API_KEY")
-                self.base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
-                self.model = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct")
-
-    def _build_request(self, messages: list[dict], tools: list[dict] = None) -> urllib.request.Request:
+    def _build_request(self, messages: list[dict], tools: Optional[list[dict]] = None) -> urllib.request.Request:
         url = f"{self.base_url}/chat/completions"
         payload = {
             "model": self.model,
@@ -101,9 +91,10 @@ class OpenAILLM(BaseLLM):
             ),
         )
 
-    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+    async def generate(self, messages: list[dict], tools: Optional[list[dict]] = None) -> str:
         req = self._build_request(messages, tools)
         result = await asyncio.to_thread(self._call_sync, req)
+        self._record_usage(result.get("usage"))
         message = result["choices"][0]["message"]
 
         if "tool_calls" in message:
@@ -120,18 +111,13 @@ class OpenAILLM(BaseLLM):
             })
         return message.get("content", "{}")
 
-    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+    async def generate_result(self, messages: list[dict], tools: Optional[list[dict]] = None) -> ModelResult:
         req = self._build_request(messages, tools)
         result = await asyncio.to_thread(self._call_sync, req)
         message = result["choices"][0]["message"]
 
-        usage = None
-        if "usage" in result:
-            usage = ModelUsage(
-                prompt_tokens=result["usage"].get("prompt_tokens", 0),
-                completion_tokens=result["usage"].get("completion_tokens", 0),
-                total_tokens=result["usage"].get("total_tokens", 0)
-            )
+        usage = self._record_usage(result.get("usage"))
+        if usage:
             print(f"[LLM] Call Usage: {usage.prompt_tokens} input, {usage.completion_tokens} output, {usage.total_tokens} total tokens.")
 
         if "tool_calls" in message:
@@ -146,3 +132,4 @@ class OpenAILLM(BaseLLM):
             return ModelResult(tool_calls=tool_calls, usage=usage)
 
         return ModelResult(text=message.get("content", ""), usage=usage)
+

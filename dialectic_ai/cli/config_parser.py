@@ -35,23 +35,17 @@ def load_agent_from_config(config_path: str) -> DialecticalAgent:
             
     # 1. Load LLM
     llm_name = config.get("llm", "mock").lower()
-    if llm_name in ("fallback", "auto"):
-        llm = FallbackLLM([GeminiLLM(), OpenAILLM()])
-    elif llm_name == "gemini":
-        llm = GeminiLLM()
-    elif llm_name == "openai":
-        llm = OpenAILLM()
-    elif llm_name == "gigachat":
-        llm = GigaChatLLM()
-    else:
-        llm = MockLLM()
-        
+    from dialectic_ai.integrations.providers import build_llm
+    llm = build_llm(llm_name)
+
     # 2. Load tools (Reality Checks)
     tools = []
     for tool_name in config.get("tools", []):
         tool_class = TOOL_REGISTRY.get(tool_name.lower())
         if not tool_class:
             raise ValueError(f"Unknown tool: '{tool_name}'. Available: {list(TOOL_REGISTRY.keys())}")
+        if tool_name == "web_search" and llm_name != "mock":
+            raise ValueError("web_search is a mock; use fetch_url for real pages")
         tools.append(tool_class())
         
     # 3. Assemble the agent

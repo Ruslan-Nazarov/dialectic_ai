@@ -1,3 +1,7 @@
+> Current runtime contract (2026-09-19): see [RUNTIME_CONTRACT.md](RUNTIME_CONTRACT.md).
+> The material below is retained as historical context and may describe removed implementations.
+> Active prompts: `engine/prompt.py`, `core/proposal_schema.py`, `core/semantic_validator.py`.
+
 # HANDOFF — Start Here
 
 **Date:** 2026-09-16

@@ -1,3 +1,5 @@
+> Runtime clarification from the owner, 2026-09-19: EVERY task first constructs a complete world-roadmap in thought, through both developments, contradiction and planned leap, before any domain tool executes. Practice then tests and can revise that roadmap. This supersedes the runtime interpretation of the significant-step threshold below; see RUNTIME_CONTRACT.md.
+
 # Dialectical Construction of AI Agents: Rules and Practices
 
 In this document, we gather the principles, rules of inference, and best practices for building AI agents using the dialectical method. The document is supplemented as we communicate and learn.
@@ -18,9 +20,7 @@ In this document, we gather the principles, rules of inference, and best practic
 2. **Confrontation with the World (Practice and Correction):** Each significant step of development must be immediately checked against reality (launch, simulation). 
    - *Integration of Best Practices:* As soon as the confrontation with reality reveals a problem or failure, we address it while simultaneously aligning with the "best practices" from the industry. We critically evaluate these practices and consciously decide whether to apply them to solve our problem or not.
 
-3. **Evaluation of the Transition Itself (Reflection on the Leap):** When transitioning to a fundamentally new architectural step (for example, from interaction logic to Memory architecture), it is necessary to pause and evaluate *the very nature of this transition*. Is this transition actually being made? What external practices and paradigms exist for this stage? We validate not only the code but also the direction of our thought.
-
-4. **Development Memory (Keeping a Log):** Development must have its own continuous memory. From the first step, a lightweight log of architectural decisions is maintained. When starting each new step, it is necessary to refer not only to these rules of dialectics but also to the development log, to align the current vector with the history of previous steps.
+3. **Evaluation of the Transition Itself:** When transitioning to a fundamentally new architectural step (for example, from interaction logic to Memory architecture), it is necessary to pause and evaluate *the very nature of this transition*. Is this transition actually being made? What external practices and paradigms exist for this stage? We validate not only the code but also the direction of our thought.
 
 5. **Driving to Contradiction (Simplest → Development → Opposite → Contradiction → Leap):** For *significant* steps (the same threshold as Rule 3 — a fundamentally new architectural step, not routine work), development must be pushed all the way to an explicit contradiction and its resolution, not stopped at "a problem and a fix."
    - **Simplest process:** the process that is (a) connected to the task at hand, (b) generative — the full set of developing processes can be approached starting from it, and (c) such that every developing process it generates is itself connected back to it.

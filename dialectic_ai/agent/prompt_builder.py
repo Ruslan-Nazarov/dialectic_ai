@@ -15,7 +15,7 @@ DIALECTICAL DESCRIPTION:
   Own contradictions: The prompt grows along with the memory. With a large knowledge graph,
     it may exceed the model's context window. A compression strategy is needed.
 """
-from dialectic_ai.memory.base import BaseMemory
+from typing import Optional
 
 _AGENT_DIALECTICAL_RULES = """
 ## How you should think (mandatory dialectical procedure, not a suggestion)
@@ -205,8 +205,7 @@ FORMAT_INSTRUCTION = FORMAT_INSTRUCTION_DIALECTIC_JSON
 
 def build_system_prompt(
     goal: str,
-    memory: BaseMemory,
-    tools: list = None,
+    tools: Optional[list] = None,
     tool_calling_mode: Literal["dialectic_json", "native"] = "dialectic_json",
     native_tool_calling: Optional[bool] = None,
 ) -> str:
@@ -244,13 +243,9 @@ def build_system_prompt(
     else:
         raise ValueError(f"Unknown tool_calling_mode: '{tool_calling_mode}'. Must be 'dialectic_json' or 'native'.")
 
-    memory_context = memory.get_context()
-
     return f"""# Your goal
 {goal}
 
 {_DIALECTICAL_RULES_MD}
 {format_instruction}{tools_section}
-## Current state of memory
-{memory_context}
 """

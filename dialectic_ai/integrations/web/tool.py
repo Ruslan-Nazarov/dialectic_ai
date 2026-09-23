@@ -5,6 +5,7 @@ Reality Check Tool: Reading web pages.
 Demonstrates how easy it is to extend the framework with new capabilities.
 """
 import asyncio
+import urllib.parse
 import urllib.error
 import urllib.request
 import uuid
@@ -34,7 +35,7 @@ class WebFetchCheck(ObservationTool):
 
     @property
     def description(self) -> str:
-        return "Downloads the textual content from the specified URL. Use to search for information on the web."
+        return "Downloads the textual content from the specified URL. Requires a known URL; this tool is not a search engine."
 
     @property
     def category(self) -> str:
@@ -54,6 +55,8 @@ class WebFetchCheck(ObservationTool):
 
     async def execute(self, args: dict) -> Evidence:
         url = args.get("url", "")
+        if urllib.parse.urlsplit(url).scheme not in ("http", "https"):
+            return Evidence(source=self.name, tool_name=self.name, content="", success=False, error="Only http/https URLs are allowed")
         if not url:
             return Evidence(
                 id=str(uuid.uuid4()),
@@ -76,7 +79,7 @@ class WebFetchCheck(ObservationTool):
                 headers={'User-Agent': 'Mozilla/5.0 DialecticAI/1.0'}
             )
             with urllib.request.urlopen(req, timeout=10) as response:
-                content = response.read().decode('utf-8', errors='ignore')
+                content = response.read(100_001).decode('utf-8', errors='ignore')
                 return content[:5000] + ("\n...[TRUNCATED]" if len(content) > 5000 else "")
 
         try:

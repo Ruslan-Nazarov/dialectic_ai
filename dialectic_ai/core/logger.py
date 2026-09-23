@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from dialectic_ai.core.dialectical import dialectical
+from typing import Optional
 
 
 @dialectical(
@@ -42,7 +43,7 @@ class DevelopmentLogger:
         self.log_path = Path(log_path)
         self.trace_path = Path(trace_path)
 
-    async def log_step(self, step_name: str, description: str, layer: int = None) -> None:
+    async def log_step(self, step_name: str, description: str, layer: Optional[int] = None) -> None:
         """Logs an architectural step in development_log.md."""
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         layer_info = f" (Layer {layer})" if layer is not None else ""
@@ -67,7 +68,7 @@ class DevelopmentLogger:
                 f.write(json.dumps(event, ensure_ascii=False) + "\n")
         await asyncio.to_thread(_write)
 
-    async def log_collision(self, tool_name: str, success: bool, output: str, session_id: str = None) -> None:
+    async def log_collision(self, tool_name: str, success: bool, output: str, session_id: Optional[str] = None) -> None:
         """Logs the result of a collision with reality (Rule 2)."""
         data = {
             "tool": tool_name,
@@ -92,3 +93,4 @@ class DevelopmentLogger:
             print(f"\n  [Layer {meta.layer}] {meta.name}")
             print(f"    ➡ Generates: {meta.generates[:80]}...")
         print(f"\n{'='*60}\n")
+

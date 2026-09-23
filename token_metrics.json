@@ -1,20 +1,26 @@
 {
-  "prompt_tokens": 1949143,
-  "completion_tokens": 1097155,
-  "total_tokens": 3046298,
-  "total_calls": 6096,
+  "prompt_tokens": 114549,
+  "completion_tokens": 5841,
+  "total_tokens": 120390,
+  "total_calls": 553,
   "by_provider": {
     "gigachat": {
-      "prompt_tokens": 1949129,
-      "completion_tokens": 1096993,
-      "total_tokens": 3046122,
-      "calls": 6094
+      "prompt_tokens": 114549,
+      "completion_tokens": 5841,
+      "total_tokens": 120390,
+      "calls": 45,
+      "exact_calls": 45
     },
     "mock": {
-      "prompt_tokens": 14,
-      "completion_tokens": 162,
-      "total_tokens": 176,
-      "calls": 2
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "calls": 508,
+      "exact_calls": 508,
+      "estimated_calls": 0
     }
-  }
+  },
+  "exact_calls": 553,
+  "estimated": false,
+  "last_updated": "2026-09-22T16:46:46.838469+00:00"
 }

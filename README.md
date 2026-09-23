@@ -1,52 +1,87 @@
-# DialecticAI 0.1 🧠⚡
+# DialecticAI — Runtime V2
 
-DialecticAI is an architectural framework for building predictable, philosophical, and truly cognitive Multi-Agent systems. It is built strictly on the principles of **Dialectics** (Thesis -> Antithesis -> Synthesis).
+An experimental agent runtime with an enforced dialectical **world-roadmap**.
+First the model derives a simplest process, its development, an independently developing
+opposite, their contradiction and a proposed leap. Only an accepted complete roadmap
+permits tool execution. Practice can require revising the roadmap.
 
-Unlike LangChain or other "Lego block" frameworks that let you write spaghetti code, **DialecticAI forces you to think**. 
+Read [RUNTIME_CONTRACT.md](RUNTIME_CONTRACT.md) for the authoritative current contract,
+validation boundary and distinction between a planned and realized leap.
 
-![Dialectical Cycle](https://img.shields.io/badge/Architecture-Strict-red)
-![Version](https://img.shields.io/badge/version-0.1-blue)
-![Python](https://img.shields.io/badge/python-3.10+-success)
+## Install (Python 3.10+)
 
-## Why DialecticAI? (The Problem with LangChain)
-Most agent frameworks are just infinite `while` loops with tool calls. They are prone to sycophancy (LLMs agreeing with themselves), hallucinations, and endless loops. 
-DialecticAI solves this on an architectural level:
-1. **Generative Beginning (Rule 1)**: Every Component (Agent, Tool, Memory) must explicitly declare its dialectical *contradiction* and how it *resolves* it via the `@dialectical` decorator. If you don't, **the code will crash at runtime**. We enforce architecture at the interpreter level.
-2. **Collision with Reality (Rule 3)**: Agents cannot just output "thoughts". They are forced by the `DialecticalEngine` to verify their assumptions against tools.
-3. **Sublation (Synthesis)**: All conflicts are resolved into a higher-order truth.
-
-## Features 🔥
-- 🛠️ **`@dialectical_tool`**: Create strict tools from simple Python functions with auto-schema generation, just like LangChain, but with philosophical enforcement.
-- 🧠 **Knowledge Graph Memory**: Stop overflowing your context window with Chat History buffers! Our `SQLiteKnowledgeGraphMemory` stores user concepts in a SQLite Database for O(1) retrieval and infinite agent lifespan.
-- 🗣️ **Dialectical Debate Engine**: Multi-agent orchestration where Agent A (Thesis) argues with Agent B (Antithesis), and Agent C (Synthesis) resolves the conflict. This completely destroys LLM sycophancy.
-- 📊 **Observability Dashboard (Layer 5)**: Real-time `vis.js` visualization of your Agent's Knowledge Graph and Thought Traces.
-
-## Getting Started
-```bash
-git clone https://github.com/your-username/DialecticAI.git
-cd DialecticAI
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev,dashboard]"
 ```
 
-### Create a Tool
-```python
-from dialectic_ai.core.decorators import dialectical_tool
+On Linux/macOS activate with `source .venv/bin/activate`.
+Copy `.env.example` to `.env` and configure only the provider you use. Never commit keys.
 
-@dialectical_tool(
-    origin="Agent is blind to current events",
-    contradiction="LLM hallucinates facts without internet access",
-    resolves="Provides live DuckDuckGo web search"
-)
-def search_web(query: str) -> str:
-    """Searches the internet for the query."""
-    return f"Search results for {query}..."
+## Verify without network calls
+
+```powershell
+python -m pytest -q
+python -m tests.local_runner
+```
+
+The local runner is an explicit simulation, not a real answer to a task.
+
+## Run a real agent
+
+```json
+{"name":"Calculator","goal":"Compute accurately and verify using Python.","llm":"groq","tools":["python_executor"],"max_iterations":30}
+```
+
+Save as `calculator.json`, configure `GROQ_API_KEY` and `GROQ_MODEL` for a model available to your account, then:
+
+```powershell
+python -m dialectic_ai run calculator.json
+```
+
+Example input: `Calculate 17 * 23 and verify the result with Python.` Each run first
+constructs its roadmap, then acts. This spends inference quota and can reject proposals
+or stop without completion. PythonExecutor is for trusted local use only.
+
+**Verified working combination (2026-09-19):** actor `gigachat` with `GIGACHAT_MODEL=GigaChat-2-Max`
+(the free base `GigaChat` model is noticeably less reliable at the strict JSON contract over a
+long run). The semantic judge is auto-selected to a *different* provider than the actor — Groq
+is excluded from judging (a point-test caught it false-rejecting a valid proposal), so configure
+at least one of Gemini/Cerebras/OpenAI alongside your actor for real semantic validation instead
+of a same-provider self-judgment fallback. See `.env.example`.
+
+Opt-in end-to-end real-provider check (up to 25 iterations, 480 seconds):
+
+```powershell
+$env:DIALECTIC_RUN_CANARY="1"
+$env:DIALECTIC_CANARY_PROVIDER="gigachat"
+python -m pytest tests/test_canary_real_provider.py -v
 ```
 
 ## Dashboard
-Run the built-in observability server to watch your agent's brain in real-time:
-```bash
-python -m dialectic_observability.server
+
+```powershell
+python -m dialectic_ai.api.server
 ```
-Then open `http://localhost:8000` to see the live Knowledge Graph.
+
+In another terminal:
+
+```powershell
+cd dashboard
+npm ci
+npm run dev
+```
+
+Open the Vite address printed in the terminal. Backend defaults to `127.0.0.1:8123`.
+`VITE_API_BASE` overrides the frontend API URL. Choose Mock for simulation; real-provider
+runs expose `fetch_url`, which fetches supplied URLs and is not a search engine.
+
+## Evidence and limitations
+
+`trace.jsonl` records roadmap versions, decisions and observations.
+`python -m dialectic_ai eval --trace trace.jsonl` checks the latest run's trace structure.
+Live dashboard state is in memory. Automatic resume, multi-user authentication and
+conversational memory are not implemented. Semantic validation is enabled for real
+models, but is still an LLM judgment. No superiority or benchmark accuracy is claimed.
+Historical documents may describe removed code; use RUNTIME_CONTRACT.md for current behavior.

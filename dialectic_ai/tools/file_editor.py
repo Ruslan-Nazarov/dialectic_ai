@@ -1,32 +1,31 @@
+"""File tools confined to an explicitly configured workspace."""
 import os
-
+from pathlib import Path
 from dialectic_ai.core.decorators import dialectical_tool
 
 
-@dialectical_tool(
-    origin="The agent could only talk but could not save artifacts",
-    contradiction="The developer had to manually copy code from the chat into files",
-    resolves="Allows the agent to directly read the local file system",
-)
-def read_file(path: str) -> str:
-    """Reads the contents of a file at the specified path."""
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
-    except Exception as e:
-        return f"File reading error: {str(e)}"
+def workspace_path(path: str) -> Path:
+    root = Path(os.getenv("DIALECTIC_WORKSPACE", "agent_workspace")).resolve()
+    target = (root / path).resolve()
+    if not target.is_relative_to(root):
+        raise ValueError("Path escapes DIALECTIC_WORKSPACE")
+    if any(part.startswith(".") for part in target.relative_to(root).parts):
+        raise ValueError("Hidden configuration files are outside the file tool contract")
+    return target
 
-@dialectical_tool(
-    origin="The agent could only talk but could not save artifacts",
-    contradiction="The developer had to manually copy code from the chat into files",
-    resolves="Allows the agent to directly edit the local file system",
-)
+
+@dialectical_tool(origin="Agent needs artifacts", contradiction="Text alone cannot access artifacts",
+                  resolves="Read a file within the configured workspace")
+def read_file(path: str) -> str:
+    """Read a UTF-8 file relative to DIALECTIC_WORKSPACE (default agent_workspace)."""
+    return workspace_path(path).read_text(encoding="utf-8")
+
+
+@dialectical_tool(origin="Agent needs artifacts", contradiction="Text alone cannot persist artifacts",
+                  resolves="Write a file within the configured workspace")
 def write_file(path: str, content: str) -> str:
-    """Writes content to a file at the specified path."""
-    try:
-        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(content)
-        return f"File {path} successfully saved."
-    except Exception as e:
-        return f"File writing error: {str(e)}"
+    """Write a UTF-8 file relative to DIALECTIC_WORKSPACE (default agent_workspace)."""
+    target = workspace_path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding="utf-8")
+    return f"Saved {path}"

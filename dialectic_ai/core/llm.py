@@ -15,43 +15,42 @@ DIALECTICAL DESCRIPTION:
     providers (function calling, vision, embeddings). Interface extensions
     or specialized subclasses are needed.
 """
+import json
+import re
 import time
 from abc import ABC, abstractmethod
 
 from dialectic_ai.core.dialectical import DialecticalObject, dialectical
-from dialectic_ai.core.schema import ModelResult
+from dialectic_ai.core.schema import ModelResult, ModelToolCall, ModelUsage
+from typing import Optional
 
 
 class BaseLLM(ABC, DialecticalObject):
     """Abstraction over any language model."""
     supports_native_tool_calling: bool = False
 
-    def __new__(cls, *args, **kwargs):
-        import os
-        override = os.getenv("DIALECTIC_LLM_OVERRIDE", "").lower().strip()
-        if override and not getattr(cls, "_in_override", False):
-            try:
-                cls._in_override = True
-                if override == "gemini" and cls.__name__ != "GeminiLLM":
-                    from dialectic_ai.integrations.gemini.llm import GeminiLLM
-                    return GeminiLLM()
-                elif override == "gigachat" and cls.__name__ != "GigaChatLLM":
-                    from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
-                    return GigaChatLLM()
-                elif override in ("openai", "groq", "openrouter", "cerebras") and cls.__name__ != "OpenAILLM":
-                    from dialectic_ai.integrations.openai.llm import OpenAILLM
-                    return OpenAILLM()
-                elif override == "mock" and cls.__name__ != "MockLLM":
-                    from dialectic_ai.core.llm import MockLLM
-                    return MockLLM()
-            except Exception:
-                pass
-            finally:
-                cls._in_override = False
-        return super().__new__(cls)
+    def set_usage_callback(self, provider: str, callback) -> None:
+        """Attach an optional per-response usage sink without coupling providers to the API."""
+        self._usage_provider = provider
+        self._usage_callback = callback
+
+    def _record_usage(self, usage: Optional[dict]) -> Optional[ModelUsage]:
+        if not usage:
+            return None
+        parsed = ModelUsage(
+            prompt_tokens=int(usage.get("prompt_tokens", usage.get("promptTokenCount", 0)) or 0),
+            completion_tokens=int(usage.get("completion_tokens", usage.get("candidatesTokenCount", 0)) or 0),
+            total_tokens=int(usage.get("total_tokens", usage.get("totalTokenCount", 0)) or 0),
+        )
+        if not parsed.total_tokens:
+            parsed.total_tokens = parsed.prompt_tokens + parsed.completion_tokens
+        callback = getattr(self, "_usage_callback", None)
+        if callback:
+            callback(getattr(self, "_usage_provider", self.__class__.__name__.lower()), parsed)
+        return parsed
 
     @abstractmethod
-    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+    async def generate(self, messages: list[dict], tools: Optional[list[dict]] = None) -> str:
         """
         Generates a response based on the message history.
 
@@ -63,7 +62,7 @@ class BaseLLM(ABC, DialecticalObject):
         """
         ...
 
-    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+    async def generate_result(self, messages: list[dict], tools: Optional[list[dict]] = None) -> ModelResult:
         """
         Generates a structured result from the language model, including text and native tool calls.
         
@@ -76,6 +75,9 @@ class BaseLLM(ABC, DialecticalObject):
         """
         text = await self.generate(messages, tools)
         return ModelResult(text=text)
+
+
+_UUID = r"[0-9a-fA-F-]{36}"
 
 
 @dialectical(
@@ -92,27 +94,124 @@ class MockLLM(BaseLLM):
     """
     Test LLM with predefined responses.
     Used during development and in unit tests.
+
+    When no `responses` are given, it drives an "autopilot": a deterministic
+    walk through the full dialectical cycle (Simplest -> Development ->
+    Action/Observation -> Opposite -> Contradiction -> Leap -> Complete),
+    read straight out of the rendered Runtime V2 state summary in the prompt.
+    This lets the dashboard demonstrate the whole mechanism with zero API
+    keys and zero token cost.
     """
 
-    def __init__(self, responses: list[str] = None):
+    def __init__(self, responses: Optional[list[str]] = None):
         """
         Args:
             responses: Queue of responses. Returned one at a time for each call.
                        After exhaustion — returns the last response.
+                       If omitted, the autopilot described above is used instead.
         """
-        self._responses = responses or [
-            '{"thought": "MockLLM: analyzing the request", "tool_calls": [], "response": "This is the response from MockLLM."}'
-        ]
+        self._responses = responses
         self._index = 0
+        self._autopilot_step = 0
 
-    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
-        response = self._responses[min(self._index, len(self._responses) - 1)]
-        self._index += 1
-        return response
+    async def generate(self, messages: list[dict], tools: Optional[list[dict]] = None) -> str:
+        self._record_usage({"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
+        if self._responses:
+            response = self._responses[min(self._index, len(self._responses) - 1)]
+            self._index += 1
+            return response
 
-    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+        prompt = messages[-1]["content"] if messages else ""
+        proposal = self._autopilot_proposal(prompt)
+        return json.dumps(proposal, ensure_ascii=False)
+
+    async def generate_result(self, messages: list[dict], tools: Optional[list[dict]] = None) -> ModelResult:
         text = await self.generate(messages, tools)
-        return ModelResult(text=text)
+        try:
+            args = json.loads(text)
+        except json.JSONDecodeError:
+            args = None
+        tool_calls = [ModelToolCall(name="submit_proposal", arguments=args)] if args else []
+        return ModelResult(text=text, tool_calls=tool_calls)
+
+    @staticmethod
+    def _section(prompt: str, header: str) -> str:
+        """Returns just the text of one '<Header>:\\n...' block, up to the next blank-line-separated block."""
+        idx = prompt.find(header)
+        if idx == -1:
+            return ""
+        rest = prompt[idx + len(header):]
+        end = rest.find("\n\n")
+        return rest if end == -1 else rest[:end]
+
+    def _autopilot_proposal(self, prompt: str) -> dict:
+        """Explicit simulation of the protocol, not a solution of the user's task."""
+        try:
+            data = json.loads(prompt.split("RUNTIME_JSON:\n", 1)[1].split("\nEND_RUNTIME_JSON", 1)[0])
+        except (IndexError, json.JSONDecodeError):
+            return {}
+        def move(name, payload):
+            return {"move_type": name, "payload": payload,
+                    "why_this_move_now": "[SIMULATION] deterministic protocol example",
+                    "expected_goal_contribution": "[SIMULATION] exercise structure, not task quality"}
+        def develop(pid):
+            return move("DEVELOP_PROCESS", {"source_process_id": pid, "emergent_content": "[SIMULATION] Concrete development",
+                "potential_containment": "[SIMULATION] source potential", "emergence": "[SIMULATION] emergence",
+                "concretization": "[SIMULATION] more concrete", "new_content": "[SIMULATION] new determination"})
+        designations = data['designations']
+        candidates = [d for d in designations if d['role'] == 'candidate_simplest']
+        simplest = next((d for d in designations if d['role'] == 'simplest'), None)
+        if candidates:
+            return move('ASSESS_SIMPLEST', {'candidate_simplest_id': candidates[-1]['id'], 'approved': True})
+        if not simplest:
+            return move('PROPOSE_SIMPLEST', {'content': '[SIMULATION] Task-derived simplest process'})
+        development = data['development']
+        sdev = next((r for r in development if r['source_process_id'] == simplest['process_id']), None)
+        if not sdev:
+            return develop(simplest['process_id'])
+        opposite = next((d for d in designations if d['role'] == 'opposite'), None)
+        if not opposite:
+            return move('DESIGNATE_OPPOSITE', {'simplest_id': simplest['id'], 'context_id': sdev['id'],
+                 'content': '[SIMULATION] Independently developing process',
+                 'justification': '[SIMULATION] Development does not require the simplest process'})
+        odev = next((r for r in development if r['source_process_id'] == opposite['process_id']), None)
+        if not odev:
+            return develop(opposite['process_id'])
+        if not data['contradictions']:
+            return move('ESTABLISH_CONTRADICTION', {'simplest_id': simplest['id'], 'opposite_id': opposite['id'],
+                'simplest_dev_ref_ids': [sdev['id']], 'opposite_dev_ref_ids': [odev['id']],
+                'unity_justification': '[SIMULATION] Unity of both developments',
+                'developing_unity_description': '[SIMULATION] Their developing unity'})
+        if not data['resolutions']:
+            return move('PROPOSE_LEAP', {'contradiction_id': data['contradictions'][0]['id'],
+                'resolution_content': '[SIMULATION] Resolution from the unity of both processes', 'resolution_outcome': 'replacement'})
+        resolution = data['resolutions'][-1]
+        if data['phase'] == 'planning':
+            return move('BEGIN_EXECUTION', {'simplest_id': simplest['id'],
+                'contradiction_ids': [data['contradictions'][0]['id']], 'resolution_ids': [resolution['id']],
+                'execution_process_ids': [sdev['emergent_process_id'], resolution['resolution_process_id']]})
+        roadmap = data['roadmaps'][-1]
+        data['actions'] = [a for a in data['actions'] if a['roadmap_id'] == roadmap['id']]
+        action_ids = {a['id'] for a in data['actions']}
+        data['observations'] = [o for o in data['observations'] if o['action_id'] in action_ids]
+        data['practice'] = [pa for pa in data['practice'] if pa['action_id'] in action_ids]
+        if not data['actions']:
+            return move('PROPOSE_ACTION', {'tool_name': 'web_search', 'args': {'query': '[SIMULATION] example'},
+                'origin_ref': {'type': 'Process', 'id': roadmap['execution_process_ids'][0]},
+                'why_now': 'Exercise practice', 'purpose': 'Simulate observation', 'expectation': 'Explicit mock output',
+                'relation_to_goal': 'Test protocol only'})
+        if not data['practice']:
+            obs = data['observations'][-1]
+            return move('ASSESS_PRACTICE', {'action_id': obs['action_id'], 'observation_id': obs['id'],
+                'expected_actual_relation': 'confirmed' if obs['success'] else 'inconclusive',
+                'explanation': '[SIMULATION] Check tool execution only', 'consequence_for_development': 'Assess simulated leap'})
+        if not resolution['confirmed_roadmap_id']:
+            return move('ASSESS_LEAP', {'resolution_id': resolution['id'],
+                'observation_ids': [data['observations'][-1]['id']], 'explanation': '[SIMULATION] Protocol assessment only'})
+        return move('COMPLETE', {'final_response': '[SIMULATION] Roadmap protocol completed. This is not an answer to the task.',
+            'committed_development_refs': [{'type': 'Process', 'id': resolution['resolution_process_id']}],
+            'evidence_observation_ids': [data['observations'][-1]['id']], 'goal_coverage': 'Simulation only',
+            'why_further_development_not_needed': 'Protocol example finished'})
 
 
 import warnings
@@ -150,7 +249,7 @@ class FallbackLLM(BaseLLM):
             raise ValueError("FallbackLLM requires at least one provider")
         self.providers = providers
 
-    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+    async def generate(self, messages: list[dict], tools: Optional[list[dict]] = None) -> str:
         last_error = None
         for i, provider in enumerate(self.providers):
             provider_name = provider.__class__.__name__
@@ -165,7 +264,7 @@ class FallbackLLM(BaseLLM):
         # If no provider worked
         raise RuntimeError(f"All {len(self.providers)} LLM providers are unavailable. Last error: {last_error}")
 
-    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+    async def generate_result(self, messages: list[dict], tools: Optional[list[dict]] = None) -> ModelResult:
         last_error = None
         for i, provider in enumerate(self.providers):
             provider_name = provider.__class__.__name__
@@ -236,7 +335,7 @@ class BalancingLLM(BaseLLM):
         if not self.providers:
             raise RuntimeError("All LLM providers are unavailable. Please check your .env config.")
 
-    async def _call_with_balancing(self, method_name: str, messages: list[dict], tools: list[dict] = None):
+    async def _call_with_balancing(self, method_name: str, messages: list[dict], tools: Optional[list[dict]] = None):
         last_error = None
         available = self._available_providers()
         for _ in range(len(available)):
@@ -261,8 +360,9 @@ class BalancingLLM(BaseLLM):
                 continue
         raise RuntimeError(f"All providers failed in BalancingLLM. Last error: {last_error}")
 
-    async def generate(self, messages: list[dict], tools: list[dict] = None) -> str:
+    async def generate(self, messages: list[dict], tools: Optional[list[dict]] = None) -> str:
         return await self._call_with_balancing("generate", messages, tools)
 
-    async def generate_result(self, messages: list[dict], tools: list[dict] = None) -> ModelResult:
+    async def generate_result(self, messages: list[dict], tools: Optional[list[dict]] = None) -> ModelResult:
         return await self._call_with_balancing("generate_result", messages, tools)
+

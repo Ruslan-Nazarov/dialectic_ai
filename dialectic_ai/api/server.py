@@ -1,12 +1,15 @@
-import uvicorn
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Optional
-import uuid
 import json
 import os
 import sys
+import uuid
+from datetime import datetime, timezone
+from threading import Lock
+from typing import List, Optional
+
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
 # Ensure UTF-8 output encoding across Windows consoles
 for stream_name in ("stdout", "stderr"):
@@ -22,8 +25,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from dialectic_ai.cli.creator import generate_agent
 from dialectic_ai.cli.config_parser import TOOL_REGISTRY
+from dialectic_ai.cli.creator import generate_agent
 
 app = FastAPI(title="Dialectic AI Dashboard API")
 
@@ -64,6 +67,10 @@ class TokenMetrics(BaseModel):
     completion_tokens: int = 0
     total_tokens: int = 0
     total_calls: int = 0
+    estimated: bool = True
+    exact_calls: int = 0
+    estimated_calls: int = 0
+    last_updated: Optional[str] = None
     by_provider: dict = {}
 
 class ProviderInfo(BaseModel):
@@ -95,7 +102,23 @@ class ProposalRequest(BaseModel):
 class ProposalResponse(BaseModel):
     proposal: str
 
+class RunRequest(BaseModel):
+    agent_goal: str = Field(min_length=1, max_length=10000)
+    task: str = Field(min_length=1, max_length=10000)
+    provider: str = "mock"
+
+class RunResponse(BaseModel):
+    run_id: str
+
+class RunListResponse(BaseModel):
+    runs: List[dict]
+
 METRICS_FILE = os.path.join(PROJECT_ROOT, "token_metrics.json")
+
+# In-memory store for active V2 runs
+ACTIVE_RUNS = {}
+_METRICS_LOCK = Lock()
+
 
 def load_token_metrics() -> dict:
     if os.path.exists(METRICS_FILE):
@@ -124,6 +147,10 @@ def load_token_metrics() -> dict:
         "completion_tokens": comp_tok,
         "total_tokens": prompt_tok + comp_tok,
         "total_calls": calls,
+        "estimated": bool(calls),
+        "exact_calls": 0,
+        "estimated_calls": calls,
+        "last_updated": None,
         "by_provider": {
             "gigachat": {
                 "prompt_tokens": prompt_tok,
@@ -144,25 +171,39 @@ def save_token_metrics(metrics: dict):
         pass
 
 def record_token_usage(provider: str, prompt_text: str, completion_text: str) -> dict:
-    metrics = load_token_metrics()
     p_tok = max(1, int(len(prompt_text) / 3.5))
     c_tok = max(1, int(len(completion_text) / 3.5))
-    t_tok = p_tok + c_tok
-    
-    metrics["prompt_tokens"] = metrics.get("prompt_tokens", 0) + p_tok
-    metrics["completion_tokens"] = metrics.get("completion_tokens", 0) + c_tok
-    metrics["total_tokens"] = metrics.get("total_tokens", 0) + t_tok
-    metrics["total_calls"] = metrics.get("total_calls", 0) + 1
-    
-    by_prov = metrics.setdefault("by_provider", {})
-    prov_stat = by_prov.setdefault(provider, {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "calls": 0})
-    prov_stat["prompt_tokens"] += p_tok
-    prov_stat["completion_tokens"] += c_tok
-    prov_stat["total_tokens"] += t_tok
-    prov_stat["calls"] += 1
-    
-    save_token_metrics(metrics)
-    return metrics
+    return _record_usage(provider, p_tok, c_tok, p_tok + c_tok, exact=False)
+
+
+def record_model_usage(provider: str, usage) -> dict:
+    return _record_usage(provider, usage.prompt_tokens, usage.completion_tokens,
+                         usage.total_tokens, exact=True)
+
+
+def _record_usage(provider: str, prompt_tokens: int, completion_tokens: int,
+                  total_tokens: int, *, exact: bool) -> dict:
+    with _METRICS_LOCK:
+        metrics = load_token_metrics()
+        metrics["prompt_tokens"] = metrics.get("prompt_tokens", 0) + prompt_tokens
+        metrics["completion_tokens"] = metrics.get("completion_tokens", 0) + completion_tokens
+        metrics["total_tokens"] = metrics.get("total_tokens", 0) + total_tokens
+        metrics["total_calls"] = metrics.get("total_calls", 0) + 1
+        counter = "exact_calls" if exact else "estimated_calls"
+        metrics[counter] = metrics.get(counter, 0) + 1
+        metrics["estimated"] = metrics.get("exact_calls", 0) == 0 and metrics.get("estimated_calls", 0) > 0
+        metrics["last_updated"] = datetime.now(timezone.utc).isoformat()
+        by_prov = metrics.setdefault("by_provider", {})
+        prov_stat = by_prov.setdefault(provider, {"prompt_tokens": 0, "completion_tokens": 0,
+                                                   "total_tokens": 0, "calls": 0,
+                                                   "exact_calls": 0, "estimated_calls": 0})
+        prov_stat["prompt_tokens"] += prompt_tokens
+        prov_stat["completion_tokens"] += completion_tokens
+        prov_stat["total_tokens"] += total_tokens
+        prov_stat["calls"] += 1
+        prov_stat[counter] = prov_stat.get(counter, 0) + 1
+        save_token_metrics(metrics)
+        return metrics
 
 def load_agents() -> List[Agent]:
     if not os.path.exists(DB_FILE):
@@ -184,8 +225,8 @@ async def get_providers():
     load_dotenv()
     
     gigachat_avail = bool(os.getenv("GIGACHAT_AUTH_KEY"))
-    gemini_avail = bool(os.getenv("GEMINI_API_KEY"))
-    groq_avail = bool(os.getenv("GROQ_API_KEY"))
+    gemini_avail = bool(os.getenv("GEMINI_API_KEY") and os.getenv("GEMINI_MODEL"))
+    groq_avail = bool(os.getenv("GROQ_API_KEY") and os.getenv("GROQ_MODEL"))
     openai_avail = bool(os.getenv("OPENAI_API_KEY"))
     
     providers = [
@@ -202,7 +243,7 @@ async def get_providers():
             name="Google Gemini",
             available=gemini_avail,
             description="Google AI Flash / Pro модели с поддержкой длинного контекста",
-            model="gemini-1.5-flash",
+            model=os.getenv("GEMINI_MODEL", "not configured"),
             is_default=False if gigachat_avail else gemini_avail
         ),
         ProviderInfo(
@@ -210,7 +251,7 @@ async def get_providers():
             name="Groq LPU",
             available=groq_avail,
             description="Сверхбыстрый inference LPU для open-source моделей",
-            model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+            model=os.getenv("GROQ_MODEL", "not configured"),
             is_default=False
         ),
         ProviderInfo(
@@ -252,6 +293,119 @@ chat_state = {
 @app.get("/api/agents", response_model=List[Agent])
 async def get_agents():
     return load_agents()
+
+@app.get("/api/runs")
+async def get_runs():
+    return {"runs": [
+        {
+            "id": rid,
+            "goal": r.get("task"),
+            "task": r.get("task"),
+            "agent_goal": r.get("agent_goal"),
+            "provider": r.get("provider"),
+            "status": r.get("status", "pending"),
+            "error": r.get("error"),
+        }
+        for rid, r in ACTIVE_RUNS.items()
+    ]}
+
+
+def _build_llm_for_provider(provider: str):
+    from dialectic_ai.integrations.providers import build_llm
+    llm = build_llm(provider)
+    llm.set_usage_callback(provider, record_model_usage)
+    return llm
+
+
+async def background_run_v2(run_id: str, agent_goal: str, task: str, provider: str):
+    from dialectic_ai.agent.base import DialecticalAgent
+    from dialectic_ai.core.schema import AgentInput
+    from dialectic_ai.engine.executor import DialecticalEngine
+
+    try:
+        tool_names = ["web_search"] if provider == "mock" else ["fetch_url", "python_executor"]
+        tools = [TOOL_REGISTRY[t]() for t in tool_names]
+        llm = _build_llm_for_provider(provider)
+
+        agent = DialecticalAgent(goal=agent_goal, llm=llm, tools=tools)
+        engine = DialecticalEngine(agent, max_iterations=30)
+
+        ACTIVE_RUNS[run_id]["engine"] = engine
+        ACTIVE_RUNS[run_id]["status"] = "running"
+
+        result = await engine.run(AgentInput(user_message=task))
+        ACTIVE_RUNS[run_id]["status"] = result.status
+        ACTIVE_RUNS[run_id]["result"] = result.response
+        ACTIVE_RUNS[run_id]["validation_mode"] = result.validation_mode
+        if result.status != "completed":
+            ACTIVE_RUNS[run_id]["error"] = f"{result.response} ({result.stop_reason})"
+    except Exception as e:
+        import traceback
+        ACTIVE_RUNS[run_id]["status"] = "error"
+        ACTIVE_RUNS[run_id]["error"] = f"{type(e).__name__}: {e}"
+        ACTIVE_RUNS[run_id]["traceback"] = traceback.format_exc()
+
+@app.post("/api/run")
+async def start_run(req: RunRequest):
+    import asyncio
+    agent_goal = req.agent_goal.strip()
+    task = req.task.strip()
+    if not agent_goal or not task:
+        raise HTTPException(status_code=422, detail="Agent goal and task must not be blank")
+    casual = task.casefold().strip(" .,!?:;—-()[]{}")
+    if casual in {"привет", "здравствуй", "здравствуйте", "добрый день", "добрый вечер",
+                  "hello", "hi", "hey", "спасибо", "thanks", "thank you"}:
+        return {
+            "run_id": None,
+            "kind": "conversation",
+            "message": f"Привет. Я готов работать в рамках своей цели: {agent_goal}",
+        }
+    try:
+        _build_llm_for_provider(req.provider)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    run_id = str(uuid.uuid4())[:8]
+    ACTIVE_RUNS[run_id] = {
+        "id": run_id,
+        "agent_goal": agent_goal,
+        "task": task,
+        "provider": req.provider,
+        "engine": None,
+        "status": "pending",
+        "error": None,
+    }
+    ACTIVE_RUNS[run_id]["task_handle"] = asyncio.create_task(
+        background_run_v2(run_id, agent_goal, task, req.provider)
+    )
+    return {"run_id": run_id, "kind": "runtime"}
+
+@app.delete("/api/runs/{run_id}")
+async def delete_run(run_id: str):
+    run = ACTIVE_RUNS.get(run_id)
+    if run and run.get("task_handle"):
+        run["task_handle"].cancel()
+        import asyncio
+        try:
+            await run["task_handle"]
+        except asyncio.CancelledError:
+            pass
+    ACTIVE_RUNS.pop(run_id, None)
+    return {"ok": True}
+
+@app.get("/api/state")
+async def get_state(run_id: str):
+    if run_id not in ACTIVE_RUNS:
+        raise HTTPException(status_code=404, detail="Run not found")
+
+    run = ACTIVE_RUNS[run_id]
+    engine = run.get("engine")
+    if not engine:
+        return {"snapshot": None, "status": run.get("status", "pending"), "error": run.get("error")}
+
+    from dialectic_ai.observability.read_model import RuntimeReadModel
+    return {"snapshot": RuntimeReadModel(engine.state).get_snapshot(),
+            "status": run.get("status", "running"), "error": run.get("error")}
+
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat_with_framework(msg: ChatMessage):
@@ -309,7 +463,7 @@ async def chat_with_framework(msg: ChatMessage):
                     idx = int(idx_str.strip()) - 1
                     if 0 <= idx < len(available_tools):
                         selected.append(available_tools[idx])
-                except:
+                except Exception:
                     pass
         chat_state["tools"] = selected
         chat_state["step"] = 4
@@ -321,11 +475,16 @@ async def chat_with_framework(msg: ChatMessage):
     # State 4: LLM and Generation
     elif chat_state["step"] == 4:
         llm_choice = "mock"
-        if user_text == "1": llm_choice = "gemini"
-        elif user_text == "2": llm_choice = "openai"
-        elif user_text == "3": llm_choice = "mock"
-        elif user_text == "4": llm_choice = "fallback"
-        elif user_text == "5": llm_choice = "gigachat"
+        if user_text == "1":
+            llm_choice = "gemini"
+        elif user_text == "2":
+            llm_choice = "openai"
+        elif user_text == "3":
+            llm_choice = "mock"
+        elif user_text == "4":
+            llm_choice = "fallback"
+        elif user_text == "5":
+            llm_choice = "gigachat"
         
         chat_state["llm"] = llm_choice
         
@@ -336,6 +495,9 @@ async def chat_with_framework(msg: ChatMessage):
         llm = chat_state["llm"]
         chat_state["step"] = 0
         
+        import re
+        if not re.fullmatch(r"[\w -]{1,80}", name):
+            raise HTTPException(status_code=422, detail="Agent name must contain only letters, numbers, spaces, underscores or hyphens")
         filename = f"{name.lower().replace(' ', '_')}.py"
         full_filepath = os.path.join(PROJECT_ROOT, filename)
         
@@ -360,7 +522,7 @@ async def chat_with_framework(msg: ChatMessage):
             
             logs.append(f"[AgentBuilder] Файл агента сгенерирован: {filepath.name}")
             if design_log:
-                logs.append(f"[Architect] Диалектический лог дизайна успешно создан. Подробности:")
+                logs.append("[Architect] Диалектический лог дизайна успешно создан. Подробности:")
                 for line in design_log.split('\n'):
                     if line.strip() and not line.startswith('#') and not line.startswith('*Auto-generated'):
                         # Clean up markdown syntax for the dashboard log
@@ -462,12 +624,12 @@ async def test_agent(agent_id: str, req: TestRequest):
                 continue
             if (
                 clean.startswith("[Iteration")
-                or clean.startswith("[Hypothesis]")
+                or clean.startswith("[SimplestProcess]")
                 or clean.startswith("[Plan]")
                 or clean.startswith("[Decision]")
                 or clean.startswith("[Collision]")
                 or clean.startswith("[Observation]")
-                or clean.startswith("[Synthesis]")
+                or clean.startswith("[Completion]")
                 or clean.startswith("[Validation]")
                 or clean.startswith("[Engine]")
                 or clean.startswith("[Repair]")
@@ -492,8 +654,8 @@ async def test_agent(agent_id: str, req: TestRequest):
 
         if not clean_response:
             for t in reversed(agent_thoughts):
-                if t.startswith("[Synthesis]"):
-                    clean_response = t.replace("[Synthesis]", "").strip()
+                if t.startswith("[Completion]"):
+                    clean_response = t.replace("[Completion]", "").strip()
                     break
             if not clean_response:
                 clean_response = target_section.strip()
@@ -507,7 +669,7 @@ async def test_agent(agent_id: str, req: TestRequest):
 
         return TestResponse(result=clean_response, agent_thoughts=agent_thoughts, tokens=TokenMetrics(**tokens))
         
-    except Exception as e:
+    except Exception:
         import traceback
         tb = traceback.format_exc()
         return TestResponse(result=f"Ошибка при запуске агента:\n{tb}")
@@ -519,4 +681,5 @@ async def get_proposal(req: ProposalRequest):
     )
 
 if __name__ == "__main__":
-    uvicorn.run("dialectic_ai.api.server:app", host="0.0.0.0", port=8123, reload=True)
+    uvicorn.run("dialectic_ai.api.server:app", host="127.0.0.1", port=8123, reload=True)
+

@@ -18,9 +18,7 @@ DIALECTICAL DESCRIPTION:
 from dialectic_ai.agent.prompt_builder import build_system_prompt
 from dialectic_ai.core.dialectical import DialecticalObject, dialectical
 from dialectic_ai.core.llm import BaseLLM, MockLLM
-from dialectic_ai.memory.base import BaseMemory
-from dialectic_ai.memory.knowledge_graph import KnowledgeGraphMemory
-from dialectic_ai.memory.sublation import SublationEngine
+from typing import Optional
 
 
 @dialectical(
@@ -52,47 +50,37 @@ class DialecticalAgent(DialecticalObject):
     def __init__(
         self,
         goal: str,
-        llm: BaseLLM = None,
-        memory: BaseMemory = None,
-        tools: list = None,
+        llm: Optional[BaseLLM] = None,
+        tools: Optional[list] = None,
         tool_calling_mode: str = "dialectic_json",
     ):
         self.goal = goal
         self.llm = llm or MockLLM()
-        self.memory = memory or KnowledgeGraphMemory()
         self.tools: list = tools if tools is not None else []
         self.tool_calling_mode = tool_calling_mode
         self._history: list[dict] = []  # History of messages for LLM
         self.max_history_length = 10
-        self.sublation_engine = SublationEngine(llm=self.llm)
 
     def get_system_prompt(self) -> str:
-        """Assembles the current system prompt (goal + rules + memory + tools)."""
+        """Assembles the current system prompt (goal + rules + tools)."""
         return build_system_prompt(
             self.goal, 
-            self.memory, 
             tools=self.tools,
             tool_calling_mode=self.tool_calling_mode,
         )
 
     async def add_to_history(self, role: str, content: str) -> None:
-        """Adds a message to the dialogue history and performs sublation on overflow."""
+        """Adds a message to the dialogue history."""
         self._history.append({"role": role, "content": content})
         
         if len(self._history) > self.max_history_length:
-            print(f"[Agent] Context overflowed ({len(self._history)} messages). Starting SublationEngine...")
-            # Keep the most recent exchanges verbatim (they contain the specific
-            # tool calls/errors the agent needs to avoid repeating) and only
-            # summarize the older tail. Replacing everything with a vague
-            # 1-2 paragraph synthesis was erasing "this exact call already
-            # failed" context, causing the agent to retry the same dead end.
+            print(f"[Agent] Context overflowed ({len(self._history)} messages). History truncation not fully implemented without sublation.")
+            # Simple truncation for now:
             keep_tail = 4
-            to_summarize, recent = self._history[:-keep_tail], self._history[-keep_tail:]
-            synthesis = await self.sublation_engine.sublate(to_summarize)
+            recent = self._history[-keep_tail:]
             self._history = [
-                {"role": "user", "content": f"[SYSTEM INTERNAL] Synthesis of past conversations:\n{synthesis}"}
+                {"role": "user", "content": "[SYSTEM INTERNAL] History truncated."}
             ] + recent
-            print("[Agent] History successfully compressed (Aufheben).")
 
     def get_messages(self) -> list[dict]:
         """Returns the complete list of messages: system prompt + history."""
@@ -102,4 +90,3 @@ class DialecticalAgent(DialecticalObject):
     def clear_history(self) -> None:
         """Clears the dialogue history (start a new session)."""
         self._history.clear()
-        self.memory.clear()

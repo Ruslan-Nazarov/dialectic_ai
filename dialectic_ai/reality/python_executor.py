@@ -161,6 +161,7 @@ except ImportError:
                     )
             except asyncio.TimeoutError:
                 process.kill()
+                await process.wait()
                 return Evidence(
                     id=str(uuid.uuid4()),
                     source=self.name,
@@ -169,6 +170,11 @@ except ImportError:
                     success=False,
                     error=f"Timeout: code executed longer than {self.timeout} seconds. Possible infinite loop.",
                 )
+        except asyncio.CancelledError:
+            if 'process' in locals() and process.returncode is None:
+                process.kill()
+                await process.wait()
+            raise
         except Exception as e:
             return Evidence(
                 id=str(uuid.uuid4()),
@@ -180,3 +186,4 @@ except ImportError:
             )
         finally:
             os.unlink(tmp_path)
+

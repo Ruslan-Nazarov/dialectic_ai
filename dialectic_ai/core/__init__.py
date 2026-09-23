@@ -3,8 +3,6 @@ from dialectic_ai.core.dialectical import dialectical, get_dialectical_map, prin
 from dialectic_ai.core.llm import BaseLLM, MockLLM
 from dialectic_ai.core.logger import DevelopmentLogger
 from dialectic_ai.core.schema import AgentInput, AgentOutput, Claim, Evidence, Hypothesis, MemoryUpdate
-from dialectic_ai.integrations.gemini.llm import GeminiLLM
-from dialectic_ai.integrations.openai.llm import OpenAILLM
 
 __all__ = [
     "dialectical", "print_dialectical_card", "get_dialectical_map",
@@ -12,3 +10,13 @@ __all__ = [
     "BaseLLM", "MockLLM", "GeminiLLM", "OpenAILLM",
     "DevelopmentLogger",
 ]
+
+
+def __getattr__(name):
+    if name == "GeminiLLM":
+        from dialectic_ai.integrations.gemini.llm import GeminiLLM
+        return GeminiLLM
+    if name == "OpenAILLM":
+        from dialectic_ai.integrations.openai.llm import OpenAILLM
+        return OpenAILLM
+    raise AttributeError(name)

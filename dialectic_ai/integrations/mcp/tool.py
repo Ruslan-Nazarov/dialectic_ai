@@ -109,3 +109,4 @@ async def load_mcp_tools(session: "ClientSession") -> list[MCPTool]:
         
     tools_response = await session.list_tools()
     return [MCPTool(session, t) for t in tools_response.tools]
+

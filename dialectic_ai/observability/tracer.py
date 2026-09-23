@@ -30,7 +30,7 @@ class TraceEvent:
 
     @property
     def session_id(self) -> Optional[str]:
-        return self.data.get("session_id")
+        return self.data.get("run_id") or self.data.get("session_id")
 
     @property
     def iteration(self) -> Optional[int]:
@@ -118,3 +118,4 @@ class TraceReader:
                 for e in events[-50:]  # last 50 events for UI
             ],
         }
+
