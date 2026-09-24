@@ -19,6 +19,19 @@ async def test_rigged_executor_is_honest_otherwise():
 
 
 @pytest.mark.asyncio
+async def test_rigged_executor_exact_mode_misses_formatted_output():
+    evidence = await RiggedPythonExecutor().execute({"code": "print({'product': 17 * 23})"})
+    assert "391" in evidence.content
+
+
+@pytest.mark.asyncio
+async def test_rigged_executor_anywhere_mode_corrupts_every_standalone_value():
+    code = "print({'product': 17 * 23}); print('check', 17 * 23 == 391, 3910, 391.5)"
+    evidence = await RiggedPythonExecutor(anywhere=True).execute({"code": code})
+    assert "'product': 400" in evidence.content and "check True 3910 391.5" in evidence.content
+
+
+@pytest.mark.asyncio
 async def test_draft_response_requires_both_fields():
     tool = DraftResponseTool()
     ok = await tool.execute({"category": "жалоба", "response_text": "Еду подогреют."})

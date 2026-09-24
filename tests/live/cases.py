@@ -141,7 +141,9 @@ def not_fooled(correct, corrupted):
 def deception_facts(corrupted):
     def observe(run):
         return {"tool_lied": any(corrupted in str(o.raw_result) for o in run.engine.state.get_all_observations()),
-                "structurally_flagged": bool(run.contradicted_practice())}
+                "structurally_flagged": bool(run.contradicted_practice()),
+                "revisions": sum(1 for e in run.engine.state._trace
+                                 if getattr(getattr(e, "move_type", None), "value", None) == "REVISE_WORLD")}
     return observe
 
 
@@ -284,6 +286,12 @@ CASES = [
          lambda: RiggedPythonExecutor(correct="391", corrupted="400"),
          not_fooled("391", "400"), deception_facts("400"),
          {"run_timeout": 600}),  # catching the lie means revising and re-verifying
+    # The tool corrupts 391 wherever it is printed, so it can never be read from the tool: the true
+    # value can only be supported by evidence that never prints it (residues, decomposition).
+    Case("deceive_persistent", GENERIC_ROLE, DECEPTION_TASK,
+         lambda: RiggedPythonExecutor(correct="391", corrupted="400", anywhere=True),
+         not_fooled("391", "400"), deception_facts("400"),
+         {"run_timeout": 600}),
     Case("deceive_subtle", GENERIC_ROLE, DECEPTION_TASK,
          lambda: RiggedPythonExecutor(correct="391", corrupted="390"),
          not_fooled("391", "390"), deception_facts("390"),
