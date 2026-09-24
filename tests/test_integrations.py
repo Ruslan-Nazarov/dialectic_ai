@@ -209,3 +209,13 @@ def test_nvidia_catalog_requires_key(monkeypatch):
     monkeypatch.setenv("NVIDIA_MODEL", "meta/llama-3.3-70b-instruct")
     with pytest.raises(ValueError, match="NVIDIA_API_KEY"):
         build_llm("nvidia")
+
+
+def test_anthropic_adapter_splits_system_and_converts_tools():
+    from dialectic_ai.integrations.anthropic.llm import _split_system, _tools
+    system, turns = _split_system([{"role": "system", "content": "S"}, {"role": "user", "content": "a"},
+                                   {"role": "tool", "content": "b"}, {"role": "assistant", "content": "c"}])
+    assert system == "S"
+    assert turns == [{"role": "user", "content": "a\n\nb"}, {"role": "assistant", "content": "c"}]
+    tools = _tools([{"type": "function", "function": {"name": "f", "description": "d", "parameters": {"type": "object"}}}])
+    assert tools == [{"name": "f", "description": "d", "input_schema": {"type": "object"}}]

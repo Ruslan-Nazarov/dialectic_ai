@@ -2,6 +2,7 @@
 import os
 
 from dialectic_ai.core.llm import FallbackLLM, MockLLM
+from dialectic_ai.integrations.anthropic.llm import DEFAULT_MODEL as ANTHROPIC_DEFAULT_MODEL, AnthropicLLM
 from dialectic_ai.integrations.gemini.llm import GeminiLLM
 from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
 from dialectic_ai.integrations.openai.llm import OpenAILLM
@@ -11,7 +12,7 @@ PROVIDER_KEYS = [
     ('gigachat', 'GIGACHAT_AUTH_KEY'), ('gemini', 'GEMINI_API_KEY'),
     ('openai', 'OPENAI_API_KEY'), ('groq', 'GROQ_API_KEY'),
     ('cerebras', 'CEREBRAS_API_KEY'), ('openrouter', 'OPENROUTER_API_KEY'),
-    ('nvidia', 'NVIDIA_API_KEY'),
+    ('nvidia', 'NVIDIA_API_KEY'), ('anthropic', 'ANTHROPIC_API_KEY'),
 ]
 
 # Self-hosted OpenAI-compatible servers (e.g. vLLM or NIM on an NVIDIA Brev instance) often run
@@ -43,6 +44,8 @@ def build_llm(provider: str):
         return _tagged(GigaChatLLM(model=os.getenv('GIGACHAT_MODEL', 'GigaChat')), 'gigachat')
     if provider == 'gemini':
         return _tagged(GeminiLLM(), 'gemini')
+    if provider == 'anthropic':
+        return _tagged(AnthropicLLM(model=os.getenv('ANTHROPIC_MODEL', ANTHROPIC_DEFAULT_MODEL)), 'anthropic')
     if provider == 'openai':
         return _tagged(OpenAILLM(api_key=os.getenv('OPENAI_API_KEY', ''),
                          base_url=os.getenv('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
