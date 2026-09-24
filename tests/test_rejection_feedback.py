@@ -62,3 +62,30 @@ async def test_fallback_skips_empty_replies():
 
     llm = FallbackLLM([Empty(), MockLLM(['{"accepted": true}'])])
     assert await llm.generate([{"role": "user", "content": "x"}]) == '{"accepted": true}'
+
+
+def test_tool_args_keep_ids_that_look_like_aliases():
+    """A tool's own ids (answers A1, A2, ...) reach it verbatim even when an action is aliased A1;
+    graph references outside args are still translated."""
+    from dialectic_ai.engine.executor import _resolve_payload_aliases
+    alias_to_uuid = {"A1": "action-uuid", "P3": "process-uuid"}
+    payload = {"tool_name": "commit_card", "origin_ref": {"type": "Process", "id": "P3"},
+               "args": {"data": {"value": "Excel", "sources": [{"source_id": "A1", "quote": "Excel"}]}}}
+    resolved = _resolve_payload_aliases(payload, alias_to_uuid)
+    assert resolved["args"]["data"]["sources"][0]["source_id"] == "A1"
+    assert resolved["origin_ref"]["id"] == "process-uuid"
+    assert _resolve_payload_aliases({"contradiction_id": "A1"}, alias_to_uuid) == {"contradiction_id": "action-uuid"}
+
+
+@pytest.mark.asyncio
+async def test_judge_outage_cause_stays_in_trace(tmp_path):
+    import json
+    from dialectic_ai.core.logger import DevelopmentLogger
+    trace = tmp_path / "trace.jsonl"
+    e = DialecticalEngine(DialecticalAgent("g", MockLLM(), [web_search()]), semantic_validator=FlakyJudge(outages=1),
+                          logger=DevelopmentLogger(trace_path=str(trace)))
+    await e.run(AgentInput(user_message="Example"))
+    rejected = [json.loads(l) for l in trace.read_text(encoding="utf-8").splitlines()
+                if json.loads(l)["event_type"] == "proposal_rejected"]
+    assert rejected[0]["cause"] == "Validation error: empty reply"
+    assert "empty reply" not in rejected[0]["reason"]

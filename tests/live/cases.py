@@ -170,7 +170,11 @@ contradiction you found, one fact per question, plain Russian) and then commit t
 commit_card BEFORE COMPLETE. Completing without both tools is not allowed.
 Never add facts the business did not state. If there is no information for a field, set it to null.
 If an answer resolves the contradiction, practice is confirmed; if it reveals a new gap, ask again
-(at most 2 rounds of questions). COMPLETE's final_response is the committed card as JSON."""
+(at most 2 rounds of questions). COMPLETE's final_response is the committed card as JSON.
+commit_card drops every field it cannot ground and commits the rest. A card with some fields dropped
+is the EXPECTED result, not a failure: assess that practice as partially_confirmed, then ASSESS_LEAP
+and COMPLETE. The business representative fills the dropped fields in afterwards. Do not REVISE_WORLD
+because of dropped fields -- revise only if commit_card grounded nothing at all."""
 
 BUSINESS_DOMAIN = Domain(
     name="business task card",
@@ -209,6 +213,14 @@ BUSINESS_DOMAIN = Domain(
             "'partially_confirmed'. commit_card: all fields grounded is 'confirmed'; some fields dropped as "
             "ungrounded is 'partially_confirmed' (the human fills them in later); nothing grounded is "
             "'contradicted'. Judge only this comparison."),
+        MoveType.REVISE_WORLD: (
+            "Reject a revision whose reason is only that commit_card dropped some fields while grounding others: "
+            "a partially grounded card is this domain's expected result, and the business fills dropped fields "
+            "in afterwards. Accept a revision only if the card grounded nothing or the answers revealed a "
+            "contradiction the questions did not address."),
+        MoveType.ASSESS_LEAP: (
+            "Accept when commit_card committed a card with at least one grounded field and practice was assessed "
+            "as confirmed or partially_confirmed. Dropped fields do not block the leap's realization here."),
     },
 )
 

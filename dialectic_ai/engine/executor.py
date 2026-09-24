@@ -50,6 +50,19 @@ def _schema_error(errors) -> str:
     return f"{message}. Hint: {hint}" if hint else message
 
 
+def _resolve_payload_aliases(payload, alias_to_uuid: dict):
+    """Translates graph aliases (P1, C2, A1, ...) back to UUIDs everywhere except tool arguments.
+    Tool arguments are the tool's own data, not graph references: a tool may use ids of its own
+    that look like aliases (the business-card answers are A1, A2, ... -- the same labels as
+    actions), and rewriting them sent the tool a UUID it had never issued."""
+    if not isinstance(payload, dict) or "args" not in payload:
+        return apply_aliases(payload, alias_to_uuid)
+    tool_args = payload["args"]
+    resolved = apply_aliases({k: v for k, v in payload.items() if k != "args"}, alias_to_uuid)
+    resolved["args"] = tool_args
+    return resolved
+
+
 class DialecticalEngine:
     def __init__(
         self,
@@ -310,7 +323,7 @@ class DialecticalEngine:
             # any alias it used back to the real UUID before schema/structural validation ever sees
             # the payload -- everything downstream of this point still speaks real UUIDs.
             if isinstance(proposal_data, dict) and isinstance(proposal_data.get("payload"), (dict, list)):
-                proposal_data["payload"] = apply_aliases(proposal_data["payload"], alias_to_uuid)
+                proposal_data["payload"] = _resolve_payload_aliases(proposal_data["payload"], alias_to_uuid)
 
             requested_move = proposal_data.get("move_type") if isinstance(proposal_data, dict) else None
             if requested_move == self._last_move_type_requested:
@@ -363,7 +376,7 @@ class DialecticalEngine:
                     # Not a verdict: tell the actor to resubmit unchanged, and keep the raw provider
                     # error out of its feedback so it does not try to "fix" a non-problem.
                     await self._reject("Judge unavailable (no verdict was returned); resubmit the same "
-                                       "proposal unchanged.", proposal)
+                                       "proposal unchanged.", proposal, cause=sem_res.reason)
                     judge_outages += 1
                     if judge_outages >= self.max_judge_outages:
                         return await self._failure("judge_unavailable", f"Judge returned no verdict {judge_outages} times: {sem_res.reason}")
@@ -485,11 +498,15 @@ class DialecticalEngine:
                                                              "result_id": result_id, "origin": "domain"})
         return True
 
-    async def _reject(self, reason, proposal=None):
+    async def _reject(self, reason, proposal=None, cause=None):
+        """`reason` is what the actor sees next; `cause`, when given, is the underlying error kept
+        only in the trace -- e.g. the provider error behind a judge outage."""
         event = RuntimeEvent(event_type="proposal_rejected", proposal=proposal, validation_error=reason)
         self.state._trace.append(event)
-        await self.logger.trace_event("proposal_rejected", {"run_id": self.run_id, "reason": reason,
-                                                          "proposal": asdict(proposal) if proposal else None})
+        record = {"run_id": self.run_id, "reason": reason, "proposal": asdict(proposal) if proposal else None}
+        if cause:
+            record["cause"] = cause
+        await self.logger.trace_event("proposal_rejected", record)
 
     async def _failure(self, reason, response):
         await self.logger.trace_event("run_finished", {"run_id": self.run_id, "status": "error", "stop_reason": reason})
