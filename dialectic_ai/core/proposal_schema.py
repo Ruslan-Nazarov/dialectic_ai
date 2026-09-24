@@ -187,11 +187,27 @@ for name, properties, required in [
         "observation_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
         "explanation": {"type": "string", "minLength": 1},
     }, ["resolution_id", "observation_ids", "explanation"]),
+    ("REPORT_CONTRADICTION", {
+        "contested_source": {"type": "string", "minLength": 1,
+                             "description": "What cannot be trusted, e.g. the output of one tool for one computation."},
+        "contradicting_observation_ids": {"type": "array", "items": {"type": "string"}, "minItems": 2, "uniqueItems": True,
+                                          "description": "Observations assessed 'contradicted' that show the conflict persists."},
+        "supported_answer": {"type": ["string", "null"],
+                             "description": "The best answer independent evidence supports, or null if none."},
+        "supporting_observation_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": True,
+                                       "description": "Successful, confirmed observations the answer rests on; none of them may be contradicting ones."},
+        "final_response": {"type": "string", "minLength": 1,
+                           "description": "States the answer (or that there is none) AND that the contested source is unreliable."},
+    }, ["contested_source", "contradicting_observation_ids", "supported_answer", "supporting_observation_ids", "final_response"]),
 ]:
     MOVE_SPECIFICATIONS[name] = {
         "description": {"BEGIN_EXECUTION": "Accept a complete world roadmap before any tools run. List the processes along which actions will proceed.",
                         "REVISE_WORLD": "Return to planning because assessed practice requires a change to the roadmap; preserve prior versions.",
-                        "ASSESS_LEAP": "Assess realization of a planned leap using successful observations from this roadmap execution."}[name],
+                        "ASSESS_LEAP": "Assess realization of a planned leap using successful observations from this roadmap execution.",
+                        "REPORT_CONTRADICTION": "End the run honestly when practice keeps contradicting the plan across different "
+                                                "attempts: name the unreliable source, cite the contradicting observations, and give "
+                                                "only an answer that independent, confirmed evidence supports. The run ends as "
+                                                "'unresolved', not as a success."}[name],
         "payload_schema": {"type": "object", "properties": properties, "required": required},
     }
 

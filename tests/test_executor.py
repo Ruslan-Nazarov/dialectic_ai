@@ -175,3 +175,39 @@ async def test_practice_revises_roadmap_and_executes_new_version():
     assert first.snapshot != second.snapshot
     assert {a.roadmap_id for a in engine.state.get_all_actions()} == {first.id, second.id}
     assert len(engine.state.get_all_observations()) == 2
+
+
+@pytest.mark.asyncio
+async def test_persistent_contradiction_ends_unresolved_not_completed():
+    """Practice contradicts every roadmap; once two differently-argued actions were contradicted after
+    a revision, the model reports it and the run ends 'unresolved' -- never 'completed'."""
+    class AlwaysContradicted(MockLLM):
+        async def generate(self, messages, tools=None):
+            prompt = messages[-1]['content']
+            state = json.loads(prompt.split('RUNTIME_JSON:\n')[1].split('\nEND_RUNTIME_JSON')[0])
+            def move(name, payload):
+                return json.dumps({'move_type': name, 'payload': payload, 'why_this_move_now': 'x',
+                                   'expected_goal_contribution': 'y'})
+            contradicted = [pa['observation_id'] for pa in state['practice'] if pa['expected_actual_relation'] == 'contradicted']
+            if 'REPORT_CONTRADICTION' in state['allowed_moves']:
+                return move('REPORT_CONTRADICTION', {'contested_source': 'web_search results',
+                    'contradicting_observation_ids': contradicted, 'supported_answer': None,
+                    'supporting_observation_ids': [], 'final_response': 'The source kept contradicting the plan.'})
+            proposal = json.loads(await super().generate(messages, tools))
+            if proposal.get('move_type') == 'PROPOSE_ACTION':
+                proposal['payload']['args'] = {'query': f"attempt {len(state['roadmaps'])}"}
+            if proposal.get('move_type') == 'ASSESS_PRACTICE':
+                proposal['payload']['expected_actual_relation'] = 'contradicted'
+            elif state['allowed_moves'] == ['REVISE_WORLD']:
+                return move('REVISE_WORLD', {'observation_ids': contradicted, 'reason': 'Actual result contradicts expectation'})
+            elif state['phase'] == 'planning' and state['roadmaps'] and len(state['resolutions']) == len(state['roadmaps']):
+                return move('PROPOSE_LEAP', {'contradiction_id': state['contradictions'][0]['id'],
+                    'resolution_content': f"Another route {len(state['roadmaps'])}", 'resolution_outcome': 'mediation'})
+            return json.dumps(proposal)
+
+    engine = DialecticalEngine(agent(AlwaysContradicted()), max_iterations=40)
+    result = await engine.run(AgentInput(user_message='Persistent contradiction example'))
+    assert result.status == 'unresolved', result.stop_reason
+    assert result.stop_reason == 'unresolved_contradiction'
+    assert result.response == 'The source kept contradicting the plan.'
+    assert len(engine.state._roadmaps) == 2 and not engine.state._completions

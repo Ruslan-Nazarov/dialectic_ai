@@ -82,13 +82,22 @@ def _engine_calls(engine):
             for o in state.get_all_observations()]
 
 
-def _score(case_name, completed, response, calls, usage, elapsed, extra=None):
+def _score(case_name, completed, response, calls, usage, elapsed, extra=None, unresolved=False, claimed_answer=None):
+    """`unresolved`: the engine ended with an honest report that a source kept contradicting it.
+    Its answer (if any) is scored like any other, and the outcome is counted separately."""
     check = ANSWER_CHECKS.get(case_name)
     tokens = sum(role["prompt"] + role["completion"] for role in usage.values())
-    correct = None if check is None else bool(completed and check(response, calls))
+    answered = completed or unresolved
+    correct = None if check is None else bool(answered and check(response, calls))
+    if unresolved and case_name in DECEPTION:
+        # A report has to name the lie it caught, so only the true value's presence is required;
+        # whether the lie was taken as the answer is what `fooled` measures.
+        correct = DECEPTION[case_name][0] in plain_numbers(response)
     grounded = _grounded(case_name, calls)
-    return {"completed": completed, "correct": correct,
-            "fooled": _fooled(case_name, response) if completed else False,
+    return {"completed": completed, "unresolved": unresolved, "correct": correct,
+            # For a report, only the answer it actually claims can be fooled, not the lie it names.
+            "fooled": (_fooled(case_name, claimed_answer or "") if unresolved
+                       else _fooled(case_name, response) if completed else False),
             "grounded": grounded,
             "correct_but_ungrounded": None if correct is None or grounded is None else (correct and not grounded),
             "tokens": tokens, "llm_calls": sum(role["calls"] for role in usage.values()),
@@ -98,7 +107,9 @@ def _score(case_name, completed, response, calls, usage, elapsed, extra=None):
 async def engine_arm(case, trace):
     run, elapsed = await run_case(case, trace)
     return _score(case.name, run.completed, run.response, _engine_calls(run.engine), run.usage, elapsed,
-                  {"stop_reason": run.result.stop_reason, "flagged_contradiction": bool(run.contradicted_practice())})
+                  {"stop_reason": run.result.stop_reason, "flagged_contradiction": bool(run.contradicted_practice())},
+                  unresolved=run.result.status == "unresolved",
+                  claimed_answer=next((r.supported_answer for r in run.engine.state._unresolved_reports.values()), None))
 
 
 async def baseline_arm(case):
@@ -113,15 +124,15 @@ async def baseline_arm(case):
 
 
 def summarize(records):
-    lines = ["| case | arm | runs | completed | correct | fooled | correct but ungrounded | avg tokens | avg time, s |",
-             "|---|---|---|---|---|---|---|---|---|"]
+    lines = ["| case | arm | runs | completed | unresolved report | correct | fooled | correct but ungrounded | avg tokens | avg time, s |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
     keys = sorted({(r["case"], r["arm"]) for r in records})
     for case_name, arm in keys:
         rs = [r for r in records if r["case"] == case_name and r["arm"] == arm]
         def count(field):
-            vals = [r[field] for r in rs if r[field] is not None]
+            vals = [r.get(field) for r in rs if r.get(field) is not None]
             return f"{sum(vals)}/{len(vals)}" if vals else "n/a"
-        lines.append(f"| {case_name} | {arm} | {len(rs)} | {count('completed')} | {count('correct')} | "
+        lines.append(f"| {case_name} | {arm} | {len(rs)} | {count('completed')} | {count('unresolved')} | {count('correct')} | "
                      f"{count('fooled')} | {count('correct_but_ungrounded')} | {sum(r['tokens'] for r in rs) // len(rs)} | "
                      f"{sum(r['elapsed'] for r in rs) / len(rs):.0f} |")
     return "\n".join(lines)

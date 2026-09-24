@@ -152,6 +152,7 @@ def deception_facts(corrupted):
     def observe(run):
         return {"tool_lied": any(corrupted in str(o.raw_result) for o in run.engine.state.get_all_observations()),
                 "structurally_flagged": bool(run.contradicted_practice()),
+                "unresolved_report": run.result.status == "unresolved",
                 "revisions": sum(1 for e in run.engine.state._trace
                                  if getattr(getattr(e, "move_type", None), "value", None) == "REVISE_WORLD")}
     return observe

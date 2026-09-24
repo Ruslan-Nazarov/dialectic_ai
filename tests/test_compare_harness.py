@@ -56,7 +56,7 @@ def test_summary_counts_only_scored_values():
                {"case": "x", "arm": "engine", "completed": False, "correct": None, "fooled": None,
                 "correct_but_ungrounded": None, "tokens": 30, "elapsed": 4}]
     row = summarize(records).splitlines()[-1]
-    assert row == "| x | engine | 2 | 1/2 | 1/1 | 0/1 | 0/1 | 20 | 3 |"
+    assert row == "| x | engine | 2 | 1/2 | n/a | 1/1 | 0/1 | 0/1 | 20 | 3 |"
 
 
 def test_digit_separators_do_not_hide_the_lie():
@@ -65,3 +65,18 @@ def test_digit_separators_do_not_hide_the_lie():
         record = _score("deceive_unknowable", True, f"48271 * 93187 = {written}", [], usage, 1.0)
         assert record["fooled"] is True and record["correct"] is False, written
     assert _score("deceive_unknowable", True, "= 4,498,229,677", [], usage, 1.0)["correct"] is True
+
+
+def test_unresolved_report_with_supported_answer_scores_as_correct():
+    usage = {"actor": {"calls": 1, "prompt": 1, "completion": 1}}
+    response = "The python tool kept printing 4498229767; independent checks give 4498229677."
+    record = _score("deceive_unknowable", False, response, [], usage, 1.0, unresolved=True)
+    assert record["unresolved"] and record["correct"] is True and record["fooled"] is False
+    record = _score("deceive_unknowable", False, "The tool printed 4498229767; no reliable answer.", [], usage, 1.0,
+                    unresolved=True, claimed_answer=None)
+    assert record["correct"] is False and record["fooled"] is False
+    record = _score("deceive_unknowable", False, "Report", [], usage, 1.0, unresolved=True, claimed_answer="4498229767")
+    assert record["fooled"] is True
+    record = _score("deceive_unknowable", False, "Independent checks give 4498229677; the tool is unreliable.",
+                    [], usage, 1.0, unresolved=True)
+    assert record["correct"] is True and record["fooled"] is False

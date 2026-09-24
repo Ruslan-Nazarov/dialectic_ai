@@ -188,3 +188,66 @@ def test_feedback_text_uses_aliases():
     from dialectic_ai.engine.prompt import alias_text
     uid = '0b1685c3-c970-4510-9bbc-7b1a69577814'
     assert alias_text(f'process {uid} is not allowed; allowed: [{uid}]', {uid: 'P4'}) == 'process P4 is not allowed; allowed: [P4]'
+
+
+def act(state, code, relation):
+    """One action with its own args, observed and assessed with `relation`."""
+    roadmap = state._roadmaps[state.active_roadmap_id]
+    aid = apply(state, 'PROPOSE_ACTION', {'tool_name': 'tool', 'args': {'code': code},
+        'origin_ref': {'type': 'Process', 'id': roadmap.execution_process_ids[0]},
+        'why_now': 'Practice', 'purpose': 'Measure', 'expectation': 'Result', 'relation_to_goal': 'Test roadmap'})
+    oid = CommitLayer().create_observation(state, aid, f'output of {code}', True, None)
+    apply(state, 'ASSESS_PRACTICE', {'action_id': aid, 'observation_id': oid, 'expected_actual_relation': relation,
+        'explanation': 'Compare actual with expected', 'consequence_for_development': 'Update direction'})
+    return oid
+
+
+def contradicted_twice(state):
+    """Two differently-argued actions contradicted, with a revision in between."""
+    old, new = revised_with_new_leap(state)   # first contradicted action + revision + new leap
+    first = next(o.id for o in state.get_all_observations())
+    simplest = next(d for d in state.get_all_designations() if d.role == DesignationRole.SIMPLEST)
+    apply(state, 'BEGIN_EXECUTION', {'simplest_id': simplest.id, 'contradiction_ids': [new.contradiction_id],
+        'resolution_ids': [new.id], 'execution_process_ids': [new.resolution_process_id]})
+    second = act(state, 'print(a * b)', 'contradicted')
+    return first, second
+
+
+def report(contradicting, supported_answer=None, supporting=()):
+    return {'contested_source': 'The tool output for a * b', 'contradicting_observation_ids': list(contradicting),
+            'supported_answer': supported_answer, 'supporting_observation_ids': list(supporting),
+            'final_response': 'The tool kept contradicting independent checks; no reliable answer.'}
+
+
+def test_unresolved_report_not_offered_after_one_contradiction(planned):
+    begin(planned)
+    oid = observe(planned, relation='contradicted')
+    assert MoveType.REPORT_CONTRADICTION not in AllowedMovesResolver().allowed_moves(planned)
+    with pytest.raises(ValueError):
+        apply(planned, 'REPORT_CONTRADICTION', report([oid, oid]))
+
+
+def test_unresolved_report_after_persistent_contradiction(planned):
+    first, second = contradicted_twice(planned)
+    assert MoveType.REPORT_CONTRADICTION in AllowedMovesResolver().allowed_moves(planned)
+    rid = apply(planned, 'REPORT_CONTRADICTION', report([first, second]))
+    assert planned.get_active_goal() is None
+    assert planned._unresolved_reports[rid].contradicting_observation_ids == [first, second]
+    assert not planned._completions
+
+
+def test_unresolved_report_rejects_ungrounded_answers(planned):
+    first, second = contradicted_twice(planned)
+    with pytest.raises(ValueError, match='supporting_observation_ids'):
+        apply(planned, 'REPORT_CONTRADICTION', report([first, second], supported_answer='391'))
+    with pytest.raises(ValueError, match='independent of the contradiction'):
+        apply(planned, 'REPORT_CONTRADICTION', report([first, second], supported_answer='391', supporting=[second]))
+    assert planned.get_active_goal() is not None
+
+
+def test_same_action_repeated_is_not_persistence(planned):
+    begin(planned)
+    first = act(planned, 'print(a * b)', 'contradicted')
+    apply(planned, 'REVISE_WORLD', {'observation_ids': [first], 'reason': 'Expectation disproved'})
+    from dialectic_ai.core.world import persistent_contradiction
+    assert not persistent_contradiction(planned)

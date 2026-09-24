@@ -44,6 +44,7 @@ class MoveType(str, Enum):
     REVISE_WORLD = "REVISE_WORLD"
     ASSESS_LEAP = "ASSESS_LEAP"
     COMPLETE = "COMPLETE"
+    REPORT_CONTRADICTION = "REPORT_CONTRADICTION"
 
 
 @dataclass(kw_only=True)
@@ -146,6 +147,18 @@ class Completion:
     why_further_development_not_needed: str = ""
 
 @dataclass(kw_only=True)
+class UnresolvedReport:
+    """An honest end to a run whose practice kept contradicting the plan: which source is
+    unreliable, the observations showing it, and only an answer independent evidence supports."""
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    goal_id: str = ""
+    contested_source: str = ""
+    contradicting_observation_ids: List[str] = field(default_factory=list)
+    supported_answer: Optional[str] = None
+    supporting_observation_ids: List[str] = field(default_factory=list)
+    final_response: str = ""
+
+@dataclass(kw_only=True)
 class Proposal:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     move_type: MoveType
@@ -174,6 +187,7 @@ class RuntimeState:
         self._contradictions: Dict[str, Contradiction] = {}
         self._resolution_relations: Dict[str, ResolutionRelation] = {}
         self._completions: Dict[str, Completion] = {}
+        self._unresolved_reports: Dict[str, UnresolvedReport] = {}
         
         self._provisional_owners: Dict[str, str] = {}
         self._trace: List[Any] = []
@@ -663,6 +677,19 @@ class CommitLayer:
             entities_to_insert.append((state._completions, comp.id, comp))
             updates.append(lambda: setattr(state._goals[comp.goal_id], "active", False))
             result_id = comp.id
+
+        elif proposal.move_type == MoveType.REPORT_CONTRADICTION:
+            report = UnresolvedReport(
+                goal_id=state.get_active_goal().id,
+                contested_source=proposal.payload["contested_source"],
+                contradicting_observation_ids=list(proposal.payload["contradicting_observation_ids"]),
+                supported_answer=proposal.payload.get("supported_answer"),
+                supporting_observation_ids=list(proposal.payload.get("supporting_observation_ids", [])),
+                final_response=proposal.payload["final_response"],
+            )
+            entities_to_insert.append((state._unresolved_reports, report.id, report))
+            updates.append(lambda: setattr(state._goals[report.goal_id], "active", False))
+            result_id = report.id
             
         # Apply mutations atomically
         for collection, key, value in entities_to_insert:
@@ -693,19 +720,20 @@ class AllowedMovesResolver:
     def allowed_moves(self, state: RuntimeState) -> List[MoveType]:
         if not state.get_active_goal():
             return []
-        from dialectic_ai.core.world import unassessed, revision_needed
+        from dialectic_ai.core.world import unassessed, revision_needed, persistent_contradiction
+        report = [MoveType.REPORT_CONTRADICTION] if persistent_contradiction(state) else []
         if state.phase == "executing":
             if unassessed(state):
                 return [MoveType.ASSESS_PRACTICE]
             if revision_needed(state):
-                return [MoveType.REVISE_WORLD]
+                return [MoveType.REVISE_WORLD] + report
             moves = [MoveType.PROPOSE_ACTION]
             if state.get_all_observations():
                 moves += [MoveType.REVISE_WORLD, MoveType.ASSESS_LEAP]
                 roadmap = state._roadmaps[state.active_roadmap_id]
                 if all(state._resolution_relations[r].confirmed_roadmap_id == roadmap.id for r in roadmap.resolution_ids):
                     moves.append(MoveType.COMPLETE)
-            return moves
+            return moves + report
         designations = state.get_all_designations()
         candidates = [d for d in designations if d.role == DesignationRole.CANDIDATE_SIMPLEST]
         simplest = [d for d in designations if d.role == DesignationRole.SIMPLEST]
@@ -751,7 +779,7 @@ class AllowedMovesResolver:
         if (simplest and not candidates and not opposites
                 and any(_has_development(d.process_id) for d in simplest)):
             moves.append(MoveType.COMPLETE)
-        return moves
+        return moves + report
 
     def get_direction_snapshot(self, state: RuntimeState) -> Optional[DirectionSnapshot]:
         goal = state.get_active_goal()

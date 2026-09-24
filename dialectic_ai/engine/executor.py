@@ -450,6 +450,15 @@ class DialecticalEngine:
                 await self.logger.trace_event("observation", {"run_id": self.run_id, "observation": asdict(observation)})
 
             # 8. Completion Check
+            if move_type_enum == MoveType.REPORT_CONTRADICTION:
+                # An honest end, not a success: callers must be able to tell "the answer" from
+                # "what independent evidence supports, given a source that kept contradicting it".
+                report = self.state._unresolved_reports[result_id]
+                await self.logger.trace_event("run_finished", {"run_id": self.run_id, "status": "unresolved",
+                                                               "report": asdict(report)})
+                return RuntimeResult(status="unresolved", response=report.final_response, run_id=self.run_id,
+                                     stop_reason="unresolved_contradiction", validation_mode=self.validation_mode,
+                                     roadmap_id=self.state.active_roadmap_id)
             if move_type_enum == MoveType.COMPLETE:
                 completion = self.state._completions[result_id]
                 await self.logger.trace_event("run_finished", {"run_id": self.run_id, "status": "completed", "completion": asdict(completion)})

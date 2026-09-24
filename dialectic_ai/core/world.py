@@ -1,5 +1,6 @@
 """A roadmap is constructed before practice. A planned leap is not a realized leap."""
 import copy
+import json
 import uuid
 from dataclasses import asdict, dataclass, field
 
@@ -25,8 +26,12 @@ PLANNING_MOVES = {
     # reach COMPLETE only through BEGIN_EXECUTION was a real, observed failure mode -- the engine
     # had no honest way to say "resolved through development alone, no leap needed."
     'COMPLETE',
+    # An honest unresolved end is legal in either phase once practice has persistently
+    # contradicted the plan (see persistent_contradiction).
+    'REPORT_CONTRADICTION',
 }
-EXECUTION_MOVES = {'PROPOSE_ACTION', 'ASSESS_PRACTICE', 'ASSESS_LEAP', 'REVISE_WORLD', 'COMPLETE'}
+EXECUTION_MOVES = {'PROPOSE_ACTION', 'ASSESS_PRACTICE', 'ASSESS_LEAP', 'REVISE_WORLD', 'COMPLETE',
+                   'REPORT_CONTRADICTION'}
 
 
 def validate_world(proposal, state):
@@ -133,6 +138,23 @@ def validate_world(proposal, state):
                 raise ValueError('Inconclusive practice cannot substantiate a realized leap')
             if action.roadmap_id != roadmap.id:
                 raise ValueError('Leap evidence must come from the current roadmap execution')
+    if move == 'REPORT_CONTRADICTION':
+        if not persistent_contradiction(state):
+            raise ValueError('An unresolved report needs practice contradicted by at least two different actions '
+                             'after a revision, with nothing pending or unassessed')
+        relations = {pa.observation_id: pa.expected_actual_relation for pa in state._practice_assessments.values()}
+        contradicting = p['contradicting_observation_ids']
+        for oid in contradicting:
+            if relations.get(oid) != 'contradicted':
+                raise ValueError(f'Observation {oid} was not assessed as contradicted')
+        for oid in p.get('supporting_observation_ids', []):
+            observation = state.get_observation(oid)
+            if (oid in contradicting or not observation or not observation.success
+                    or relations.get(oid) not in ('confirmed', 'partially_confirmed')):
+                raise ValueError(f'Observation {oid} is not successful, confirmed evidence independent of the contradiction')
+        if p.get('supported_answer') and not p.get('supporting_observation_ids'):
+            raise ValueError('A supported_answer needs supporting_observation_ids; use null when no independent evidence exists')
+        return
     if move == 'COMPLETE':
         roadmap = state._roadmaps.get(state.active_roadmap_id)
         if roadmap is None:
@@ -157,6 +179,18 @@ def validate_world(proposal, state):
                 raise ValueError('Failed observations cannot support successful completion')
             if state.get_action(observation.action_id).roadmap_id != roadmap.id:
                 raise ValueError('Completion needs evidence from the current roadmap')
+
+
+def persistent_contradiction(state) -> bool:
+    """Practice has contradicted the plan in at least two actions with different arguments, a
+    revision was already tried, and nothing is pending or unassessed. Only then may a run end
+    as unresolved -- not as a shortcut past the first surprising observation."""
+    if unassessed(state) or any(a.status == 'pending' for a in state.get_all_actions()):
+        return False
+    contradicted_args = {json.dumps(state.get_action(p.action_id).args, sort_keys=True, default=str)
+                         for p in state._practice_assessments.values() if p.expected_actual_relation == 'contradicted'}
+    revised = any(getattr(getattr(e, 'move_type', None), 'value', None) == 'REVISE_WORLD' for e in state._trace)
+    return len(contradicted_args) >= 2 and revised
 
 
 def unassessed(state):

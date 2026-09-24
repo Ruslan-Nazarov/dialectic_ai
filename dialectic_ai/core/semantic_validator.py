@@ -101,6 +101,11 @@ things PROPOSE_SIMPLEST, ASSESS_SIMPLEST, or DEVELOP_PROCESS must already contai
   explanation is worded (a fluent explanation does not substitute for the numbers actually matching).
 - REVISE_WORLD: identified observations genuinely call for changing the roadmap.
 - ASSESS_LEAP: actual observations substantiate realization; planned reasoning alone is insufficient.
+- REPORT_CONTRADICTION: an honest unresolved end. Accept only if (1) the cited contradicting observations really
+  conflict with what was expected, repeatedly, not a single slip the model could still work around; (2)
+  supported_answer, when given, is actually established by the cited supporting observations and those do not
+  rely on the contested source's disputed output; (3) final_response states the answer's status plainly, names
+  the unreliable source, and never presents a value from the contradicting observations as the answer.
 - COMPLETE: actual response satisfies the user task and role, supported by cited observations and assessments. Do not accept
   simulation placeholders as real results, unsupported claims, or unresolved practical failures disguised as success.
   A "clear" COMPLETE (no roadmap ever built, evidence_observation_ids empty) is legitimate ONLY when the goal
