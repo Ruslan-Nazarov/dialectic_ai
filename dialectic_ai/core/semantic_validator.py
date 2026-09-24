@@ -102,14 +102,18 @@ things PROPOSE_SIMPLEST, ASSESS_SIMPLEST, or DEVELOP_PROCESS must already contai
 - OPPOSITE: a process found among the simplest's developing processes whose own development does not require
   the simplest (excluding its existence is not destroying it); independence must say why. Being found in the
   simplest's development (its context) is REQUIRED, not a lack of independence: independence concerns only
-  whether the opposite's OWN development needs the simplest. REJECT an alternative way to reach the same goal
-  and a mere negation ("don't do it").
+  whether the opposite's OWN development needs the simplest. It must be a process of the task's own situation,
+  found where the development approaches it: REJECT a side topic the development drifted into (the chemistry or
+  biology behind an everyday situation, a technical subsystem of a human one). REJECT an alternative way to reach the same goal,
+  another way of handling the situation (a quick reaction as the "opposite" of prevention), and a mere negation.
 - CONTRADICTION: the simplest and the opposite taken in the unity of their development. REJECT "two options
-  compete for one goal" or "choose one of two routes": that is a choice between solutions.
+  compete for one goal", "choose one of two routes", and two approaches to handling the situation (prevention vs
+  reaction, a policy vs a technology): that is a choice between solutions. Both sides must be processes of the
+  task's own situation: REJECT a contradiction about a side topic.
 - LEAP: a resolving process -- one that replaces the simplest and the opposite by taking both into its own
   development (replacement), or one that lets the contradiction keep existing until it is resolved
-  (mediation); how_resolves must say how. REJECT a hybrid or compromise of two options, a protocol that "does
-  both", or a recommendation: the answer to the task is derived from the resolution, it is not the resolution.
+  (mediation); how_resolves must say how. REJECT a hybrid or compromise of two options, a protocol or an
+  "integrated system" that "does both" or merely combines what both sides do, or a recommendation: the answer to the task is derived from the resolution, it is not the resolution.
 - BEGIN_EXECUTION: complete coherent task-world and actionable ordered route through it, with no unsupported claim of practice.
 - ACTION: truly tests or realizes its referenced route process, with a concrete expectation and valid known inputs.
   If this action's own route was designated OPPOSITE specifically to provide independent verification, its code

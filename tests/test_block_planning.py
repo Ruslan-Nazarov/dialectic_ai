@@ -34,7 +34,7 @@ class BlockLLM(MockLLM):
             ("State this task as a PROCESS", {"process": "food has gone cold and the staff can heat it",
                                              "needs_development": self.needs_development}),
             ("Find the SIMPLEST process", {"simplest": "cold food"}),
-            ("Name the processes that develop out of this process", None),
+            ("Name the processes through which this process develops", None),
             ("Develop this element of the process", None),
             ("Choose the OPPOSITE", None),
             ("State the contradiction", {"contradiction": "cold food and heating in the unity of their development",
@@ -53,7 +53,7 @@ class BlockLLM(MockLLM):
 
 
     def _dynamic(self, marker, prompt):
-        if marker == "Name the processes that develop out of this process":
+        if marker == "Name the processes through which this process develops":
             if "Process: cold food" in prompt:
                 return {"elements": ["food that was not heated", "food losing its taste", "heating of food"]}
             return {"elements": ["choosing a heating method", "bringing food to temperature"]}
@@ -103,8 +103,9 @@ async def test_development_is_a_bundle_with_a_block_per_element():
     elements = [state.get_process(r.emergent_process_id).content
                 for r in state.get_all_development_relations() if r.source_process_id == simplest.process_id]
     assert elements == ["food that was not heated", "food losing its taste", "heating of food"]
-    # Each element of both bundles was developed in its own block.
-    assert len(llm.block_prompts["Develop this element of the process"]) == 3 + 2
+    # Each element of every bundle -- the simplest's, the opposite's, the contradiction's -- was developed
+    # in its own block.
+    assert len(llm.block_prompts["Develop this element of the process"]) == 3 + 2 + 3
     for element in elements:
         element_id = next(p.id for p in state.get_all_processes() if p.content == element)
         step = next(r for r in state.get_all_development_relations() if r.source_process_id == element_id)
@@ -131,7 +132,7 @@ async def test_only_the_first_block_sees_the_task():
     llm = BlockLLM()
     await engine(llm, stop_after_roadmap=True).run(AgentInput(user_message=TASK))
     assert TASK in llm.block_prompts["State this task as a PROCESS"][0]
-    for marker in ("Find the SIMPLEST process", "Name the processes that develop out of this process",
+    for marker in ("Find the SIMPLEST process", "Name the processes through which this process develops",
                    "Develop this element of the process", "Choose the OPPOSITE", "State the contradiction",
                    "Resolve this contradiction"):
         assert all(TASK not in p and "What to do" not in p for p in llm.block_prompts[marker]), marker
@@ -175,7 +176,7 @@ async def test_plain_fact_question_skips_the_blocks(tmp_path):
     events = trace_events(trace)
     assert next(ev for ev in events if ev["event_type"] == "block_planning")["outcome"] == "no_contradiction"
     assert "Find the SIMPLEST process" not in llm.block_prompts
-    assert "Name the processes that develop out of this process" not in llm.block_prompts
+    assert "Name the processes through which this process develops" not in llm.block_prompts
 
 
 class RetryLLM(BlockLLM):
@@ -202,7 +203,7 @@ async def test_a_simplest_that_reaches_no_contradiction_is_rolled_back_and_repla
     result = await e.run(AgentInput(user_message=TASK))
     assert result.status == "planned"
     second = llm.block_prompts["Find the SIMPLEST process"][1]
-    assert 'Tried before, did not lead to a contradiction: "food service"' in second
+    assert 'Tried before, not the simplest: "food service"' in second
     # The graph keeps only the candidate that reached a contradiction.
     contents = [p.content for p in e.state.get_all_processes()]
     assert "food service" not in contents and "cold food" in contents
@@ -223,3 +224,90 @@ async def test_the_simplest_is_not_judged_on_its_own():
                           semantic_validator=RejectSimplest(), block_planning=True, stop_after_roadmap=True)
     result = await e.run(AgentInput(user_message=TASK))
     assert result.status == "planned"
+
+
+@pytest.mark.asyncio
+async def test_every_bundle_develops_toward_the_tasks_process():
+    llm = BlockLLM()
+    await engine(llm, stop_after_roadmap=True).run(AgentInput(user_message=TASK))
+    target = "Target: food has gone cold and the staff can heat it"
+    for marker in ("Name the processes through which this process develops", "Develop this element of the process"):
+        assert all(target in p for p in llm.block_prompts[marker]), marker
+
+
+class CarryLLM(BlockLLM):
+    """Every block passes on a carry naming the block it came from."""
+
+    async def generate(self, messages, tools=None):
+        reply = await super().generate(messages, tools)
+        prompt = messages[-1]["content"]
+        try:
+            answer = json.loads(reply)
+        except ValueError:
+            return reply
+        if isinstance(answer, dict) and "carry" not in answer and "State this task" not in prompt:
+            marker = next((m for m, ps in self.block_prompts.items() if ps and ps[-1] is prompt), "?")
+            answer["carry"] = f"carry from <{self.TAGS.get(marker, '?')}>"
+            return json.dumps(answer)
+        return reply
+
+    TAGS = {"Find the SIMPLEST process": "simplest", "Name the processes through which this process develops": "bundle",
+            "Develop this element of the process": "element", "Choose the OPPOSITE": "opposite",
+            "State the contradiction": "contradiction"}
+
+
+@pytest.mark.asyncio
+async def test_each_block_receives_the_carry_of_the_block_before_it():
+    llm = CarryLLM()
+    await engine(llm, stop_after_roadmap=True).run(AgentInput(user_message=TASK))
+    bundle_prompts = llm.block_prompts["Name the processes through which this process develops"]
+    assert "Received from the previous block: carry from <simplest>" in bundle_prompts[0]
+    assert "Received from the previous block: carry from <opposite>" in bundle_prompts[1]
+    assert "Received from the previous block: carry from <contradiction>" in bundle_prompts[2]
+    element_prompts = llm.block_prompts["Develop this element of the process"]
+    assert "Received from the previous block: carry from <bundle>" in element_prompts[0]
+    contradiction = llm.block_prompts["State the contradiction"][0]
+    assert "Received from the previous block: carry from <bundle>" in contradiction
+    # The resolution receives the contradiction's own development.
+    resolution = llm.block_prompts["Resolve this contradiction"][0]
+    assert "Its development:" in resolution and "made concrete" in resolution
+
+
+class JudgeLLM:
+    """The judge between blocks: rejects the first opposite as a side topic."""
+
+    def __init__(self):
+        self.prompts = []
+
+    async def generate(self, messages, tools=None):
+        prompt = messages[-1]["content"]
+        self.prompts.append(prompt)
+        first_opposite = "This block: OPPOSITE" in prompt and not any(
+            "This block: OPPOSITE" in p for p in self.prompts[:-1])
+        return json.dumps({"accepted": not first_opposite, "reason": "a side topic" if first_opposite else "ok"})
+
+
+class Judged(AcceptAll):
+    def __init__(self):
+        self.llm = JudgeLLM()
+
+
+@pytest.mark.asyncio
+async def test_every_block_passes_the_judge_who_sees_the_whole_chain():
+    llm, judged = BlockLLM(), Judged()
+    e = DialecticalEngine(DialecticalAgent("Answer the user", llm, [web_search()]), semantic_validator=judged,
+                          block_planning=True, stop_after_roadmap=True)
+    result = await e.run(AgentInput(user_message=TASK))
+    assert result.status == "planned"
+    blocks = [p.split("This block: ", 1)[1].split(" --", 1)[0] for p in judged.llm.prompts]
+    for block in ("SIMPLEST", "BUNDLE", "ELEMENT", "OPPOSITE", "CONTRADICTION", "RESOLUTION"):
+        assert block in blocks, block
+    # The rejected opposite was redone with the judge's reason.
+    retry = llm.block_prompts["Choose the OPPOSITE"][1]
+    assert "the judge: a side topic" in retry
+    # The judge of the contradiction sees the whole chain before it, from the task's process on.
+    contradiction_check = next(p for p in judged.llm.prompts if "This block: CONTRADICTION" in p)
+    chain = contradiction_check.split("The chain built so far:", 1)[1].split("This block:", 1)[0]
+    for text in ("TASK PROCESS: food has gone cold", "SIMPLEST: cold food", "food losing its taste",
+                 "opposite: heating of food", "choosing a heating method"):
+        assert text in chain, text
