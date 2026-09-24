@@ -69,3 +69,13 @@ async def test_judge_sees_graph_without_timeline():
     runtime = json.loads(Capture.prompt.split("\nDATA:\n", 1)[1])["runtime"]
     assert "timeline" not in runtime
     assert all("snapshot" not in r for r in runtime["roadmaps"])
+
+
+def test_actor_sees_guidance_only_for_allowed_moves():
+    state, goal = executed_state()
+    prompt, _ = build_v2_prompt(state, goal, ["DEVELOP_PROCESS", "COMPLETE"])
+    core = prompt.split("# Core Dialectical Moves", 1)[1].split("# Current Runtime State", 1)[0]
+    assert "- DEVELOP_PROCESS:" in core and "- COMPLETE:" in core
+    assert "WITHOUT ever" in core  # the clear-path note travels with COMPLETE
+    for unavailable in ("PROPOSE_ACTION", "ASSESS_PRACTICE", "REPORT_CONTRADICTION", "PROPOSE_SIMPLEST"):
+        assert f"- {unavailable}:" not in core

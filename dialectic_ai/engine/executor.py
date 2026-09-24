@@ -183,13 +183,11 @@ class DialecticalEngine:
                 include_runtime_json=getattr(self.agent.llm, "reads_runtime_json", False),
             )
 
-            # The static "Core Dialectical Moves" section always lists every move
-            # type, including ones not currently legal; a model can lock onto one
-            # of those (e.g. reaching for PROPOSE_ACTION while still in the design
-            # phase) and repeat it verbatim across retries despite the dynamic
-            # "Allowed Move Specifications" list further down correctly excluding
-            # it. When that repetition is detected, put the correction where it
-            # can't be missed: first, in its own sentence, before anything else.
+            # A model can lock onto a move that is not legal now (e.g. reaching for
+            # PROPOSE_ACTION while still in the design phase) and repeat it verbatim
+            # across retries, even though the prompt lists only allowed moves. When
+            # that repetition is detected, put the correction where it can't be
+            # missed: first, in its own sentence, before anything else.
             if (
                 self._repeat_invalid_move_count >= 2
                 and self._last_move_type_requested is not None
