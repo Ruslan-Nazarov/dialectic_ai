@@ -472,7 +472,18 @@ class StructuralValidator:
                 for ref_dict in proposal.payload.get("committed_development_refs", []):
                     ref = RuntimeReference(**ref_dict)
                     if not state.get_entity_by_ref(ref):
-                        return False, f"Development ref {ref} does not exist"
+                        # Say what was wrong and what would be valid: the bare message left the model
+                        # resubmitting refs of the wrong type (7 such rejections in live traces).
+                        other = [t for t in ("Process", "DevelopmentRelation", "Contradiction", "PracticeAssessment")
+                                 if t != ref.type and state.get_entity_by_ref(RuntimeReference(type=t, id=ref.id))]
+                        if other:
+                            return False, (f"Development ref {ref.id} is a {other[0]}, not a {ref.type}; "
+                                           f"use type '{other[0]}'")
+                        processes = [p.id for p in state.get_all_processes()
+                                     if state.is_committed(p.id) and state.ref_belongs_to_goal(
+                                         RuntimeReference(type="Process", id=p.id), goal.id)]
+                        return False, (f"Development ref {ref.type} {ref.id} does not exist. Committed processes "
+                                       f"of this goal you can cite: {processes}")
                     if not state.is_committed(ref.id):
                         return False, f"Development ref {ref} is not committed"
                     # Check goal ownership

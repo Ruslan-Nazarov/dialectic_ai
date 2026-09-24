@@ -262,3 +262,18 @@ def test_assess_leap_is_not_offered_once_every_leap_is_assessed(planned):
     apply(planned, 'ASSESS_LEAP', {'resolution_id': resolution.id, 'observation_ids': [oid], 'explanation': 'Observed'})
     moves = AllowedMovesResolver().allowed_moves(planned)
     assert MoveType.COMPLETE in moves and MoveType.ASSESS_LEAP not in moves
+
+
+def test_complete_with_wrong_ref_type_says_which_type_to_use(planned):
+    begin(planned)
+    oid = observe(planned)
+    resolution = next(iter(planned._resolution_relations.values()))
+    apply(planned, 'ASSESS_LEAP', {'resolution_id': resolution.id, 'observation_ids': [oid], 'explanation': 'Observed'})
+    payload = completion(planned, oid)
+    relation = planned.get_all_development_relations()[0]
+    payload['committed_development_refs'] = [{'type': 'Process', 'id': relation.id}]
+    with pytest.raises(ValueError, match="is a DevelopmentRelation, not a Process"):
+        apply(planned, 'COMPLETE', payload)
+    payload['committed_development_refs'] = [{'type': 'Process', 'id': 'missing'}]
+    with pytest.raises(ValueError, match="Committed processes of this goal you can cite"):
+        apply(planned, 'COMPLETE', payload)

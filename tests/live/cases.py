@@ -396,7 +396,9 @@ async def run_case(case: Case, trace_path: Path) -> tuple[Run, float]:
     agent = DialecticalAgent(case.role, llm=actor, tools=tools if isinstance(tools, list) else [tools])
     judge = LLMSemanticValidator(judge_llm)
     judge.agent_goal = agent.goal
-    limits = {"max_iterations": 30, "max_rejected_proposals": 8, "run_timeout": 300, **case.engine_kwargs}
+    # 600 s: runs that revise their roadmap took longer than 300 s on gpt-5-mini and timed out
+    # while still making progress.
+    limits = {"max_iterations": 30, "max_rejected_proposals": 8, "run_timeout": 600, **case.engine_kwargs}
     engine = DialecticalEngine(agent, semantic_validator=judge, logger=DevelopmentLogger(trace_path=str(trace_path)),
                                **limits)
     started = time.time()
