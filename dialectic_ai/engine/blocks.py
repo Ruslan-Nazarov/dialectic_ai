@@ -31,10 +31,14 @@ The flow:
    contradiction alive until it is resolved (mediation);
 8. route: built by the engine from the resolution.
 
-The simplest may not be found at once; it is checked by the run of the algorithm -- whether it
-reaches a contradiction. A candidate that does not (its block or bundle does not pass the judge, no
-opposite, no contradiction) is rolled back (the graph restored to before it) and the simplest block is
-asked for another one, told which candidates failed and why -- up to SIMPLEST_ATTEMPTS.
+The simplest may not be found at once: a link's place is found through the whole chain. So the simplest
+block first sketches, for its candidates, the whole analysis (development, opposite, contradiction,
+resolution) and chooses the candidate whose chain holds; the sketch stays inside that block -- only
+the simplest's judge sees it, and it goes to the trace, never to the next blocks. After the
+contradiction the judge checks the chain as a whole. A candidate whose chain does not hold (a block or
+bundle does not pass the judge, no opposite, no contradiction, or the whole-chain check fails) is
+rolled back (the graph restored to before it) and the simplest block is asked for another one, told
+which candidates failed and why -- up to SIMPLEST_ATTEMPTS.
 The contradiction's development is kept in the chain and the trace, not in the graph: the graph's
 development relations run between processes, and a contradiction is not one.
 """
@@ -75,6 +79,9 @@ DUTIES = {
     "OPPOSITE": "the opposite, chosen from the simplest's bundle",
     "CONTRADICTION": "the simplest and the opposite in the unity of their development",
     "RESOLUTION": "the process that resolves the contradiction",
+    "CHAIN": ("the chain as a whole, up to the contradiction: the simplest develops toward the task's process, the "
+              "opposite is found in that development and does not require the simplest, and the contradiction is "
+              "their unity in development"),
 }
 
 JUDGE = """You check one block of a dialectical analysis before its result is passed on to the next block.
@@ -117,8 +124,14 @@ of triangles, which gives the squares; the area arises out of the triangle). "a 
 clients call support less" -> "sales automation" (it develops into automating contact with clients, then answering
 typical questions automatically, and so into wanting a bot; "clients call support" would not do: the wish for a bot
 does not arise out of it).
+Before naming it, sketch the whole analysis for two or three candidates: what develops out of each toward this
+process, which of those developing processes is its opposite (its development does not require the candidate),
+what contradiction they form, and what resolves it. Choose the candidate whose sketch holds together best -- it
+develops into this process as a whole and reaches a real contradiction. The sketch is only for your choice: the
+carry must not contain it.
 Process: {process}{tried}
-Answer in the process's language. Return only JSON: {{"simplest": "...", "carry": "..."}}{carry_note}{feedback}"""
+Answer in the process's language. Return only JSON: {{"sketch": "the candidates and their chains, briefly",
+"simplest": "...", "carry": "..."}}{carry_note}{feedback}"""
 
 BUNDLE = """Name the processes through which this process develops toward the target -- the elements of its
 development. Each arises out of this process's own content, where it was contained potentially, and as it arises
@@ -261,8 +274,9 @@ class BlockPlanner:
         return None
 
     async def _block(self, block: str, template: str, render, **fields):
-        """One block: ask, render the result for the chain (raises ValueError on a malformed answer;
-        None means "nothing to pass on", e.g. no opposite), pass it through the judge, redo with the reason.
+        """One block: ask, render the result (raises ValueError on a malformed answer; None means
+        "nothing to pass on", e.g. no opposite), pass it through the judge, redo with the reason. `render`
+        may return (for_the_judge, for_the_chain) when the judge should see more than goes on.
         Returns (answer, None) when accepted or empty, else (last_answer, reason)."""
         feedback, answer = "", None
         for _ in range(MAX_ATTEMPTS):
@@ -274,12 +288,13 @@ class BlockPlanner:
                 continue
             if result is None:
                 return answer, None
-            reason = await self._judge(block, result)
+            judged, chained = result if isinstance(result, tuple) else (result, result)
+            reason = await self._judge(block, judged)
             await self.engine.logger.trace_event("block", {"run_id": self.engine.run_id, "block": block,
-                                                           "result": result, "carry": _carry(answer, ""),
+                                                           "result": judged, "carry": _carry(answer, ""),
                                                            "judge": reason or "accepted"})
             if reason is None:
-                self.chain.append(f"{block}: {result}")
+                self.chain.append(f"{block}: {chained}")
                 return answer, None
             feedback = f"the judge: {reason}"
         return answer, feedback or "no answer"
@@ -414,8 +429,12 @@ class BlockPlanner:
         if tried_note:
             tried_note += "\nFind a different simplest."
 
-        # 1. Simplest -- receives the task's process.
-        answer, reason = await self._block("SIMPLEST", SIMPLEST, lambda a: _text(a, "simplest"), process=task_process,
+        # 1. Simplest -- receives the task's process; its sketch of the whole chain goes to its judge only.
+        def render_simplest(a):
+            simplest = _text(a, "simplest")
+            sketch = str(a.get("sketch") or "").strip()
+            return (f"{simplest}\n(the sketch behind this choice: {sketch})" if sketch else simplest), simplest
+        answer, reason = await self._block("SIMPLEST", SIMPLEST, render_simplest, process=task_process,
                                            tried=tried_note)
         simplest_text = str((answer or {}).get("simplest") or "").strip()
         if reason:
@@ -487,6 +506,13 @@ class BlockPlanner:
         if not contradiction_id:
             return None, simplest_text, f"the contradiction could not be committed: {why}"
         carry = _carry(answer, contradiction_text)
+
+        # The whole chain, up to the contradiction, must hold -- else the simplest was not the simplest.
+        reason = await self._judge("CHAIN", "(the chain above)")
+        await self.engine.logger.trace_event("block", {"run_id": self.engine.run_id, "block": "CHAIN",
+                                                       "result": "", "carry": "", "judge": reason or "accepted"})
+        if reason:
+            return None, simplest_text, f"the chain built on it does not hold: {reason}"
 
         # 6. The contradiction's development -- a bundle of processes (kept in the chain, not the graph).
         contradiction_bundle, reason = await self._bundle("the contradiction's development", None, contradiction_text,

@@ -311,3 +311,57 @@ async def test_every_block_passes_the_judge_who_sees_the_whole_chain():
     for text in ("TASK PROCESS: food has gone cold", "SIMPLEST: cold food", "food losing its taste",
                  "opposite: heating of food", "choosing a heating method"):
         assert text in chain, text
+
+
+class SketchLLM(BlockLLM):
+    """The simplest block returns a sketch of the whole chain behind its choice."""
+    SKETCH = "SKETCH: cold food -> heating -> contradiction -> heating of the cold food"
+
+    async def generate(self, messages, tools=None):
+        prompt = messages[-1]["content"]
+        if "Find the SIMPLEST process" in prompt:
+            self.block_prompts.setdefault("Find the SIMPLEST process", []).append(prompt)
+            return json.dumps({"sketch": self.SKETCH, "simplest": "cold food", "carry": "cold food"})
+        return await super().generate(messages, tools)
+
+
+@pytest.mark.asyncio
+async def test_the_simplests_sketch_goes_only_to_its_own_judge():
+    llm, judged = SketchLLM(), Judged()
+    e = DialecticalEngine(DialecticalAgent("Answer the user", llm, [web_search()]), semantic_validator=judged,
+                          block_planning=True, stop_after_roadmap=True)
+    await e.run(AgentInput(user_message=TASK))
+    simplest_checks = [p for p in judged.llm.prompts if "This block: SIMPLEST" in p]
+    assert SketchLLM.SKETCH in simplest_checks[0]
+    later = [p for p in judged.llm.prompts if "This block: SIMPLEST" not in p]
+    assert later and all(SketchLLM.SKETCH not in p for p in later)
+    assert all(SketchLLM.SKETCH not in p for m, ps in llm.block_prompts.items() for p in ps
+               if m != "Find the SIMPLEST process")
+
+
+class ChainJudgeLLM(JudgeLLM):
+    """Rejects the whole chain built on the first simplest."""
+
+    async def generate(self, messages, tools=None):
+        prompt = messages[-1]["content"]
+        self.prompts.append(prompt)
+        first_chain = "This block: CHAIN" in prompt and not any("This block: CHAIN" in p for p in self.prompts[:-1])
+        return json.dumps({"accepted": not first_chain, "reason": "the opposite is not found in its development"
+                           if first_chain else "ok"})
+
+
+@pytest.mark.asyncio
+async def test_a_chain_that_does_not_hold_sends_the_analysis_back_to_the_simplest(tmp_path):
+    from dialectic_ai.core.logger import DevelopmentLogger
+    trace = tmp_path / "t.jsonl"
+    judged = Judged()
+    judged.llm = ChainJudgeLLM()
+    llm = BlockLLM()
+    e = DialecticalEngine(DialecticalAgent("Answer the user", llm, [web_search()]), semantic_validator=judged,
+                          block_planning=True, stop_after_roadmap=True, logger=DevelopmentLogger(trace_path=str(trace)))
+    result = await e.run(AgentInput(user_message=TASK))
+    assert result.status == "planned"
+    retry = next(ev for ev in trace_events(trace) if ev["event_type"] == "simplest_retry")
+    assert "the chain built on it does not hold: the opposite is not found" in retry["reason"]
+    assert "the chain built on it does not hold" in llm.block_prompts["Find the SIMPLEST process"][1]
+    assert len(e.state.get_all_contradictions()) == 1   # the rolled-back chain left nothing behind
