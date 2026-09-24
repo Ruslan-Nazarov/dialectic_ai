@@ -23,6 +23,10 @@ class Domain:
         DESIGNATE_OPPOSITE at all -- it develops the opposite but does not choose it.
     unjudged_moves: moves checked only structurally, e.g. a route the domain fixes.
     judge_criteria: per-move criteria that override the judge's generic ones.
+    tool_call_limits: the most times each named tool may be called in one run. Enforced by the
+        engine before the judge; the model sees the remaining calls next to each tool. On the
+        business-card domain the role's "at most 2 rounds of questions" was ignored and one run
+        asked 4 rounds, chasing a field the business never knew, until the deadline.
 
     Observed on the business-card pilot without this (0/3 runs reached the first
     question): the judge rejected the domain's own opposite up to 8 times in a row,
@@ -36,6 +40,11 @@ class Domain:
     opposite_justification: str = "Fixed by the task domain, not chosen by the model."
     unjudged_moves: frozenset = frozenset()
     judge_criteria: dict = field(default_factory=dict)
+    tool_call_limits: dict = field(default_factory=dict)
+
+    def calls_left(self, tool_name: str, calls_made: int) -> Optional[int]:
+        limit = self.tool_call_limits.get(tool_name)
+        return None if limit is None else max(0, limit - calls_made)
 
     def judge_criterion(self, move: MoveType) -> Optional[str]:
         return self.judge_criteria.get(move) or self.judge_criteria.get(move.value)

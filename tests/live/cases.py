@@ -204,6 +204,7 @@ BUSINESS_DOMAIN = Domain(
 - The route is always the same: ask_business, then commit_card.""",
     opposite="Студенческая команда начинает работу, зная только карточку задачи, без возможности спросить бизнес",
     unjudged_moves=frozenset({MoveType.BEGIN_EXECUTION}),
+    tool_call_limits={"ask_business": 2},
     judge_criteria={
         MoveType.DEVELOP_PROCESS: (
             "Accept if the development concretizes its source. Simplest side: what the draft says or implies "

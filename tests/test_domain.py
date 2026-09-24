@@ -97,3 +97,35 @@ async def test_judge_sees_domain_instead_of_role():
     assert Capture.data and all("role" not in d and d["domain"]["semantics"] == DOMAIN.semantics for d in Capture.data)
     develop = [d for d in Capture.data if d["proposal"]["move_type"] == "DEVELOP_PROCESS"]
     assert develop and all(d["domain_criterion"] == DOMAIN.judge_criteria[MoveType.DEVELOP_PROCESS] for d in develop)
+
+
+@pytest.mark.asyncio
+async def test_domain_tool_limit_is_enforced_before_the_judge():
+    """A limited tool is refused once its calls are used up, the judge is not asked, and the model
+    sees how many calls are left."""
+    class Capture(MockLLM):
+        prompts = []
+
+        async def generate(self, messages, tools=None):
+            self.prompts.append(messages[-1]["content"])
+            return await super().generate(messages, tools)
+
+    limited = Domain(name="limited", semantics="s", tool_call_limits={"web_search": 0})
+    judge = RecordingJudge()
+    llm = Capture()
+    e = DialecticalEngine(DialecticalAgent("Build a task card", llm, [web_search()]),
+                          semantic_validator=judge, domain=limited, max_rejected_proposals=2)
+    result = await e.run(AgentInput(user_message="Example"))
+    assert result.stop_reason == "max_rejected_proposals"
+    assert not e.state.get_all_actions()
+    assert MoveType.PROPOSE_ACTION not in judge.moves
+    rejections = [ev.validation_error for ev in e.state._trace if getattr(ev, "event_type", "") == "proposal_rejected"]
+    assert rejections and "web_search may be called at most 0 times" in rejections[0]
+    assert '"limit": "at most 0 calls per run; 0 left"' in llm.prompts[-1]
+
+
+@pytest.mark.asyncio
+async def test_tool_limit_leaves_unlimited_tools_alone():
+    e = engine(domain=Domain(name="d", semantics="s", tool_call_limits={"other_tool": 1}))
+    result = await e.run(AgentInput(user_message="Example"))
+    assert result.status == "completed" and len(e.state.get_all_actions()) == 1

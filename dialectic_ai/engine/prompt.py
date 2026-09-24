@@ -320,6 +320,7 @@ def build_v2_prompt(
     agent_goal: str = "",
     tools: Optional[list] = None,
     include_runtime_json: bool = False,
+    tool_notes: Optional[dict] = None,
 ) -> tuple[str, dict]:
     # Summarize state for the LLM
     procs = state.get_all_processes()
@@ -430,7 +431,10 @@ def build_v2_prompt(
     schemas_str += "\nAgent role and constraints:\n" + agent_goal
     schemas_str += "\nAvailable domain tools (call only these through PROPOSE_ACTION):\n"
     for tool in tools or []:
-        schemas_str += json.dumps({"name": tool.name, "description": tool.description, "parameters": tool.parameters()}, ensure_ascii=False) + "\n"
+        entry = {"name": tool.name, "description": tool.description, "parameters": tool.parameters()}
+        if tool_notes and tool.name in tool_notes:
+            entry["limit"] = tool_notes[tool.name]
+        schemas_str += json.dumps(entry, ensure_ascii=False) + "\n"
     if not tools:
         schemas_str += "No domain tools available. Never invent tools or observations.\n"
     prompt = V2_SYSTEM_PROMPT_TEMPLATE.format(

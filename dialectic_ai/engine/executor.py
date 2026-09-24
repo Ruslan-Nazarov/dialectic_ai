@@ -182,6 +182,7 @@ class DialecticalEngine:
                 iteration=iteration, max_iterations=self.max_iterations,
                 agent_goal=self._actor_role(), tools=list(self._tool_registry.values()),
                 include_runtime_json=getattr(self.agent.llm, "reads_runtime_json", False),
+                tool_notes=self._tool_limit_notes(),
             )
 
             # A model can lock onto a move that is not legal now (e.g. reaching for
@@ -360,6 +361,14 @@ class DialecticalEngine:
                     return await self._failure("max_rejected_proposals", "Too many rejected proposals")
                 continue
 
+            limit_error = self._tool_limit_error(proposal)
+            if limit_error:
+                await self._reject(limit_error, proposal)
+                rejected_count += 1
+                if rejected_count >= self.max_rejected_proposals:
+                    return await self._failure("max_rejected_proposals", "Too many rejected proposals")
+                continue
+
             # 4. Structural Validation
             from dialectic_ai.core.runtime import StructuralValidator
             validator = StructuralValidator()
@@ -518,6 +527,27 @@ class DialecticalEngine:
         await self.logger.trace_event("proposal_committed", {"run_id": self.run_id, "proposal": asdict(proposal),
                                                              "result_id": result_id, "origin": "domain"})
         return True
+
+    def _tool_calls_made(self, tool_name: str) -> int:
+        return sum(1 for a in self.state.get_all_actions() if a.tool_name == tool_name)
+
+    def _tool_limit_notes(self):
+        if not self.domain or not self.domain.tool_call_limits:
+            return None
+        return {name: f"at most {limit} calls per run; {self.domain.calls_left(name, self._tool_calls_made(name))} left"
+                for name, limit in self.domain.tool_call_limits.items()}
+
+    def _tool_limit_error(self, proposal):
+        """A domain's per-run tool limit, enforced before the judge is asked."""
+        if not self.domain or proposal.move_type != MoveType.PROPOSE_ACTION:
+            return None
+        name = (proposal.payload or {}).get("tool_name")
+        made = self._tool_calls_made(name)
+        if self.domain.calls_left(name, made) == 0:
+            return (f"Structural: {name} may be called at most {self.domain.tool_call_limits[name]} times in "
+                    f"this domain and has been called {made} times. Do not call it again: continue with what "
+                    f"you have (the remaining route, ASSESS_LEAP, COMPLETE).")
+        return None
 
     def _proposal_key(self, proposal):
         """Identifies a proposal together with the committed state it was made in."""
