@@ -88,3 +88,12 @@ async def test_auto_planning_keeps_a_domain_fixed_opposite():
     await engine.run(AgentInput(user_message="Example"))
     opposite = next(d for d in engine.state.get_all_designations() if d.role == DesignationRole.OPPOSITE)
     assert engine.state.get_process(opposite.process_id).content == domain.opposite
+
+
+@pytest.mark.asyncio
+async def test_stop_after_roadmap_ends_before_any_action():
+    engine = DialecticalEngine(DialecticalAgent("g", MockLLM(), [web_search()]), semantic_validator=RecordingJudge(),
+                               stop_after_roadmap=True)
+    result = await engine.run(AgentInput(user_message="Example"))
+    assert result.status == "planned" and result.roadmap_id in engine.state._roadmaps
+    assert not engine.state.get_all_actions() and engine.state.get_all_contradictions()

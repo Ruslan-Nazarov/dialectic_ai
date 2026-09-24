@@ -88,6 +88,9 @@ class DialecticalEngine:
         # practice (act, assess, revise, complete/report). Everything after planning is unchanged,
         # so comparing runs with and without it isolates what the model's own planning adds.
         auto_planning: bool = False,
+        # For measuring the dialectical blocks alone: end the run as "planned" as soon as the
+        # roadmap is accepted, before any action.
+        stop_after_roadmap: bool = False,
     ):
         self.agent = agent
         self.logger = logger or DevelopmentLogger()
@@ -100,6 +103,7 @@ class DialecticalEngine:
         self.run_timeout = run_timeout
         self.domain = domain
         self.auto_planning = auto_planning
+        self.stop_after_roadmap = stop_after_roadmap
         self._running = False
         self.validation_mode = "semantic"
         self._last_move_type_requested = None
@@ -454,6 +458,11 @@ class DialecticalEngine:
                 
             if move_type_enum == MoveType.BEGIN_EXECUTION:
                 await self.logger.trace_event("roadmap_accepted", {"run_id": self.run_id, "roadmap": asdict(self.state._roadmaps[result_id])})
+                if self.stop_after_roadmap:
+                    await self.logger.trace_event("run_finished", {"run_id": self.run_id, "status": "planned"})
+                    return RuntimeResult(status="planned", response="", run_id=self.run_id,
+                                         stop_reason="stopped_after_roadmap", validation_mode=self.validation_mode,
+                                         roadmap_id=result_id)
 
             # 7. Action Execution (if PROPOSE_ACTION was committed)
             if move_type_enum == MoveType.PROPOSE_ACTION:
