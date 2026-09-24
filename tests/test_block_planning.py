@@ -176,3 +176,36 @@ async def test_plain_fact_question_skips_the_blocks(tmp_path):
     assert next(ev for ev in events if ev["event_type"] == "block_planning")["outcome"] == "no_contradiction"
     assert "Find the SIMPLEST process" not in llm.block_prompts
     assert "Name the processes that develop out of this process" not in llm.block_prompts
+
+
+class RetryLLM(BlockLLM):
+    """The first simplest leads to no opposite; the second reaches a contradiction."""
+
+    def __init__(self):
+        super().__init__(opposite_numbers=(0, 3))
+        self.simplests = ["food service", "cold food"]
+
+    async def generate(self, messages, tools=None):
+        prompt = messages[-1]["content"]
+        if "Find the SIMPLEST process" in prompt:
+            self.block_prompts.setdefault("Find the SIMPLEST process", []).append(prompt)
+            return json.dumps({"simplest": self.simplests.pop(0)})
+        return await super().generate(messages, tools)
+
+
+@pytest.mark.asyncio
+async def test_a_simplest_that_reaches_no_contradiction_is_rolled_back_and_replaced(tmp_path):
+    from dialectic_ai.core.logger import DevelopmentLogger
+    trace = tmp_path / "t.jsonl"
+    llm = RetryLLM()
+    e = engine(llm, stop_after_roadmap=True, logger=DevelopmentLogger(trace_path=str(trace)))
+    result = await e.run(AgentInput(user_message=TASK))
+    assert result.status == "planned"
+    second = llm.block_prompts["Find the SIMPLEST process"][1]
+    assert 'Tried before, did not lead to a contradiction: "food service"' in second
+    # The graph keeps only the candidate that reached a contradiction.
+    contents = [p.content for p in e.state.get_all_processes()]
+    assert "food service" not in contents and "cold food" in contents
+    assert len([d for d in e.state.get_all_designations() if d.role == DesignationRole.SIMPLEST]) == 1
+    retry = next(ev for ev in trace_events(trace) if ev["event_type"] == "simplest_retry")
+    assert retry["simplest"] == "food service" and "no opposite" in retry["reason"]

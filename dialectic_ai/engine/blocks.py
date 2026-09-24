@@ -25,13 +25,21 @@ The flow:
 6. resolution of the contradiction: a process replacing both by taking them in (replacement), or
    keeping the contradiction alive until it is resolved (mediation);
 7. route: built by the engine from the resolution.
+
+The simplest may not be found at once: whether it was the simplest shows only in whether the analysis
+reaches a contradiction. If it does not (no bundle, no opposite in it, no contradiction), the engine
+rolls the graph back to before that simplest and asks for another one, telling the block which
+candidates did not lead to a contradiction and why -- up to SIMPLEST_ATTEMPTS candidates.
 """
+import copy
 import json
 import re
 
 from dialectic_ai.core.runtime import DesignationRole, MoveType, Proposal
 
 MAX_ATTEMPTS = 3
+SIMPLEST_ATTEMPTS = 3   # candidates for the simplest, each checked by whether it reaches a contradiction
+NO_OPPOSITE = "no element of its development was independent of it (no opposite)"
 BUNDLE_MAX = 5          # elements per bundle: enough to find the opposite, bounded for cost
 ELEMENT_STEPS_MAX = 3   # how far one element is developed in its own block
 
@@ -49,12 +57,10 @@ Answer in the task's language. Return only JSON: {{"process": "...", "needs_deve
 SIMPLEST = """Find the SIMPLEST process for this process: the process from which the whole of it develops.
 It must be connected to this process; the processes that develop out of it must approach this process as a
 whole; and each of them must stay connected to it. It is not a piece of the situation and not a solution.
-Nor is it the institution or general activity around the situation (customer service, management, policy-making,
-assessment design, decision-making): it is the process the situation's own content develops from.
 Examples: "a business wants an AI chatbot so clients call support less" -> "sales automation" (it develops into
 automating contact with clients, then answering typical questions automatically, and so into wanting a bot).
 "to get the square of the hypotenuse, add the squares of the legs" -> "a triangle".
-Process: {process}
+Process: {process}{tried}
 Answer in the process's language. Return only JSON: {{"simplest": "..."}}{feedback}"""
 
 BUNDLE = """Name the processes that develop out of this process -- the elements of its development. Each is
@@ -250,28 +256,56 @@ class BlockPlanner:
             simplest_proposal = self._move(MoveType.PROPOSE_SIMPLEST, {"content": task_process},
                                            "A plain question: nothing to develop.")
             pid, _ = await self.engine._submit(simplest_proposal, self.validator, self.goal, origin="block")
-        else:
-            def simplest_move(answer):
-                _nonempty(answer["simplest"], "simplest")
-                return self._move(MoveType.PROPOSE_SIMPLEST, {"content": str(answer["simplest"]).strip()},
-                                  "The process from which the whole situation develops.")
-            pid, _ = await self._block(SIMPLEST, simplest_move, process=task_process)
+            if not pid:
+                return "fallback"
+            candidate = next(d for d in self.engine.state.get_all_designations() if d.process_id == pid)
+            approve = self._move(MoveType.ASSESS_SIMPLEST, {"candidate_simplest_id": candidate.id, "approved": True},
+                                 "A plain question: nothing to develop.")
+            ok = (await self.engine._submit(approve, self.validator, self.goal, origin="block"))[0]
+            return "no_contradiction" if ok else "fallback"
+
+        # Blocks 1-7 per candidate simplest; a candidate that does not reach a contradiction is rolled back.
+        tried, reason = [], None
+        for attempt in range(1, SIMPLEST_ATTEMPTS + 1):
+            saved = copy.deepcopy(self.engine.state)
+            outcome, simplest_text, reason = await self._attempt(task_process, tried)
+            if outcome is not None:
+                return outcome
+            tried.append((simplest_text, reason))
+            await self.engine.logger.trace_event("simplest_retry", {"run_id": self.engine.run_id, "attempt": attempt,
+                                                                    "simplest": simplest_text, "reason": reason})
+            if attempt < SIMPLEST_ATTEMPTS:
+                self.engine.state = saved
+        return "no_contradiction" if reason == NO_OPPOSITE else "fallback"
+
+    async def _attempt(self, task_process, tried):
+        """Blocks 1-7 for one candidate simplest. Returns (outcome, None, None) once the analysis reached
+        a contradiction or failed for another cause ("roadmap" or "fallback"), or (None, simplest_text,
+        reason) when this candidate did not lead to a contradiction."""
+        state = self.engine.state
+        tried_note = "".join(f'\nTried before, did not lead to a contradiction: "{text}" -- {why}' for text, why in tried)
+        if tried_note:
+            tried_note += "\nFind a different simplest."
+
+        def simplest_move(answer):
+            _nonempty(answer["simplest"], "simplest")
+            return self._move(MoveType.PROPOSE_SIMPLEST, {"content": str(answer["simplest"]).strip()},
+                              "The process from which the whole situation develops.")
+        pid, _ = await self._block(SIMPLEST, simplest_move, process=task_process, tried=tried_note)
         if not pid:
-            return "fallback"
+            return "fallback", None, None
         candidate = next(d for d in state.get_all_designations() if d.process_id == pid)
         approve = self._move(MoveType.ASSESS_SIMPLEST, {"candidate_simplest_id": candidate.id, "approved": True},
                              "The candidate is the simplest process of the task.")
         if not (await self.engine._submit(approve, self.validator, self.goal, origin="block"))[0]:
-            return "fallback"
-        if plain_question:
-            return "no_contradiction"
+            return "fallback", None, None
         simplest = self._designation(DesignationRole.SIMPLEST)
         simplest_text = state.get_process(simplest.process_id).content
 
         # 2. The simplest's development -- a bundle; receives the simplest (and the task's process as target).
         bundle = await self._bundle(simplest.process_id, simplest_text, target=task_process)
         if not bundle:
-            return "fallback"
+            return None, simplest_text, "it did not develop into a bundle of processes"
 
         # 3. Opposite -- chosen from the bundle; the engine links it to that element.
         listed = "\n".join(f"{i}. {e.describe()}" for i, e in enumerate(bundle, 1))
@@ -293,14 +327,16 @@ class BlockPlanner:
                 "An element of the bundle whose development does not require the simplest.")
         opposite_pid, answer = await self._block(OPPOSITE, opposite_move, simplest=simplest_text, bundle=listed)
         if not opposite_pid:
-            return "no_contradiction" if isinstance(answer, dict) and str(answer.get("number")) == "0" else "fallback"
+            if isinstance(answer, dict) and str(answer.get("number")) == "0":
+                return None, simplest_text, NO_OPPOSITE
+            return None, simplest_text, f"no opposite could be established in its development ({answer})"[:300]
         opposite = self._designation(DesignationRole.OPPOSITE)
         opposite_text = state.get_process(opposite.process_id).content
 
         # 4. The opposite's development -- its own bundle; receives the opposite.
         opposite_bundle = await self._bundle(opposite.process_id, opposite_text)
         if not opposite_bundle:
-            return "fallback"
+            return None, simplest_text, "the opposite found in its development did not develop"
 
         # 5. Contradiction -- receives the simplest (without its bundle) and the opposite with its bundle.
         # In the graph the simplest's side is the development the opposite was found in.
@@ -319,7 +355,7 @@ class BlockPlanner:
             CONTRADICTION, contradiction_move, simplest=simplest_text, opposite=opposite_text,
             opposite_bundle="\n".join(f"- {e.describe()}" for e in opposite_bundle))
         if not contradiction_id:
-            return "fallback"
+            return None, simplest_text, "it and the opposite did not form a contradiction"
         contradiction_text = state.get_contradiction(contradiction_id).unity_justification
 
         # 6. Resolution -- receives the contradiction (with its two sides).
@@ -334,11 +370,12 @@ class BlockPlanner:
         leap_pid, _ = await self._block(RESOLUTION, resolution_move, contradiction=contradiction_text,
                                         simplest=simplest_text, opposite=opposite_text)
         if not leap_pid:
-            return "fallback"
+            return "fallback", None, None
         leap = next(r for r in state._resolution_relations.values() if r.resolution_process_id == leap_pid)
 
         # 7. Route -- built by the engine from the resolution.
         route = self._move(MoveType.BEGIN_EXECUTION, {
             "simplest_id": simplest.id, "contradiction_ids": [contradiction_id], "resolution_ids": [leap.id],
             "execution_process_ids": [leap.resolution_process_id]}, "Act on the resolution.")
-        return "roadmap" if (await self.engine._submit(route, self.validator, self.goal, origin="block"))[0] else "fallback"
+        accepted = (await self.engine._submit(route, self.validator, self.goal, origin="block"))[0]
+        return ("roadmap" if accepted else "fallback"), None, None
