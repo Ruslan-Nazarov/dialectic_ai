@@ -3,9 +3,11 @@ tests/scenario_tools.py
 
 Tools that shape a scenario rather than serve a domain: a Python executor that
 lies about one exact result, and a "commit the reply" action for tasks whose
-real-world effect is the drafted answer itself. Used by the deterministic tool
-tests and by the opt-in live suite (tests/live/).
+real-world effect is the drafted answer itself. Also the business-card domain: a
+scripted business representative, and a card commit that rejects facts the business
+never stated. Used by the deterministic tool tests and the live suite (tests/live/).
 """
+import re
 import uuid
 
 from dialectic_ai.core.dialectical import dialectical
@@ -92,3 +94,142 @@ class DraftResponseTool(ActionTool):
             success=ok,
             error=None if ok else "category and response_text are required",
         )
+
+
+CARD_FIELDS = ["title", "context", "need", "users", "data", "constraints", "expected_result",
+               "success_criteria", "contact", "interaction_format"]
+
+# Facts a card value may only contain if the cited sources contain them too.
+_FACTS = re.compile(r"\d+|[\w.+-]+@[\w-]+\.[\w.]+|https?://\S+")
+
+
+def _norm(text: str) -> str:
+    text = text.lower().replace("ё", "е").replace("«", '"').replace("»", '"').replace(" ", " ")
+    return re.sub(r"\s+", " ", text).strip()
+
+
+class BusinessSession:
+    """One business representative for one run: the draft plus every answer given,
+    each addressable by source_id so card fields can cite them. `knows` maps a card
+    field to what this business would answer; anything else is "don't know"."""
+
+    def __init__(self, draft: str, knows: dict):
+        self.knows = knows
+        self.sources = {"draft": draft}
+        self.rounds = []
+        self.card_attempts = []
+
+    def answer(self, field: str) -> tuple:
+        answer_id = f"A{len(self.sources)}"
+        self.sources[answer_id] = self.knows.get(field, "")
+        return answer_id, self.sources[answer_id]
+
+    def provenance_errors(self, card: dict) -> list:
+        errors = []
+        for field in CARD_FIELDS:
+            item = card.get(field)
+            if not item:
+                continue
+            sources = item.get("sources") or []
+            if not sources:
+                errors.append(f"{field}: no sources")
+            cited = []
+            for source in sources:
+                text = self.sources.get(source.get("source_id"))
+                if text is None:
+                    errors.append(f"{field}: unknown source_id {source.get('source_id')}")
+                elif _norm(source.get("quote", "")) not in _norm(text):
+                    errors.append(f"{field}: quote not found in {source.get('source_id')}")
+                else:
+                    cited.append(text)
+            cited_text = _norm(" ".join(cited))
+            for fact in _FACTS.findall(item.get("value", "")):
+                if _norm(fact) not in cited_text:
+                    errors.append(f"{field}: fact '{fact}' is not in the cited sources")
+        return errors
+
+
+@dialectical(
+    origin="A task card needs facts that only the business representative knows",
+    contradiction="The draft omits what a team needs to start, and the model cannot know it",
+    resolves="Asks the business directly; the human answer is the observation practice collides with",
+    generates="Answers addressable by source_id, which card fields can cite",
+    own_contradictions="Here the business is scripted per field; a real person answers the question "
+                       "asked, not the field it was tagged with",
+    layer=6,
+)
+class AskBusinessTool(ActionTool):
+    """Asks the business 3-5 clarifying questions and returns their answers."""
+
+    def __init__(self, session: BusinessSession):
+        self.session = session
+
+    @property
+    def name(self) -> str:
+        return "ask_business"
+
+    @property
+    def description(self) -> str:
+        return ("Ask the business representative 3-5 clarifying questions, one fact each, in Russian. "
+                "Returns answers with answer_id; an empty answer means they do not know.")
+
+    def parameters(self) -> dict:
+        return {"type": "object", "properties": {"questions": {"type": "array", "minItems": 3, "maxItems": 5, "items": {
+            "type": "object", "properties": {
+                "question": {"type": "string"},
+                "field": {"type": "string", "enum": CARD_FIELDS},
+                "why": {"type": "string", "description": "Which gap or contradiction this question closes."}},
+            "required": ["question", "field", "why"]}}}, "required": ["questions"]}
+
+    async def execute(self, args: dict) -> Evidence:
+        questions = args.get("questions") or []
+        if len(questions) < 3:
+            return Evidence(id=str(uuid.uuid4()), source=self.name, content="", tool_name=self.name,
+                            success=False, error="At least 3 questions are required")
+        answers = []
+        for q in questions:
+            answer_id, text = self.session.answer(q.get("field"))
+            answers.append({"answer_id": answer_id, "field": q.get("field"), "question": q.get("question"),
+                            "answer": text or "(не знаю)"})
+        self.session.rounds.append({"questions": questions, "answers": answers})
+        return Evidence(id=str(uuid.uuid4()), source=self.name, content={"answers": answers},
+                        tool_name=self.name, success=True)
+
+
+@dialectical(
+    origin="Model-written task cards read fluently whether or not the business said any of it",
+    contradiction="A fluent card and a grounded card look the same to a reader",
+    resolves="Rejects any field whose quotes or facts are absent from the cited draft or answers",
+    generates="Cards whose every field is traceable to the business's own words",
+    own_contradictions="Substring matching only: a paraphrase that adds no number, e-mail or URL passes",
+    layer=6,
+)
+class CommitCardTool(ActionTool):
+    """Commits the task card; fails if any field is not grounded in its cited sources."""
+
+    def __init__(self, session: BusinessSession):
+        self.session = session
+
+    @property
+    def name(self) -> str:
+        return "commit_card"
+
+    @property
+    def description(self) -> str:
+        return ("Commit the task card. Every non-null field must cite sources: source_id 'draft' or an "
+                "answer_id from ask_business, each with an exact quote from that source. Facts not in "
+                "the sources are rejected. Use null for fields with no information.")
+
+    def parameters(self) -> dict:
+        field = {"anyOf": [{"type": "null"}, {"type": "object", "properties": {
+            "value": {"type": "string"},
+            "sources": {"type": "array", "minItems": 1, "items": {"type": "object", "properties": {
+                "source_id": {"type": "string"}, "quote": {"type": "string"}}, "required": ["source_id", "quote"]}}},
+            "required": ["value", "sources"]}]}
+        return {"type": "object", "properties": {f: field for f in CARD_FIELDS}, "required": CARD_FIELDS}
+
+    async def execute(self, args: dict) -> Evidence:
+        errors = self.session.provenance_errors(args)
+        self.session.card_attempts.append({"card": args, "errors": errors})
+        return Evidence(id=str(uuid.uuid4()), source=self.name, content={"card": args, "errors": errors},
+                        tool_name=self.name, success=not errors, error="; ".join(errors) or None)

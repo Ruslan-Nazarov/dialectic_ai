@@ -1,6 +1,8 @@
 import pytest
 
-from tests.scenario_tools import DraftResponseTool, RiggedPythonExecutor
+from tests.scenario_tools import (
+    CARD_FIELDS, AskBusinessTool, BusinessSession, CommitCardTool, DraftResponseTool, RiggedPythonExecutor,
+)
 
 
 @pytest.mark.asyncio
@@ -23,3 +25,69 @@ async def test_draft_response_requires_both_fields():
     assert ok.success and ok.content["category"] == "жалоба"
     empty = await tool.execute({"category": "жалоба", "response_text": "  "})
     assert not empty.success and empty.error
+
+
+DRAFT = "Хотим чат-бота для клиентов. Данных пока нет. Нужно к следующему месяцу."
+
+
+def business():
+    return BusinessSession(DRAFT, {"data": "Есть выгрузка обращений за полгода в Excel.",
+                                   "contact": "Анна, anna@example.com"})
+
+
+def grounded(value, source_id, quote):
+    return {"value": value, "sources": [{"source_id": source_id, "quote": quote}]}
+
+
+@pytest.mark.asyncio
+async def test_ask_business_answers_by_field_and_marks_unknown():
+    session = business()
+    questions = [{"question": "Какие данные есть?", "field": "data", "why": "gap"},
+                 {"question": "Кто контакт?", "field": "contact", "why": "gap"},
+                 {"question": "Сколько пользователей?", "field": "users", "why": "gap"}]
+    evidence = await AskBusinessTool(session).execute({"questions": questions})
+    answers = evidence.content["answers"]
+    assert evidence.success and [a["answer_id"] for a in answers] == ["A1", "A2", "A3"]
+    assert answers[2]["answer"] == "(не знаю)"
+    assert session.sources["A1"].startswith("Есть выгрузка")
+
+
+@pytest.mark.asyncio
+async def test_ask_business_requires_three_questions():
+    evidence = await AskBusinessTool(business()).execute({"questions": [{"question": "?", "field": "data", "why": "x"}]})
+    assert not evidence.success
+
+
+@pytest.mark.asyncio
+async def test_commit_card_accepts_grounded_fields_and_nulls():
+    session = business()
+    session.answer("data")
+    card = {f: None for f in CARD_FIELDS}
+    card["data"] = grounded("Выгрузка обращений за полгода", "A1", "выгрузка обращений за полгода")
+    card["need"] = grounded("Чат-бот для клиентов", "draft", "чат-бота для клиентов")
+    evidence = await CommitCardTool(session).execute(card)
+    assert evidence.success, evidence.error
+
+
+@pytest.mark.parametrize("field_value,problem", [
+    (grounded("Бот к 1 марта", "draft", "Нужно к следующему месяцу"), "fact '1'"),
+    (grounded("Чат-бот", "draft", "голосовой ассистент"), "quote not found"),
+    (grounded("Чат-бот", "A9", "чат-бота"), "unknown source_id"),
+    ({"value": "Чат-бот", "sources": []}, "no sources"),
+])
+@pytest.mark.asyncio
+async def test_commit_card_rejects_ungrounded_fields(field_value, problem):
+    card = {f: None for f in CARD_FIELDS}
+    card["need"] = field_value
+    evidence = await CommitCardTool(business()).execute(card)
+    assert not evidence.success and problem in evidence.error
+
+
+@pytest.mark.asyncio
+async def test_commit_card_rejects_invented_email():
+    session = business()
+    session.answer("contact")
+    card = {f: None for f in CARD_FIELDS}
+    card["contact"] = grounded("Анна, anna.smirnova@example.com", "A1", "Анна")
+    evidence = await CommitCardTool(session).execute(card)
+    assert not evidence.success and "anna.smirnova@example.com" in evidence.error

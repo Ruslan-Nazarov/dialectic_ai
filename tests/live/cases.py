@@ -23,7 +23,9 @@ from dialectic_ai.engine import DialecticalEngine
 from dialectic_ai.integrations.gigachat.llm import GigaChatLLM
 from dialectic_ai.integrations.providers import build_llm
 from dialectic_ai.reality import PythonExecutor
-from tests.scenario_tools import DraftResponseTool, RiggedPythonExecutor
+from tests.scenario_tools import (
+    AskBusinessTool, BusinessSession, CommitCardTool, DraftResponseTool, RiggedPythonExecutor,
+)
 
 GENERIC_ROLE = "Answer the user's task accurately. Verify any arithmetic claim using the provided Python tool before finalizing."
 OPEN_ROLE = "Answer the user's task thoughtfully and honestly."
@@ -81,9 +83,10 @@ class Case:
     name: str
     role: str
     task: str
-    tool: Callable[[], object]
+    tool: Callable[[], object]          # one tool, or a list of tools sharing state
     check: Callable[[Run], list]
     observe: Callable[[Run], dict] = field(default=lambda run: {})
+    engine_kwargs: dict = field(default_factory=dict)
 
 
 def completed_with(*needles):
@@ -156,6 +159,68 @@ def genuine_tension(run):
     return []
 
 
+BUSINESS_ROLE = """You turn a business representative's rough task description into a complete task card
+for student teams, in Russian. Card fields: title, context, need, users, data, constraints,
+expected_result, success_criteria, contact, interaction_format.
+
+DOMAIN-SPECIFIC MEANING OF THE DIALECTICAL TERMS FOR THIS TASK (use this instead of a generic reading):
+- SIMPLEST process: the need as the business stated it in the draft.
+- OPPOSITE process: a student team starting work knowing ONLY the card -- its need is "start working
+  without asking the business anything", not "describe the task". It develops independently of what
+  the business has in mind.
+- CONTRADICTION: what the business takes for granted versus what the team cannot know from the text;
+  also internal conflicts inside the draft (e.g. wants an AI model but has no data; deadline versus scope;
+  a goal with no measurable criterion).
+- LEAP: a task card whose every field is grounded in what the business actually said.
+
+MANDATORY PRACTICE: you must call ask_business (3-5 questions, each closing a specific gap or
+contradiction you found, one fact per question, plain Russian) and then commit the card with
+commit_card BEFORE COMPLETE. Completing without both tools is not allowed.
+Never add facts the business did not state. If there is no information for a field, set it to null.
+If an answer resolves the contradiction, practice is confirmed; if it reveals a new gap, ask again
+(at most 2 rounds of questions). COMPLETE's final_response is the committed card as JSON."""
+
+BUSINESS_DRAFT = ("Хотим чат-бота на ИИ для наших клиентов, чтобы меньше звонили в поддержку. "
+                  "Данных пока нет. Нужно к следующему месяцу.")
+
+# What this business would answer, per card field; anything else is "don't know".
+BUSINESS_KNOWS = {
+    "context": "Мы интернет-магазин бытовой техники. В поддержку звонят около 300 раз в день, в основном про статус доставки и возврат.",
+    "need": "Разгрузить операторов: чтобы типовые вопросы про доставку и возврат решались без звонка.",
+    "users": "Покупатели магазина, которые уже оформили заказ.",
+    "data": "Есть выгрузка обращений в поддержку за полгода в Excel и страница FAQ на сайте. Доступ к API статусов заказов можем дать.",
+    "constraints": "Срок — 4 недели. Бот должен работать в виджете на сайте. Персональные данные покупателей передавать нельзя.",
+    "expected_result": "Прототип бота в виджете, который отвечает на вопросы о статусе доставки и возврате.",
+    "success_criteria": "Не менее 30% обращений про доставку и возврат закрываются ботом без оператора в течение пилотного месяца.",
+    "contact": "Анна Смирнова, руководитель поддержки, anna.smirnova@example.com",
+    "interaction_format": "Созвон раз в неделю по четвергам, вопросы в Telegram-чате в течение дня.",
+}
+
+
+def business_tools():
+    session = BusinessSession(BUSINESS_DRAFT, BUSINESS_KNOWS)
+    return [AskBusinessTool(session), CommitCardTool(session)]
+
+
+def grounded_card(run):
+    """Asked the business, and finished with a card that passed the provenance check."""
+    problems = []
+    if not run.completed:
+        problems.append(f"did not complete: {run.result.stop_reason}")
+    if not run.successful_observations("ask_business"):
+        problems.append("never asked the business")
+    if not run.successful_observations("commit_card"):
+        problems.append("no card passed the provenance check")
+    return problems
+
+
+def business_facts(run):
+    state = run.engine.state
+    card_obs = [o for o in state.get_all_observations() if state.get_action(o.action_id).tool_name == "commit_card"]
+    return {"question_rounds": len(run.successful_observations("ask_business")),
+            "card_attempts": len(card_obs), "contradictions": len(state.get_all_contradictions())}
+
+
 CASES = [
     Case("arithmetic", GENERIC_ROLE, "Calculate 19 * 27 and verify the result with Python.",
          PythonExecutor, verified_by_practice("513")),
@@ -185,6 +250,8 @@ CASES = [
          "A university is deciding whether to allow students to use AI to write their essays entirely, with no "
          "restrictions. Should they allow it? Give a reasoned recommendation.",
          PythonExecutor, genuine_tension),
+    Case("business_card", BUSINESS_ROLE, BUSINESS_DRAFT, business_tools, grounded_card, business_facts,
+         {"max_iterations": 40, "run_timeout": 900}),
 ]
 
 
@@ -231,11 +298,13 @@ async def run_case(case: Case, trace_path: Path) -> tuple[Run, float]:
     actor, judge_llm = build_actor(), build_judge()
     meter.attach(actor, "actor")
     meter.attach(judge_llm, "judge")
-    agent = DialecticalAgent(case.role, llm=actor, tools=[case.tool()])
+    tools = case.tool()
+    agent = DialecticalAgent(case.role, llm=actor, tools=tools if isinstance(tools, list) else [tools])
     judge = LLMSemanticValidator(judge_llm)
     judge.agent_goal = agent.goal
-    engine = DialecticalEngine(agent, max_iterations=30, max_rejected_proposals=8, run_timeout=300,
-                               semantic_validator=judge, logger=DevelopmentLogger(trace_path=str(trace_path)))
+    limits = {"max_iterations": 30, "max_rejected_proposals": 8, "run_timeout": 300, **case.engine_kwargs}
+    engine = DialecticalEngine(agent, semantic_validator=judge, logger=DevelopmentLogger(trace_path=str(trace_path)),
+                               **limits)
     started = time.time()
     result = await engine.run(AgentInput(user_message=case.task))
     return Run(result, engine, meter.usage), round(time.time() - started, 1)
