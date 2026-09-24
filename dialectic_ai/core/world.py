@@ -74,10 +74,16 @@ def validate_world(proposal, state):
             reachable.update(r.emergent_process_id for r in state.get_all_development_relations()
                              if r.source_process_id in reachable and state.is_committed(r.id))
             changed = before != len(reachable)
+        usable = [pid for pid in reachable if (proc := state.get_process(pid)) and proc.status == 'active'
+                  and state.is_committed(pid)]
         for pid in p['execution_process_ids']:
-            process = state.get_process(pid)
-            if pid not in reachable or not process or process.status != 'active' or not state.is_committed(pid):
-                raise ValueError('Execution route must reference committed processes in this roadmap')
+            if pid not in usable:
+                # Name the offending process and what is allowed: the bare rule gave the model no way
+                # to see that it had kept an OLD leap's process in a route for a NEW leap, and it
+                # resubmitted the same route until the run timed out.
+                raise ValueError(f'Execution route process {pid} is not part of this roadmap: it is not reachable '
+                                 f'from the chosen contradictions and leaps {p["resolution_ids"]}. Processes '
+                                 f'allowed in this route: {usable}')
         # A revision must actually change the selected graph, not merely relabel the same roadmap.
         if state.active_roadmap_id:
             old = state._roadmaps[state.active_roadmap_id]

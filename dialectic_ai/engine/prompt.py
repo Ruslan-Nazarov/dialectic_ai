@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Optional
 
 from dialectic_ai.core.runtime import Goal, RuntimeState
@@ -52,6 +53,15 @@ def _aliased(uuid_to_alias: dict, real_id) -> str:
     if real_id is None:
         return "null"
     return uuid_to_alias.get(real_id, str(real_id))
+
+
+_UUID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
+
+def alias_text(text: str, uuid_to_alias: dict) -> str:
+    """Replaces real UUIDs inside free text (e.g. a validator's error message) with the aliases the
+    model sees in the graph; a rejection naming a UUID the model was never shown cannot be acted on."""
+    return _UUID.sub(lambda m: uuid_to_alias.get(m.group(0), m.group(0)), text)
 
 
 def apply_aliases(obj, uuid_to_alias: dict):
@@ -197,7 +207,9 @@ def _next_step_guidance(state: RuntimeState, al) -> str:
                 f"resolution ({al(newest.id)}) that was NOT part of the old roadmap -- that satisfies the "
                 f"revision. Do NOT propose yet another PROPOSE_LEAP. Call BEGIN_EXECUTION now, with "
                 f"resolution_ids including {al(newest.id)} and an execution route that differs from the old one "
-                f"({old_exec_refs})." + impossibility_hint
+                f"({old_exec_refs}). The route must include the new leap's own process "
+                f"{al(newest.resolution_process_id)}; processes that belong only to the old roadmap's leaps are "
+                f"not part of the new one." + impossibility_hint
             )
         return (
             f"A revision was triggered by practice: \"{state._revision_reason}\". Resubmitting the SAME "
@@ -347,7 +359,7 @@ def build_v2_prompt(
 
     feedback = state.get_recent_feedback()
     if feedback:
-        state_str += f"\n[URGENT FEEDBACK] Your previous proposal ({feedback['move_type']}) was rejected: {feedback['reason']}. Please fix this in your next proposal.\n"
+        state_str += f"\n[URGENT FEEDBACK] Your previous proposal ({feedback['move_type']}) was rejected: {alias_text(feedback['reason'], uuid_to_alias)}. Please fix this in your next proposal.\n"
 
     guidance = _next_step_guidance(state, al)
     if guidance:

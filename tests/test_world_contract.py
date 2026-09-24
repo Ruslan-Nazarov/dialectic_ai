@@ -148,3 +148,43 @@ def test_failed_commit_does_not_mutate(planned):
     with pytest.raises(ValueError):
         apply(planned, 'BEGIN_EXECUTION', {'simplest_id': 'missing'})
     assert planned.__dict__ == before
+
+
+def revised_with_new_leap(state):
+    """Roadmap -> contradicted practice -> revision -> a new leap for the same contradiction."""
+    begin(state)
+    oid = observe(state, relation='contradicted')
+    apply(state, 'REVISE_WORLD', {'observation_ids': [oid], 'reason': 'Expectation disproved'})
+    old = next(iter(state._resolution_relations.values()))
+    new_process = apply(state, 'PROPOSE_LEAP', {'contradiction_id': old.contradiction_id,
+        'resolution_content': 'Verify by an independent method', 'resolution_outcome': 'replacement'})
+    new = next(r for r in state._resolution_relations.values() if r.id != old.id)
+    return old, new
+
+
+def test_route_rejection_names_stale_process_and_allowed_ones(planned):
+    old, new = revised_with_new_leap(planned)
+    simplest = next(d for d in planned.get_all_designations() if d.role == DesignationRole.SIMPLEST)
+    with pytest.raises(ValueError) as err:
+        apply(planned, 'BEGIN_EXECUTION', {'simplest_id': simplest.id, 'contradiction_ids': [new.contradiction_id],
+            'resolution_ids': [new.id], 'execution_process_ids': [old.resolution_process_id]})
+    message = str(err.value)
+    assert old.resolution_process_id in message.split('allowed')[0]
+    assert new.resolution_process_id in message.split('allowed')[1]
+    apply(planned, 'BEGIN_EXECUTION', {'simplest_id': simplest.id, 'contradiction_ids': [new.contradiction_id],
+        'resolution_ids': [new.id], 'execution_process_ids': [new.resolution_process_id]})
+    assert planned.phase == 'executing'
+
+
+def test_revision_guidance_names_the_new_leap_process(planned):
+    from dialectic_ai.engine.prompt import _next_step_guidance, build_alias_map
+    old, new = revised_with_new_leap(planned)
+    aliases = build_alias_map(planned)
+    guidance = _next_step_guidance(planned, lambda x: aliases.get(x, x))
+    assert f"must include the new leap's own process {aliases[new.resolution_process_id]}" in guidance
+
+
+def test_feedback_text_uses_aliases():
+    from dialectic_ai.engine.prompt import alias_text
+    uid = '0b1685c3-c970-4510-9bbc-7b1a69577814'
+    assert alias_text(f'process {uid} is not allowed; allowed: [{uid}]', {uid: 'P4'}) == 'process P4 is not allowed; allowed: [P4]'
