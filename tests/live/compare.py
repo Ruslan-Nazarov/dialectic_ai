@@ -104,8 +104,8 @@ def _score(case_name, completed, response, calls, usage, elapsed, extra=None, un
             "elapsed": elapsed, "response": response[:300], **(extra or {})}
 
 
-async def engine_arm(case, trace):
-    run, elapsed = await run_case(case, trace)
+async def engine_arm(case, trace, overrides=None):
+    run, elapsed = await run_case(case, trace, overrides)
     return _score(case.name, run.completed, run.response, _engine_calls(run.engine), run.usage, elapsed,
                   {"stop_reason": run.result.stop_reason, "flagged_contradiction": bool(run.contradicted_practice())},
                   unresolved=run.result.status == "unresolved",
@@ -138,16 +138,22 @@ def summarize(records):
     return "\n".join(lines)
 
 
+ARMS = ("baseline", "engine")
+
+
 async def main(case_names, repeats, out):
     out.mkdir(parents=True, exist_ok=True)
     cases = [c for c in CASES if not case_names or c.name in case_names]
     records = []
     for case in cases:
         for i in range(1, repeats + 1):
-            for arm in ("baseline", "engine"):
+            for arm in ARMS:
                 try:
-                    record = (await baseline_arm(case) if arm == "baseline"
-                              else await engine_arm(case, out / f"{case.name}_{i}.jsonl"))
+                    if arm == "baseline":
+                        record = await baseline_arm(case)
+                    else:
+                        overrides = {"auto_planning": True} if arm == "auto_planning" else None
+                        record = await engine_arm(case, out / f"{case.name}_{arm}_{i}.jsonl", overrides)
                 except Exception as exc:  # a provider outage must not sink the whole comparison
                     record = {"completed": False, "correct": None, "fooled": None, "grounded": None,
                               "correct_but_ungrounded": None, "tokens": 0, "llm_calls": 0,
@@ -169,5 +175,8 @@ if __name__ == "__main__":
     parser.add_argument("--cases", default="", help="comma-separated case names; default: all")
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--out", type=Path, default=Path("live_runs/compare"))
+    parser.add_argument("--arms", default="baseline,engine",
+                        help="comma-separated: baseline, engine, auto_planning (engine without the model's own planning)")
     args = parser.parse_args()
+    ARMS = tuple(a.strip() for a in args.arms.split(",") if a.strip())
     asyncio.run(main({c.strip() for c in args.cases.split(",") if c.strip()}, args.repeats, args.out))

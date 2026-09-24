@@ -306,9 +306,8 @@ class RuntimeState:
 class StructuralValidator:
     def validate(self, proposal: Proposal, state: RuntimeState) -> tuple[bool, Optional[str]]:
         try:
-            if not is_valid_str(proposal.why_this_move_now) or not is_valid_str(proposal.expected_goal_contribution):
-                return False, "Proposal missing rationale"
-                
+            # why_this_move_now / expected_goal_contribution are explanations for the trace and the
+            # judge, optional since commit 14c1cb2; requiring them here silently undid that.
             if not isinstance(proposal.move_type, MoveType) or not isinstance(proposal.payload, dict):
                 return False, "Invalid proposal type or payload"
             active_goal = state.get_active_goal()

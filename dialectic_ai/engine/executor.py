@@ -84,6 +84,10 @@ class DialecticalEngine:
         tool_timeout: float = 30,
         run_timeout: float = 300,
         domain: Optional[Domain] = None,
+        # Ablation: the engine lays out a neutral dialectical plan itself and the model starts at
+        # practice (act, assess, revise, complete/report). Everything after planning is unchanged,
+        # so comparing runs with and without it isolates what the model's own planning adds.
+        auto_planning: bool = False,
     ):
         self.agent = agent
         self.logger = logger or DevelopmentLogger()
@@ -95,6 +99,7 @@ class DialecticalEngine:
         self.tool_timeout = tool_timeout
         self.run_timeout = run_timeout
         self.domain = domain
+        self.auto_planning = auto_planning
         self._running = False
         self.validation_mode = "semantic"
         self._last_move_type_requested = None
@@ -154,6 +159,8 @@ class DialecticalEngine:
             
             # 2. Get Allowed Moves & Direction
             from dialectic_ai.core.runtime import AllowedMovesResolver
+            if await self._auto_plan(goal):
+                continue
             resolver = AllowedMovesResolver()
             allowed_moves = resolver.allowed_moves(self.state)
             if self.domain and self.domain.opposite:
@@ -526,6 +533,77 @@ class DialecticalEngine:
         result_id = self.commit_layer.commit(proposal, self.state)
         await self.logger.trace_event("proposal_committed", {"run_id": self.run_id, "proposal": asdict(proposal),
                                                              "result_id": result_id, "origin": "domain"})
+        return True
+
+    async def _auto_plan(self, goal) -> bool:
+        """In auto_planning mode, commits a neutral plan (task -> what reality reports -> their
+        contradiction -> "act and check each result against its expectation") and a roadmap, so the
+        model starts at practice. After a revision it adds a new leap and route the same way.
+        Returns True when it committed anything this iteration."""
+        from dialectic_ai.core.runtime import DesignationRole
+        state = self.state
+        if not self.auto_planning or state.phase != "planning" or not state.get_active_goal():
+            return False
+
+        async def commit(move, payload):
+            proposal = Proposal(move_type=move, payload=payload,
+                                why_this_move_now="Auto-planned: the engine fixes the plan in this mode.",
+                                expected_goal_contribution="Lets the model act and check practice directly.")
+            result_id = self.commit_layer.commit(proposal, state)
+            await self.logger.trace_event("proposal_committed", {"run_id": self.run_id, "proposal": asdict(proposal),
+                                                                 "result_id": result_id, "origin": "auto_planning"})
+            return result_id
+
+        def role(r):
+            return next((d for d in state.get_all_designations() if d.role == r), None)
+
+        def development_of(process_id):
+            return next((r for r in state.get_all_development_relations()
+                         if r.source_process_id == process_id and state.is_committed(r.id)), None)
+
+        async def develop(process_id, content):
+            await commit(MoveType.DEVELOP_PROCESS, {"source_process_id": process_id, "emergent_content": content,
+                         "potential_containment": "Contained in the task as stated", "emergence": "Made concrete",
+                         "concretization": content, "new_content": content})
+            return development_of(process_id)
+
+        simplest = role(DesignationRole.SIMPLEST)
+        if not simplest:
+            pid = await commit(MoveType.PROPOSE_SIMPLEST, {"content": f"Carry out the task as stated: {goal.content}"})
+            candidate = next(d for d in state.get_all_designations() if d.process_id == pid)
+            await commit(MoveType.ASSESS_SIMPLEST, {"candidate_simplest_id": candidate.id, "approved": True})
+            simplest = role(DesignationRole.SIMPLEST)
+        simplest_dev = development_of(simplest.process_id) or await develop(
+            simplest.process_id, "Concrete steps that carry out the task, each with an expected result")
+        opposite = role(DesignationRole.OPPOSITE)
+        if not opposite:
+            await commit(MoveType.DESIGNATE_OPPOSITE, {"simplest_id": simplest.id,
+                         "context_id": simplest_dev.emergent_process_id,
+                         "content": "What reality actually reports when the task is carried out",
+                         "justification": "Tool results exist independently of what the plan expects of them"})
+            opposite = role(DesignationRole.OPPOSITE)
+        opposite_dev = development_of(opposite.process_id) or await develop(
+            opposite.process_id, "The observed results the expectations will be checked against")
+        contradiction = next(iter(state.get_all_contradictions()), None)
+        if not contradiction:
+            await commit(MoveType.ESTABLISH_CONTRADICTION, {"simplest_id": simplest.id, "opposite_id": opposite.id,
+                         "simplest_dev_ref_ids": [simplest_dev.id], "opposite_dev_ref_ids": [opposite_dev.id],
+                         "unity_justification": "The task is done only when what is expected and what is observed agree",
+                         "developing_unity_description": "Each step's expectation meets its observed result"})
+            contradiction = next(iter(state.get_all_contradictions()))
+        used = {rid for roadmap in state._roadmaps.values() for rid in roadmap.resolution_ids}
+        fresh = [r for r in state._resolution_relations.values() if r.id not in used]
+        if not fresh:
+            content = ("Act, compare each result with its stated expectation, and revise when they differ"
+                       if not state._roadmaps else
+                       f"A different way to act and check, after practice contradicted the plan: {state._revision_reason}")
+            await commit(MoveType.PROPOSE_LEAP, {"contradiction_id": contradiction.id, "resolution_content": content,
+                                                 "resolution_outcome": "mediation"})
+            fresh = [r for r in state._resolution_relations.values() if r.id not in used]
+        leap = fresh[-1]
+        await commit(MoveType.BEGIN_EXECUTION, {"simplest_id": simplest.id, "contradiction_ids": [contradiction.id],
+                                                "resolution_ids": [leap.id],
+                                                "execution_process_ids": [leap.resolution_process_id]})
         return True
 
     def _tool_calls_made(self, tool_name: str) -> int:

@@ -387,7 +387,7 @@ class UsageMeter:
             bucket["prompt_per_call"].append(usage.prompt_tokens)
 
 
-async def run_case(case: Case, trace_path: Path) -> tuple[Run, float]:
+async def run_case(case: Case, trace_path: Path, engine_overrides: dict | None = None) -> tuple[Run, float]:
     meter = UsageMeter()
     actor = build_actor()
     judge_llm = build_judge(actor)
@@ -399,7 +399,8 @@ async def run_case(case: Case, trace_path: Path) -> tuple[Run, float]:
     judge.agent_goal = agent.goal
     # 600 s: runs that revise their roadmap took longer than 300 s on gpt-5-mini and timed out
     # while still making progress.
-    limits = {"max_iterations": 30, "max_rejected_proposals": 8, "run_timeout": 600, **case.engine_kwargs}
+    limits = {"max_iterations": 30, "max_rejected_proposals": 8, "run_timeout": 600, **case.engine_kwargs,
+              **(engine_overrides or {})}
     engine = DialecticalEngine(agent, semantic_validator=judge, logger=DevelopmentLogger(trace_path=str(trace_path)),
                                **limits)
     started = time.time()

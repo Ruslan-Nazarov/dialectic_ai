@@ -145,3 +145,12 @@ async def test_identical_resubmission_in_same_state_is_refused_with_its_reason()
     assert not reasons[0].startswith("This exact proposal")
     assert all(r.startswith("This exact proposal was already rejected") for r in reasons[1:])
     assert reasons[0] in reasons[1]
+
+
+def test_move_without_explanations_commits():
+    """Schema AND structural validation accept a move without the explanatory fields."""
+    from dialectic_ai.core.runtime import CommitLayer, Goal, MoveType, Proposal, RuntimeState
+    state = RuntimeState()
+    goal = Goal(content="g")
+    state._goals[goal.id] = goal
+    assert CommitLayer().commit(Proposal(move_type=MoveType.PROPOSE_SIMPLEST, payload={"content": "x"}), state)
