@@ -172,6 +172,23 @@ def _next_step_guidance(state: RuntimeState, al) -> str:
                           if not any(pa.observation_id == o.id for pa in state._practice_assessments.values())]
         if unassessed_obs:
             return f"Observation {al(unassessed_obs[-1].id)} has not been assessed yet -- propose ASSESS_PRACTICE for it before anything else."
+        from dialectic_ai.core.world import persistent_contradiction, revision_needed
+        if revision_needed(state):
+            # Without this branch the model was told how to cite an origin for PROPOSE_ACTION --
+            # a move it cannot make here -- and never heard of REPORT_CONTRADICTION: offered 8
+            # times in a live run, never taken, the run timed out after 4 revisions.
+            contradicted = sum(1 for pa in state._practice_assessments.values()
+                               if pa.expected_actual_relation == "contradicted")
+            if persistent_contradiction(state):
+                return (f"Practice has now contradicted the plan {contradicted} times, across different attempts. "
+                        f"If the same source keeps contradicting what independent checks show, another revision "
+                        f"that reads that source again will fail the same way: propose REPORT_CONTRADICTION now -- "
+                        f"name the source as unreliable, cite the contradicting observations, and give only an "
+                        f"answer that confirmed observations independent of it support (or null). Choose "
+                        f"REVISE_WORLD only if you have a genuinely new way to check that never relies on the "
+                        f"contested output.")
+            return ("Practice contradicted the accepted roadmap: propose REVISE_WORLD citing the contradicted "
+                    "observations, then plan a route that does not rely on the same unreliable result.")
         contradicted_actions = [a for a in state.get_all_actions()
                                 if any(pa.action_id == a.id and pa.expected_actual_relation == "contradicted"
                                       for pa in state._practice_assessments.values())]
@@ -264,7 +281,11 @@ def _next_step_guidance(state: RuntimeState, al) -> str:
         return ("The simplest is developed. Propose DESIGNATE_OPPOSITE now if a genuine opposite "
                 "exists for this goal. If, honestly, this goal has no real opposite/contradiction "
                 "to find, COMPLETE is also legal right now, directly from planning -- do not force "
-                "a manufactured opposite just to keep the protocol moving.")
+                "a manufactured opposite just to keep the protocol moving. The typical case: a question "
+                "answered by well-established general knowledge (a capital city, a definition, 2 + 2) when "
+                "the role demands no tool verification. There, 'independently verify the answer' is not a "
+                "genuine opposite -- COMPLETE now. If the role does demand verification with a tool, it is "
+                "not this case.")
 
     opposite_devs = dev_refs_for(opposite.process_id)
     if not opposite_devs:

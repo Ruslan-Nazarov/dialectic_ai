@@ -277,3 +277,15 @@ def test_complete_with_wrong_ref_type_says_which_type_to_use(planned):
     payload['committed_development_refs'] = [{'type': 'Process', 'id': 'missing'}]
     with pytest.raises(ValueError, match="Committed processes of this goal you can cite"):
         apply(planned, 'COMPLETE', payload)
+
+
+def test_guidance_offers_report_once_contradiction_persists(planned):
+    from dialectic_ai.engine.prompt import _next_step_guidance
+    begin(planned)
+    act(planned, 'print(a * b)', 'contradicted')
+    first = _next_step_guidance(planned, lambda x: x)
+    assert 'REVISE_WORLD' in first and 'REPORT_CONTRADICTION' not in first and 'origin_ref' not in first
+    planned2 = generate_scenario_2()
+    contradicted_twice(planned2)
+    later = _next_step_guidance(planned2, lambda x: x)
+    assert 'propose REPORT_CONTRADICTION now' in later
