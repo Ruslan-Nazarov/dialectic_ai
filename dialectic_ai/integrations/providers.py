@@ -11,12 +11,18 @@ PROVIDER_KEYS = [
     ('gigachat', 'GIGACHAT_AUTH_KEY'), ('gemini', 'GEMINI_API_KEY'),
     ('openai', 'OPENAI_API_KEY'), ('groq', 'GROQ_API_KEY'),
     ('cerebras', 'CEREBRAS_API_KEY'), ('openrouter', 'OPENROUTER_API_KEY'),
+    ('nvidia', 'NVIDIA_API_KEY'),
 ]
+
+# Self-hosted OpenAI-compatible servers (e.g. vLLM or NIM on an NVIDIA Brev instance) often run
+# without an API key; for these providers a configured base URL is enough to be usable.
+KEY_OPTIONAL_WITH_BASE_URL = {'nvidia'}
 
 
 def available_providers() -> list[str]:
     """Real (non-mock) providers whose required env var is actually set."""
-    return [name for name, key in PROVIDER_KEYS if os.getenv(key)]
+    return [name for name, key in PROVIDER_KEYS
+            if os.getenv(key) or (name in KEY_OPTIONAL_WITH_BASE_URL and os.getenv(name.upper() + '_BASE_URL'))]
 
 
 def _tagged(llm, provider: str):
@@ -45,15 +51,19 @@ def build_llm(provider: str):
         'groq': ('https://api.groq.com/openai/v1', 'llama-3.3-70b-versatile'),
         'cerebras': ('https://api.cerebras.ai/v1', 'gpt-oss-120b'),
         'openrouter': ('https://openrouter.ai/api/v1', 'meta-llama/llama-3.1-8b-instruct'),
+        # NVIDIA API catalog; point NVIDIA_BASE_URL at a Brev instance to use a self-hosted model.
+        'nvidia': ('https://integrate.api.nvidia.com/v1', None),
     }
     if provider in defaults:
         url, _ = defaults[provider]
         prefix = provider.upper()
         key = os.getenv(prefix + '_API_KEY')
-        if not key:
+        self_hosted = provider in KEY_OPTIONAL_WITH_BASE_URL and os.getenv(prefix + '_BASE_URL')
+        if not key and not self_hosted:
             raise ValueError(prefix + '_API_KEY is not configured')
         model = os.getenv(prefix + '_MODEL')
         if not model:
             raise ValueError(prefix + '_MODEL must name a model available to your account')
-        return _tagged(OpenAILLM(api_key=key, base_url=os.getenv(prefix + '_BASE_URL', url), model=model), provider)
+        return _tagged(OpenAILLM(api_key=key or 'not-needed', base_url=os.getenv(prefix + '_BASE_URL', url),
+                                 model=model), provider)
     raise ValueError(f'Unknown LLM provider: {provider}')

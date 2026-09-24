@@ -16,7 +16,9 @@ from typing import Callable
 
 from dialectic_ai.agent import DialecticalAgent
 from dialectic_ai.core.llm import FallbackLLM
+from dialectic_ai.core.domain import Domain
 from dialectic_ai.core.logger import DevelopmentLogger
+from dialectic_ai.core.runtime import MoveType
 from dialectic_ai.core.schema import AgentInput
 from dialectic_ai.core.semantic_validator import LLMSemanticValidator
 from dialectic_ai.engine import DialecticalEngine
@@ -163,22 +165,52 @@ BUSINESS_ROLE = """You turn a business representative's rough task description i
 for student teams, in Russian. Card fields: title, context, need, users, data, constraints,
 expected_result, success_criteria, contact, interaction_format.
 
-DOMAIN-SPECIFIC MEANING OF THE DIALECTICAL TERMS FOR THIS TASK (use this instead of a generic reading):
-- SIMPLEST process: the need as the business stated it in the draft.
-- OPPOSITE process: a student team starting work knowing ONLY the card -- its need is "start working
-  without asking the business anything", not "describe the task". It develops independently of what
-  the business has in mind.
-- CONTRADICTION: what the business takes for granted versus what the team cannot know from the text;
-  also internal conflicts inside the draft (e.g. wants an AI model but has no data; deadline versus scope;
-  a goal with no measurable criterion).
-- LEAP: a task card whose every field is grounded in what the business actually said.
-
 MANDATORY PRACTICE: you must call ask_business (3-5 questions, each closing a specific gap or
 contradiction you found, one fact per question, plain Russian) and then commit the card with
 commit_card BEFORE COMPLETE. Completing without both tools is not allowed.
 Never add facts the business did not state. If there is no information for a field, set it to null.
 If an answer resolves the contradiction, practice is confirmed; if it reveals a new gap, ask again
 (at most 2 rounds of questions). COMPLETE's final_response is the committed card as JSON."""
+
+BUSINESS_DOMAIN = Domain(
+    name="business task card",
+    semantics="""- SIMPLEST process: the need as the business stated it in the draft.
+- OPPOSITE process (fixed by this domain): a student team starting work knowing ONLY the card. Its need is
+  "start working without asking the business anything", not "describe the task"; it develops independently
+  of what the business has in mind. Its development is what the team needs to know to start: inputs,
+  access, acceptance criterion, boundaries, contact, way of working.
+- CONTRADICTION: what the business takes for granted versus what the team cannot know from the text; also
+  internal conflicts inside the draft (wants an AI model but has no data; deadline versus scope; a goal
+  with no measurable criterion).
+- LEAP: asking the business targeted questions that resolve the contradictions, then a task card whose
+  every field is grounded in what the business actually said.
+- The route is always the same: ask_business, then commit_card.""",
+    opposite="Студенческая команда начинает работу, зная только карточку задачи, без возможности спросить бизнес",
+    unjudged_moves=frozenset({MoveType.BEGIN_EXECUTION}),
+    judge_criteria={
+        MoveType.DEVELOP_PROCESS: (
+            "Accept if the development concretizes its source. Simplest side: what the draft says or implies "
+            "(what happens now, what must change, who, materials, timing, success), including naming what is "
+            "still unknown. Opposite side: what a team needs to know to start. Never require the finished "
+            "card, questions or tool calls at this stage."),
+        MoveType.ESTABLISH_CONTRADICTION: (
+            "Accept if it names a real gap (something the business takes for granted that the team cannot know) "
+            "or an internal conflict of the draft, grounded in the cited developments of both sides."),
+        MoveType.PROPOSE_LEAP: (
+            "The leap here is asking the business targeted questions, then committing a grounded card. Accept a "
+            "leap that says which facts to ask for to resolve the contradiction. Do not require the questions' "
+            "answers or the card itself at this stage."),
+        MoveType.PROPOSE_ACTION: (
+            "ask_business: 3-5 questions, one fact each, each tied to a gap or contradiction and not answerable "
+            "from the draft. commit_card: the tool itself drops every field whose quotes or facts are not in the "
+            "sources, so accept it."),
+        MoveType.ASSESS_PRACTICE: (
+            "ask_business: answers that cover the asked facts are 'confirmed'; 'не знаю' answers make it "
+            "'partially_confirmed'. commit_card: all fields grounded is 'confirmed'; some fields dropped as "
+            "ungrounded is 'partially_confirmed' (the human fills them in later); nothing grounded is "
+            "'contradicted'. Judge only this comparison."),
+    },
+)
 
 BUSINESS_DRAFT = ("Хотим чат-бота на ИИ для наших клиентов, чтобы меньше звонили в поддержку. "
                   "Данных пока нет. Нужно к следующему месяцу.")
@@ -203,22 +235,25 @@ def business_tools():
 
 
 def grounded_card(run):
-    """Asked the business, and finished with a card that passed the provenance check."""
+    """Asked the business, and finished with a committed card (ungrounded fields are dropped by the tool)."""
     problems = []
     if not run.completed:
         problems.append(f"did not complete: {run.result.stop_reason}")
     if not run.successful_observations("ask_business"):
         problems.append("never asked the business")
     if not run.successful_observations("commit_card"):
-        problems.append("no card passed the provenance check")
+        problems.append("no card was committed")
     return problems
 
 
 def business_facts(run):
     state = run.engine.state
     card_obs = [o for o in state.get_all_observations() if state.get_action(o.action_id).tool_name == "commit_card"]
+    last = card_obs[-1].raw_result if card_obs else {}
     return {"question_rounds": len(run.successful_observations("ask_business")),
-            "card_attempts": len(card_obs), "contradictions": len(state.get_all_contradictions())}
+            "card_attempts": len(card_obs), "contradictions": len(state.get_all_contradictions()),
+            "grounded_fields": last.get("grounded_fields", []) if isinstance(last, dict) else [],
+            "dropped_fields": sorted(last.get("dropped", {})) if isinstance(last, dict) else []}
 
 
 CASES = [
@@ -251,26 +286,32 @@ CASES = [
          "restrictions. Should they allow it? Give a reasoned recommendation.",
          PythonExecutor, genuine_tension),
     Case("business_card", BUSINESS_ROLE, BUSINESS_DRAFT, business_tools, grounded_card, business_facts,
-         {"max_iterations": 40, "run_timeout": 900}),
+         {"max_iterations": 40, "run_timeout": 900, "domain": BUSINESS_DOMAIN}),
 ]
 
 
 def build_actor():
     actor = build_llm(os.getenv("DIALECTIC_LIVE_ACTOR", "gigachat"))
     actor.max_retries = 1
-    actor.max_tokens = 1600
+    actor.max_tokens = int(os.getenv("DIALECTIC_LIVE_MAX_TOKENS", "1600"))
     return actor
 
 
 def build_judge():
-    """Never the actor's own model: GigaChat-2-Pro first, Cerebras as fallback when configured."""
-    primary = GigaChatLLM(model="GigaChat-2-Pro", max_retries=0)
-    try:
-        secondary = build_llm("cerebras")
-    except ValueError:
-        return primary
-    secondary.max_retries = 0
-    return FallbackLLM([primary, secondary])
+    """Never the actor's own model. DIALECTIC_LIVE_JUDGE is a comma-separated fallback chain of
+    providers (e.g. "nvidia,openai"); by default GigaChat-2-Pro, then Cerebras when configured."""
+    names = [n.strip() for n in os.getenv("DIALECTIC_LIVE_JUDGE", "").split(",") if n.strip()]
+    if names:
+        chain = [build_llm(n) for n in names]
+    else:
+        chain = [GigaChatLLM(model="GigaChat-2-Pro", max_retries=0)]
+        try:
+            chain.append(build_llm("cerebras"))
+        except ValueError:
+            pass
+    for llm in chain:
+        llm.max_retries = 0
+    return chain[0] if len(chain) == 1 else FallbackLLM(chain)
 
 
 class UsageMeter:

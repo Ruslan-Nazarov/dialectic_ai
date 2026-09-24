@@ -257,8 +257,12 @@ class FallbackLLM(BaseLLM):
         for i, provider in enumerate(self.providers):
             provider_name = provider.__class__.__name__
             try:
-                # Attempting to generate a response
-                return await provider.generate(messages, tools=tools)
+                text = await provider.generate(messages, tools=tools)
+                # An empty reply is an outage, not an answer (GigaChat returns "" under load);
+                # returning it would hand the caller nothing while a fallback was available.
+                if not (text or "").strip():
+                    raise RuntimeError("empty response")
+                return text
             except Exception as e:
                 print(f"  [FallbackLLM] Provider {provider_name} ({i+1}/{len(self.providers)}) returned an error: {e}")
                 last_error = e
@@ -272,8 +276,10 @@ class FallbackLLM(BaseLLM):
         for i, provider in enumerate(self.providers):
             provider_name = provider.__class__.__name__
             try:
-                # Attempting to generate a response
-                return await provider.generate_result(messages, tools=tools)
+                result = await provider.generate_result(messages, tools=tools)
+                if not (result.text or "").strip() and not result.tool_calls:
+                    raise RuntimeError("empty response")
+                return result
             except Exception as e:
                 print(f"  [FallbackLLM] Provider {provider_name} ({i+1}/{len(self.providers)}) returned an error: {e}")
                 last_error = e

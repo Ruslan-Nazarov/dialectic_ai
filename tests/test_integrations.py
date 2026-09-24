@@ -189,3 +189,23 @@ def test_dashboard_records_exact_usage_by_provider(tmp_path, monkeypatch):
     assert metrics['exact_calls'] == 1
     assert metrics['estimated'] is False
     assert metrics['by_provider']['gigachat']['completion_tokens'] == 10
+
+
+def test_nvidia_self_hosted_needs_no_key(monkeypatch):
+    from dialectic_ai.integrations.providers import available_providers, build_llm
+    monkeypatch.delenv("NVIDIA_API_KEY", raising=False)
+    monkeypatch.setenv("NVIDIA_BASE_URL", "https://brev.example/v1")
+    monkeypatch.setenv("NVIDIA_MODEL", "meta/llama-3.3-70b-instruct")
+    llm = build_llm("nvidia")
+    assert llm.base_url == "https://brev.example/v1" and llm.model == "meta/llama-3.3-70b-instruct"
+    assert "nvidia" in available_providers()
+
+
+def test_nvidia_catalog_requires_key(monkeypatch):
+    import pytest
+    from dialectic_ai.integrations.providers import build_llm
+    monkeypatch.delenv("NVIDIA_API_KEY", raising=False)
+    monkeypatch.delenv("NVIDIA_BASE_URL", raising=False)
+    monkeypatch.setenv("NVIDIA_MODEL", "meta/llama-3.3-70b-instruct")
+    with pytest.raises(ValueError, match="NVIDIA_API_KEY"):
+        build_llm("nvidia")

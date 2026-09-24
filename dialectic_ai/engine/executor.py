@@ -18,6 +18,7 @@ from dialectic_ai.core.runtime import (
     RuntimeEvent,
     RuntimeState,
 )
+from dialectic_ai.core.domain import Domain
 from dialectic_ai.core.schema import AgentInput
 from dialectic_ai.core.semantic_validator import SemanticValidator, LLMSemanticValidator, FakeSemanticValidator
 from dialectic_ai.core.llm import MockLLM
@@ -35,6 +36,20 @@ class RuntimeResult(BaseModel):
     roadmap_id: Optional[str] = None
 
 
+def _schema_error(errors) -> str:
+    """Names the failing field and the rule it broke. A bare jsonschema message for an anyOf
+    ("{...} is not valid under any of the given schemas") names neither, and the model kept
+    resubmitting the same invalid field until the rejection budget ran out."""
+    from jsonschema.exceptions import best_match
+    error = best_match(errors)
+    path = ".".join(str(p) for p in error.absolute_path) or "(root)"
+    message = f"at {path}: {error.message}"
+    # Where the schema says how to satisfy the rule, pass that on: naming the broken rule alone
+    # was not enough -- the model resubmitted the same ungrounded field eight times running.
+    hint = error.schema.get("description") if isinstance(error.schema, dict) else None
+    return f"{message}. Hint: {hint}" if hint else message
+
+
 class DialecticalEngine:
     def __init__(
         self,
@@ -48,19 +63,25 @@ class DialecticalEngine:
         # otherwise-identical run died at exactly 5 one step short. 8 gives the self-correction
         # mechanism the room it needs to work as designed, without being unbounded.
         max_rejected_proposals: int = 8,
+        # Judge outages (no verdict at all) are budgeted separately: they say nothing about the
+        # proposal, and on the business-card pilot they consumed half of the rejection budget.
+        max_judge_outages: int = 6,
         semantic_validator: Optional[SemanticValidator] = None,
         model_timeout: float = 90,
         tool_timeout: float = 30,
         run_timeout: float = 300,
+        domain: Optional[Domain] = None,
     ):
         self.agent = agent
         self.logger = logger or DevelopmentLogger()
         self.max_iterations = max_iterations
         self.max_rejected_proposals = max_rejected_proposals
+        self.max_judge_outages = max_judge_outages
         self.semantic_validator = semantic_validator
         self.model_timeout = model_timeout
         self.tool_timeout = tool_timeout
         self.run_timeout = run_timeout
+        self.domain = domain
         self._running = False
         self.validation_mode = "semantic"
         self._last_move_type_requested = None
@@ -100,12 +121,14 @@ class DialecticalEngine:
             self.validation_mode = "simulation" if isinstance(validator, FakeSemanticValidator) else "semantic"
         if isinstance(validator, LLMSemanticValidator):
             validator.agent_goal = getattr(self.agent, "goal", "")
+            validator.domain = self.domain
         semantic_validator = validator
         # 1. Start V2 Run
         goal = Goal(content=user_input.user_message)
         self.state._goals[goal.id] = goal
 
         rejected_count = 0
+        judge_outages = 0
         iteration = 0
         self._last_move_type_requested = None
         self._repeat_invalid_move_count = 0
@@ -119,6 +142,10 @@ class DialecticalEngine:
             from dialectic_ai.core.runtime import AllowedMovesResolver
             resolver = AllowedMovesResolver()
             allowed_moves = resolver.allowed_moves(self.state)
+            if self.domain and self.domain.opposite:
+                if await self._designate_domain_opposite(allowed_moves):
+                    continue
+                allowed_moves = [m for m in allowed_moves if m != MoveType.DESIGNATE_OPPOSITE]
             await self.logger.trace_event("allowed_moves", {"run_id": self.run_id, "iteration": iteration,
                                                               "moves": [m.name for m in allowed_moves],
                                                               "phase": self.state.phase})
@@ -139,7 +166,7 @@ class DialecticalEngine:
             prompt, alias_to_uuid = build_v2_prompt(
                 self.state, goal, allowed_moves_names,
                 iteration=iteration, max_iterations=self.max_iterations,
-                agent_goal=getattr(self.agent, "goal", ""), tools=list(self._tool_registry.values()),
+                agent_goal=self._actor_role(), tools=list(self._tool_registry.values()),
                 include_runtime_json=getattr(self.agent.llm, "reads_runtime_json", False),
             )
 
@@ -294,7 +321,7 @@ class DialecticalEngine:
 
             errors = list(Draft202012Validator(proposal_schema(allowed_moves_names)).iter_errors(proposal_data))
             if errors:
-                await self._reject("Proposal schema: " + errors[0].message)
+                await self._reject("Proposal schema: " + _schema_error(errors))
                 rejected_count += 1
                 if rejected_count >= self.max_rejected_proposals:
                     return await self._failure("max_rejected_proposals", "Too many rejected proposals")
@@ -320,7 +347,8 @@ class DialecticalEngine:
                 continue
                 
             # 5. Semantic Validation (where required)
-            if semantic_validator:
+            unjudged = self.domain is not None and move_type_enum in self.domain.unjudged_moves
+            if semantic_validator and not unjudged:
                 try:
                     # Judge a detached view; a validator must not mutate committed runtime state.
                     import copy
@@ -330,6 +358,15 @@ class DialecticalEngine:
                     rejected_count += 1
                     if rejected_count >= self.max_rejected_proposals:
                         return await self._failure("max_rejected_proposals", "Too many rejected proposals")
+                    continue
+                if not sem_res.accepted and getattr(sem_res, "unavailable", False):
+                    # Not a verdict: tell the actor to resubmit unchanged, and keep the raw provider
+                    # error out of its feedback so it does not try to "fix" a non-problem.
+                    await self._reject("Judge unavailable (no verdict was returned); resubmit the same "
+                                       "proposal unchanged.", proposal)
+                    judge_outages += 1
+                    if judge_outages >= self.max_judge_outages:
+                        return await self._failure("judge_unavailable", f"Judge returned no verdict {judge_outages} times: {sem_res.reason}")
                     continue
                 if not sem_res.accepted:
                     await self._reject(f"Semantic: {sem_res.reason}", proposal)
@@ -349,7 +386,7 @@ class DialecticalEngine:
                 schema = tool.parameters()
                 errors = list(Draft202012Validator(schema).iter_errors(proposal.payload["args"]))
                 if errors:
-                    await self._reject("Tool arguments: " + errors[0].message, proposal)
+                    await self._reject("Tool arguments: " + _schema_error(errors), proposal)
                     rejected_count += 1
                     if rejected_count >= self.max_rejected_proposals:
                         return await self._failure("max_rejected_proposals", "Too many rejected proposals")
@@ -413,6 +450,40 @@ class DialecticalEngine:
                 )
 
         return await self._failure("max_iterations", "Max iterations reached; unfinished structure preserved")
+
+    def _actor_role(self) -> str:
+        role = getattr(self.agent, "goal", "")
+        if self.domain:
+            role += f"\n\nDomain meaning of the dialectical terms ({self.domain.name}):\n{self.domain.semantics}"
+        return role
+
+    async def _designate_domain_opposite(self, allowed_moves) -> bool:
+        """Commits the domain's fixed opposite as soon as it becomes designatable. The
+        model develops it afterwards but never chooses it, and the judge never re-argues
+        it. Returns True when a designation was committed this iteration."""
+        from dialectic_ai.core.runtime import DesignationRole
+        if MoveType.DESIGNATE_OPPOSITE not in allowed_moves:
+            return False
+        designations = self.state.get_all_designations()
+        if any(d.role == DesignationRole.OPPOSITE for d in designations):
+            return False
+        simplest = next((d for d in designations if d.role == DesignationRole.SIMPLEST), None)
+        developed = [r for r in self.state.get_all_development_relations()
+                     if simplest and self.state.is_committed(r.id)
+                     and r.source_process_id == simplest.process_id]
+        if not developed:
+            return False
+        proposal = Proposal(
+            move_type=MoveType.DESIGNATE_OPPOSITE,
+            payload={"simplest_id": simplest.id, "context_id": developed[-1].emergent_process_id,
+                     "content": self.domain.opposite, "justification": self.domain.opposite_justification},
+            why_this_move_now="The domain fixes this opposite in advance.",
+            expected_goal_contribution="Lets the model develop the opposite the domain defines.",
+        )
+        result_id = self.commit_layer.commit(proposal, self.state)
+        await self.logger.trace_event("proposal_committed", {"run_id": self.run_id, "proposal": asdict(proposal),
+                                                             "result_id": result_id, "origin": "domain"})
+        return True
 
     async def _reject(self, reason, proposal=None):
         event = RuntimeEvent(event_type="proposal_rejected", proposal=proposal, validation_error=reason)

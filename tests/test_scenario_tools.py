@@ -76,18 +76,32 @@ async def test_commit_card_accepts_grounded_fields_and_nulls():
     ({"value": "Чат-бот", "sources": []}, "no sources"),
 ])
 @pytest.mark.asyncio
-async def test_commit_card_rejects_ungrounded_fields(field_value, problem):
+async def test_commit_card_drops_ungrounded_fields(field_value, problem):
     card = {f: None for f in CARD_FIELDS}
+    card["title"] = grounded("Чат-бот для клиентов", "draft", "чат-бота для клиентов")
     card["need"] = field_value
     evidence = await CommitCardTool(business()).execute(card)
-    assert not evidence.success and problem in evidence.error
+    assert evidence.success
+    assert evidence.content["card"]["need"] is None
+    assert evidence.content["card"]["title"] == card["title"]
+    assert problem in " ".join(evidence.content["dropped"]["need"])
 
 
 @pytest.mark.asyncio
-async def test_commit_card_rejects_invented_email():
+async def test_commit_card_fails_when_nothing_is_grounded():
+    card = {f: None for f in CARD_FIELDS}
+    card["need"] = grounded("Чат-бот", "draft", "голосовой ассистент")
+    evidence = await CommitCardTool(business()).execute(card)
+    assert not evidence.success and evidence.content["card"]["need"] is None
+
+
+@pytest.mark.asyncio
+async def test_commit_card_drops_invented_email():
     session = business()
     session.answer("contact")
     card = {f: None for f in CARD_FIELDS}
+    card["title"] = grounded("Чат-бот", "draft", "чат-бота")
     card["contact"] = grounded("Анна, anna.smirnova@example.com", "A1", "Анна")
     evidence = await CommitCardTool(session).execute(card)
-    assert not evidence.success and "anna.smirnova@example.com" in evidence.error
+    assert evidence.content["card"]["contact"] is None
+    assert "anna.smirnova@example.com" in " ".join(evidence.content["dropped"]["contact"])

@@ -198,14 +198,17 @@ class AskBusinessTool(ActionTool):
 
 @dialectical(
     origin="Model-written task cards read fluently whether or not the business said any of it",
-    contradiction="A fluent card and a grounded card look the same to a reader",
-    resolves="Rejects any field whose quotes or facts are absent from the cited draft or answers",
-    generates="Cards whose every field is traceable to the business's own words",
+    contradiction="A fluent card and a grounded card look the same to a reader, and a model told a field "
+                  "is ungrounded may resubmit it unchanged anyway (GigaChat did, 8 times running)",
+    resolves="Commits only the fields whose quotes and facts are found in the cited draft or answers; "
+             "every other field is committed as null, with the reason reported back",
+    generates="Cards that cannot contain an unsupported fact, whatever the model does; the dropped "
+              "fields are what the human fills in next",
     own_contradictions="Substring matching only: a paraphrase that adds no number, e-mail or URL passes",
     layer=6,
 )
 class CommitCardTool(ActionTool):
-    """Commits the task card; fails if any field is not grounded in its cited sources."""
+    """Commits the grounded part of a task card; ungrounded fields become null."""
 
     def __init__(self, session: BusinessSession):
         self.session = session
@@ -217,19 +220,31 @@ class CommitCardTool(ActionTool):
     @property
     def description(self) -> str:
         return ("Commit the task card. Every non-null field must cite sources: source_id 'draft' or an "
-                "answer_id from ask_business, each with an exact quote from that source. Facts not in "
-                "the sources are rejected. Use null for fields with no information.")
+                "answer_id from ask_business, each with an exact quote from that source. Fields whose quotes "
+                "or facts are not found in their sources are committed as null and reported in 'dropped'. "
+                "Use null for fields with no information.")
 
     def parameters(self) -> dict:
         field = {"anyOf": [{"type": "null"}, {"type": "object", "properties": {
             "value": {"type": "string"},
-            "sources": {"type": "array", "minItems": 1, "items": {"type": "object", "properties": {
-                "source_id": {"type": "string"}, "quote": {"type": "string"}}, "required": ["source_id", "quote"]}}},
+            "sources": {"type": "array",
+                        "description": "Exact quotes from the draft or an answer that support this field.",
+                        "items": {"type": "object", "properties": {
+                            "source_id": {"type": "string"}, "quote": {"type": "string"}},
+                            "required": ["source_id", "quote"]}}},
             "required": ["value", "sources"]}]}
         return {"type": "object", "properties": {f: field for f in CARD_FIELDS}, "required": CARD_FIELDS}
 
     async def execute(self, args: dict) -> Evidence:
-        errors = self.session.provenance_errors(args)
-        self.session.card_attempts.append({"card": args, "errors": errors})
-        return Evidence(id=str(uuid.uuid4()), source=self.name, content={"card": args, "errors": errors},
-                        tool_name=self.name, success=not errors, error="; ".join(errors) or None)
+        card, dropped = {}, {}
+        for field in CARD_FIELDS:
+            errors = self.session.provenance_errors({field: args.get(field)})
+            if errors:
+                dropped[field] = errors
+            card[field] = None if errors else args.get(field)
+        self.session.card_attempts.append({"card": card, "dropped": dropped})
+        grounded = [f for f in CARD_FIELDS if card[f]]
+        return Evidence(id=str(uuid.uuid4()), source=self.name,
+                        content={"card": card, "grounded_fields": grounded, "dropped": dropped},
+                        tool_name=self.name, success=bool(grounded),
+                        error=None if grounded else "No field is grounded in the draft or the answers")

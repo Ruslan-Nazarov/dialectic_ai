@@ -2,7 +2,9 @@
 
     DIALECTIC_RUN_LIVE=1 python -m pytest tests/live -v
 
-Env: DIALECTIC_LIVE_ACTOR (default gigachat), DIALECTIC_LIVE_REPEATS (default 1),
+Env: DIALECTIC_LIVE_ACTOR (default gigachat), DIALECTIC_LIVE_JUDGE (comma-separated fallback
+chain, default GigaChat-2-Pro then Cerebras), DIALECTIC_LIVE_MAX_TOKENS (default 1600; raise it for
+reasoning models), DIALECTIC_LIVE_REPEATS (default 1),
 DIALECTIC_LIVE_CASES (comma-separated case names), DIALECTIC_LIVE_DIR (where traces
 and live_report.json go; default: pytest's tmp dir).
 """

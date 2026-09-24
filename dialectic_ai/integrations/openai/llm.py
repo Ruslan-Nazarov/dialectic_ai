@@ -13,6 +13,11 @@ from typing import Optional
 _RETRYABLE_HTTP_CODES = {429, 500, 502, 503, 504}
 
 
+def _is_openai_reasoning_model(model: str) -> bool:
+    name = model.split("/")[-1].lower()
+    return name.startswith(("o1", "o3", "o4", "gpt-5"))
+
+
 @dialectical(
     origin="Integration with OpenAI / OpenRouter / Ollama / LM Studio via standard /v1/chat/completions",
     contradiction="Developers use different providers; hard binding to one vendor is unacceptable",
@@ -46,12 +51,14 @@ class OpenAILLM(BaseLLM):
 
     def _build_request(self, messages: list[dict], tools: Optional[list[dict]] = None) -> urllib.request.Request:
         url = f"{self.base_url}/chat/completions"
-        payload = {
-            "model": self.model,
-            "messages": messages,
-            "temperature": 0.2,
-            "max_tokens": self.max_tokens,
-        }
+        payload = {"model": self.model, "messages": messages}
+        if _is_openai_reasoning_model(self.model):
+            # OpenAI reasoning models reject max_tokens and a non-default temperature, and spend
+            # part of this budget on hidden reasoning before any visible output.
+            payload["max_completion_tokens"] = self.max_tokens
+        else:
+            payload["temperature"] = 0.2
+            payload["max_tokens"] = self.max_tokens
         if tools:
             payload["tools"] = tools
         else:
