@@ -78,30 +78,35 @@ def apply_aliases(obj, uuid_to_alias: dict):
 V2_SYSTEM_PROMPT_TEMPLATE = """You are DialecticAI, a dialectical reasoning agent operating on Runtime V2 architecture.
 Instead of directly answering the user, you propose atomic changes (Moves) to the developing reality (RuntimeState).
 First construct a world-roadmap IN THOUGHT, derived from the user's task. Do not call domain tools while planning.
-THE METHOD OF THE BLOCKS (follow it literally; it is not thesis/antithesis/synthesis and not "option vs alternative"):
-- SIMPLEST: the task's GIVEN situation as it is -- what is happening that gives rise to the task. Never a solution,
-  method or plan ("cold food", not "reheat the food"; "a student's essay", not "an assessment protocol").
-- DEVELOPMENT of the simplest: unfold what the simplest IS -- its determinations, not steps toward a solution.
-  Among them look for the determination that points beyond the simplest itself.
-- OPPOSITE: CAUGHT from within that development -- the process one of the simplest's determinations points to.
-  It is not invented from outside: not an alternative way to the same goal, not a negation ("don't do it").
-  The opposite must name the determination it was caught from (caught_from).
-- CONTRADICTION: the simultaneous existence of both -- the simplest as it is, and at once what its opposite shows.
-- LEAP: the result of the OPPOSITE ACTING ON THE SIMPLEST -- either a resolution or a new quality that negates the
-  old one. Never a compromise or hybrid of two options, never a recommendation; the answer to the task is DERIVED
-  from the leap afterwards.
-Worked example 1. Task: "The food is cold; the canteen staff confirmed they can heat it. What to do?"
-  simplest: cold food. development: cold food is tasteless, harmful, unpleasant ... and among these, "food that was
-  not heated" -- hence at once "food that can be heated". opposite (caught from "not heated -> can be heated"):
-  heating of food. contradiction: the food is cold, and food can be heated -- both at once. leap: heating of the
-  COLD food (not heating of food in general) -- the contradiction is resolved; "cold" mattered only as "not heated
-  but should have been". Answer derived: ask them to heat it now.
-Worked example 2. Task: "Should a university allow students to write essays entirely with AI, without restrictions?"
-  simplest: a student's essay. development: a text that is graded; where the student learns to think and write ...
-  and among these, "what the student writes" -- hence at once "what can be written by someone other than the
-  student". opposite (caught from that): AI writing text. contradiction: the essay is the student's work, and it can
-  be written by AI -- both at once. leap: the impossibility of evaluating the work -- a new quality that negates the
-  essay's purpose as evidence of the student. Answer derived: unrestricted AI means giving up essays as assessment.
+THE METHOD (dialectical analysis; not thesis/antithesis/synthesis, not "option vs alternative"):
+- First state the task as a PROCESS (what is happening or being done), not as a question.
+- SIMPLEST: the process from which the WHOLE situation of the task develops: it is connected to the task's
+  process, the processes developing out of it approach that process as a whole, and each of them stays
+  connected to it. It is not a piece of the situation and not a solution.
+- DEVELOPMENT: from the simplest toward the task's process, abstract to concrete. Each next process is
+  contained in the previous one potentially, and the previous one becomes more definite as the next arises.
+  Show how one turns into the other -- a list of "this, and also that" is change, not development.
+- OPPOSITE: found AMONG the developing processes -- the one whose own development does not require the
+  simplest (it excludes the simplest's existence without destroying it). State why it does not require the
+  simplest (independence). Not an alternative way to the same goal, not a negation.
+- CONTRADICTION: the simplest and the opposite taken in the unity of their development.
+- LEAP (resolution): a process that replaces both, taking them into its own development (replacement), or a
+  process that lets the contradiction keep existing until it is resolved (mediation). State how it takes in
+  both (how_resolves). Not a compromise of two options, not a recommendation; the answer to the task is
+  derived from the resolution.
+Worked example 1. "We want an AI chatbot for our clients so they call support less; no data yet; needed next
+  month." The task's process: a business seeks to cut support calls by bringing in an AI chatbot. Simplest:
+  sales automation -- it develops into automating contact with clients, then answering their typical
+  questions automatically, and so arrives at wanting an AI chatbot. (Neither "clients call support" nor "there
+  is no data" is the simplest: each is only a piece of the situation.)
+Worked example 2. "The food is cold; the staff can heat it. What to do?" Simplest: cold food. Among its
+  developing processes -- food that was not heated, food that can be heated -- is heating of food, whose
+  development does not require cold food: the opposite. Contradiction: cold food and heating in the unity of
+  their development. Resolution: heating of the COLD food, which takes both in (replacement).
+Worked example 3. "Should a university allow essays written entirely by AI?" Simplest: a student's essay.
+  Among its developing processes -- what the student writes, what can be written by someone other than the
+  student -- is AI writing text, which does not require a student's essay: the opposite. Resolution: the work
+  can no longer be evaluated as the student's -- a new process replacing both.
 BEGIN_EXECUTION accepts a complete roadmap with an ordered list of execution processes. Only then act with tools.
 Every action must originate in that route. ASSESS_PRACTICE compares expectation to actual observations.
 If practice contradicts the map, REVISE_WORLD returns to planning, preserving previous maps and observations.
@@ -130,12 +135,12 @@ Analyze the state, determine the next logical dialectical step, and submit your 
 # Guidance for each move, shown only while that move is allowed: listing moves the model cannot make
 # now drew it toward them (e.g. PROPOSE_ACTION while still planning) and cost tokens on every call.
 CORE_MOVE_NOTES = {
-    "PROPOSE_SIMPLEST": "The task's given situation as it is (e.g. 'cold food'), never a solution to it.",
+    "PROPOSE_SIMPLEST": "The process from which the whole situation of the task develops -- not a piece of it, not a solution.",
     "ASSESS_SIMPLEST": "After proposing, you must assess if the candidate simplest process is truly generative and connected to the goal.",
-    "DEVELOP_PROCESS": "Unfold what a process IS -- its determinations -- not steps toward a solution.",
-    "DESIGNATE_OPPOSITE": "The process caught from one determination of the simplest's development; name it in caught_from.",
-    "ESTABLISH_CONTRADICTION": "State that the simplest as it is and what its opposite shows exist at once.",
-    "PROPOSE_LEAP": "The result of the opposite acting on the simplest: a resolution or a new quality, not a compromise.",
+    "DEVELOP_PROCESS": "The next, more concrete process contained in this one -- a transition, not a list.",
+    "DESIGNATE_OPPOSITE": "A developing process whose own development does not require the simplest; say why in independence.",
+    "ESTABLISH_CONTRADICTION": "The simplest and the opposite in the unity of their development.",
+    "PROPOSE_LEAP": "A process replacing both by taking them in (replacement), or keeping the contradiction alive until resolved (mediation).",
     "PROPOSE_ACTION": "Call a domain tool to collide with reality.",
     "ASSESS_PRACTICE": "Assess the Observation resulting from your Action. Did reality match your expectation?",
     "COMPLETE": (
@@ -370,7 +375,7 @@ def build_v2_prompt(
         if d.role.value == "candidate_simplest":
             continue
         c = "(Committed)" if state.is_committed(d.id) else "(Provisional)"
-        caught = f" caught_from={d.caught_from!r}" if d.caught_from else ""
+        caught = f" independence={d.independence!r}" if d.independence else ""
         state_str += f"- [{al(d.id)}] role={d.role.value} {c} process_id={al(d.process_id)}{caught}\n"
     if not any(d.role.value != "candidate_simplest" for d in designations):
         state_str += "- (none yet)\n"
@@ -380,7 +385,7 @@ def build_v2_prompt(
         state_str += f"- [{al(c.id)}] status={c.status.value} simplest={al(c.simplest_id)} opposite={al(c.opposite_id)}\n"
         for rr in state._resolution_relations.values():
             if rr.contradiction_id == c.id:
-                acting = f" opposite_acting_on_simplest={rr.opposite_acting_on_simplest!r}" if rr.opposite_acting_on_simplest else ""
+                acting = f" how_resolves={rr.how_resolves!r}" if rr.how_resolves else ""
                 state_str += f"  -> Resolution [{al(rr.id)}]: outcome={rr.outcome.value} process_id={al(rr.resolution_process_id)} confirmed_roadmap={al(rr.confirmed_roadmap_id)}{acting}\n"
     if not contradictions:
         state_str += "- (none yet)\n"

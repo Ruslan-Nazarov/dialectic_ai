@@ -42,7 +42,7 @@ def extract_blocks(state) -> dict:
         if not d:
             return None
         devs = [r for r in state.get_all_development_relations() if state.belongs_to_development_line(d.process_id, r.id)]
-        return {"process": content(d.process_id), "justification": d.justification, "caught_from": d.caught_from,
+        return {"process": content(d.process_id), "justification": d.justification, "independence": d.independence,
                 "development": [f"{content(r.emergent_process_id)} | {r.new_content}" for r in devs]}
 
     return {
@@ -51,7 +51,7 @@ def extract_blocks(state) -> dict:
         "contradictions": [{"unity": c.unity_justification, "developing_unity": c.developing_unity_description}
                            for c in state.get_all_contradictions()],
         "leaps": [{"content": content(r.resolution_process_id), "outcome": r.outcome.value,
-                   "opposite_acting_on_simplest": r.opposite_acting_on_simplest}
+                   "how_resolves": r.how_resolves}
                   for r in state._resolution_relations.values()],
         "completed_without_roadmap": bool(state._completions) and not state._roadmaps,
     }
@@ -75,7 +75,7 @@ TASK:
 
 EXPERT ANNOTATION
 - Simplest (the given situation): {simplest}
-- Determination the opposite is caught from: {caught_from}
+- Determination the opposite is caught from: {independence}
 - Opposite: {opposite}
 - Genuine contradiction present: {has_genuine}
 - Principal contradiction: {principal}
@@ -105,7 +105,7 @@ METRICS = ["simplest_generative", "opposite_independent", "contradiction_is_unit
 async def grade(task, blocks):
     grader = _build(os.getenv("DIALECTIC_COMPARE_GRADER", "cerebras"))
     grader.max_retries = 2
-    prompt = GRADER_PROMPT.format(task=task.task, simplest=task.simplest, caught_from=task.caught_from or "none",
+    prompt = GRADER_PROMPT.format(task=task.task, simplest=task.simplest, independence=task.independence or "none",
                                   opposite=task.opposite or "none", has_genuine=task.has_genuine_contradiction,
                                   principal=task.principal,
                                   secondary="; ".join(task.secondary) or "none", leap=task.leap_should_follow or "none",

@@ -88,30 +88,26 @@ rejecting, ask explicitly: "Is this move failing ITS OWN listed criterion below,
 it to the finished task's standard prematurely?" If it is the latter, ACCEPT it and let the
 protocol continue -- a diagnosis, a fix, a final answer are all things COMPLETE must contain, not
 things PROPOSE_SIMPLEST, ASSESS_SIMPLEST, or DEVELOP_PROCESS must already contain.
-- SIMPLEST: the task's GIVEN situation as it is, not a solution, method or plan for it. ACCEPT "cold food" or
-  "the product of 17 and 23, which the task requires"; REJECT "reheat the food", "organize safe reheating",
-  "use a pretrained LLM", "release smaller batches" -- those are solutions, and a solution in this block makes the
-  whole method collapse into "option vs alternative". A role requirement on the overall process (e.g. "verify with
-  the tool") is met by later stages and must NOT be demanded of SIMPLEST's own content; if DATA.role names what the
-  simplest concretely IS, enforce that strictly.
-- ASSESS_SIMPLEST: a reasoned judgment (approve or reject) about whether the CANDIDATE is the task's given situation
-  (not a solution), held to the same rule as SIMPLEST above. A coherent reason tied to the candidate's actual content
-  is sufficient; do not demand evidence here -- that is what PRACTICE and ASSESS_LEAP are for.
-- DEVELOPMENT: unfolds what the source process IS -- its determinations -- not steps toward a solution and not an
-  unrelated next task. ACCEPT for "cold food": "tasteless, harmful ... food that was not heated, hence food that can
-  be heated". REJECT a checklist of how to reheat. For the opposite's own line, unfold what that process is.
-- OPPOSITE: must be CAUGHT from a determination in the simplest's development, named in caught_from, and that
-  determination must actually appear in (or clearly follow from) the cited development. ACCEPT "heating of food"
-  caught from "not heated -> can be heated". REJECT an alternative way to reach the same goal ("don't reheat, demand
-  compensation", "a knowledge base instead of a bot") and a mere negation, whatever caught_from claims.
-- CONTRADICTION: the simultaneous existence of both -- the simplest as it is and, at once, what its opposite shows
-  ("the food is cold, and food can be heated"). REJECT "two options compete for the same goal" or "choose one
-  of two routes": that is a choice between solutions, not a contradiction.
-- LEAP: the result of the OPPOSITE ACTING ON THE SIMPLEST, stated in opposite_acting_on_simplest, with
-  resolution_content being that result: a resolution ("the cold food is heated") or a new quality negating the old
-  one ("the essay can no longer be evaluated as the student's work"). REJECT a hybrid or compromise of two options,
-  a protocol that "does both", or a recommendation -- the answer to the task is derived from the leap later, it is
-  not the leap.
+- SIMPLEST: the process from which the WHOLE situation of the task develops: connected to the task's process,
+  with the processes developing out of it approaching that process, each staying connected to it. REJECT a
+  piece of the situation ("clients call support", "there is no data" for "we want a chatbot... no data yet")
+  and a solution ("reheat the food", "use an LLM"). ACCEPT "sales automation" for the chatbot request, "cold
+  food" for the cold-food complaint. A role requirement on the overall process (e.g. "verify with the tool") is
+  met by later stages and must NOT be demanded of SIMPLEST's own content.
+- ASSESS_SIMPLEST: a reasoned judgment (approve or reject) about whether the CANDIDATE meets the SIMPLEST rule
+  above. A coherent reason tied to the candidate's content is sufficient; do not demand evidence here.
+- DEVELOPMENT: the next, more concrete process contained in its source potentially, the source becoming more
+  definite as it arises; together the developments move toward the task's process. REJECT juxtaposition -- a
+  list of properties or "this, and also that" is change, not development -- and steps of a solution.
+- OPPOSITE: a process found among the simplest's developing processes whose own development does not require
+  the simplest (excluding its existence is not destroying it); independence must say why. REJECT an
+  alternative way to reach the same goal and a mere negation ("don't do it").
+- CONTRADICTION: the simplest and the opposite taken in the unity of their development. REJECT "two options
+  compete for one goal" or "choose one of two routes": that is a choice between solutions.
+- LEAP: a resolving process -- one that replaces the simplest and the opposite by taking both into its own
+  development (replacement), or one that lets the contradiction keep existing until it is resolved
+  (mediation); how_resolves must say how. REJECT a hybrid or compromise of two options, a protocol that "does
+  both", or a recommendation: the answer to the task is derived from the resolution, it is not the resolution.
 - BEGIN_EXECUTION: complete coherent task-world and actionable ordered route through it, with no unsupported claim of practice.
 - ACTION: truly tests or realizes its referenced route process, with a concrete expectation and valid known inputs.
   If this action's own route was designated OPPOSITE specifically to provide independent verification, its code

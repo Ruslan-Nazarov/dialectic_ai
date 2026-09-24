@@ -164,7 +164,7 @@ async def test_practice_revises_roadmap_and_executes_new_version():
                 elif state['phase'] == 'executing' and 'REVISE_WORLD' in state['allowed_moves'] and state['practice']:
                     return move('REVISE_WORLD',{'observation_ids':[state['observations'][-1]['id']],'reason':'Actual result contradicts expected result'})
                 elif state['phase'] == 'planning' and len(state['resolutions']) == 1:
-                    return move('PROPOSE_LEAP',{'contradiction_id':state['contradictions'][0]['id'],'resolution_content':'Revised roadmap realization based on actual conditions','resolution_outcome':'mediation','opposite_acting_on_simplest':'a'})
+                    return move('PROPOSE_LEAP',{'contradiction_id':state['contradictions'][0]['id'],'resolution_content':'Revised roadmap realization based on actual conditions','resolution_outcome':'mediation','how_resolves':'a'})
             return json.dumps(proposal)
     engine = DialecticalEngine(agent(Revising()))
     result = await engine.run(AgentInput(user_message='Practice revision example'))
@@ -203,7 +203,7 @@ async def test_persistent_contradiction_ends_unresolved_not_completed():
             elif state['phase'] == 'planning' and state['roadmaps'] and len(state['resolutions']) == len(state['roadmaps']):
                 return move('PROPOSE_LEAP', {'contradiction_id': state['contradictions'][0]['id'],
                     'resolution_content': f"Another route {len(state['roadmaps'])}", 'resolution_outcome': 'mediation',
-                    'opposite_acting_on_simplest': 'a'})
+                    'how_resolves': 'a'})
             return json.dumps(proposal)
 
     engine = DialecticalEngine(agent(AlwaysContradicted()), max_iterations=40)

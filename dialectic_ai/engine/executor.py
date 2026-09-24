@@ -548,7 +548,7 @@ class DialecticalEngine:
         proposal = Proposal(
             move_type=MoveType.DESIGNATE_OPPOSITE,
             payload={"simplest_id": simplest.id, "context_id": developed[-1].emergent_process_id,
-                     "content": self.domain.opposite, "caught_from": "Fixed by the task domain",
+                     "content": self.domain.opposite, "independence": "Fixed by the task domain",
                      "justification": self.domain.opposite_justification},
             why_this_move_now="The domain fixes this opposite in advance.",
             expected_goal_contribution="Lets the model develop the opposite the domain defines.",
@@ -605,7 +605,7 @@ class DialecticalEngine:
             await commit(MoveType.DESIGNATE_OPPOSITE, {"simplest_id": simplest.id,
                          "context_id": simplest_dev.emergent_process_id,
                          "content": fixed or "What reality actually reports when the task is carried out",
-                         "caught_from": ("Fixed by the task domain" if fixed else
+                         "independence": ("Fixed by the task domain" if fixed else
                                          "Each step has an expected result, which reality may or may not report"),
                          "justification": (self.domain.opposite_justification if fixed else
                                            "Tool results exist independently of what the plan expects of them")})
@@ -626,7 +626,7 @@ class DialecticalEngine:
                        if not state._roadmaps else
                        f"A different way to act and check, after practice contradicted the plan: {state._revision_reason}")
             await commit(MoveType.PROPOSE_LEAP, {"contradiction_id": contradiction.id, "resolution_content": content,
-                                                 "opposite_acting_on_simplest": "Observed results act on each expected step",
+                                                 "how_resolves": "Observed results act on each expected step",
                                                  "resolution_outcome": "mediation"})
             fresh = [r for r in state._resolution_relations.values() if r.id not in used]
         leap = fresh[-1]
