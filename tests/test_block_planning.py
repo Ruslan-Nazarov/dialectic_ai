@@ -34,17 +34,12 @@ class BlockLLM(MockLLM):
             ("State this task as a PROCESS", {"process": "food has gone cold and the staff can heat it",
                                              "needs_development": self.needs_development}),
             ("Find the SIMPLEST process", {"simplest": "cold food"}),
-            ("Develop this process toward the target", {"chain": [
-                {"process": "food that was not heated", "how_it_arises": "cold food is food left unheated"},
-                {"process": "food that can be heated", "how_it_arises": "what was not heated can be"},
-                {"process": "heating of food", "how_it_arises": "the possibility becomes the process"}]}),
-            ("Develop this process in its own right", {"chain": [
-                {"process": "choosing a heating method", "how_it_arises": "heating needs a means"},
-                {"process": "bringing food to temperature", "how_it_arises": "the method is applied"}]}),
-            ("Find the OPPOSITE", None),
+            ("Name the processes that develop out of this process", None),
+            ("Develop this element of the process", None),
+            ("Choose the OPPOSITE", None),
             ("State the contradiction", {"contradiction": "cold food and heating in the unity of their development",
                                         "unity_of_development": "cooling and heating hold together"}),
-            ("Find the process that resolves", {"resolution": "heating of the cold food",
+            ("Resolve this contradiction", {"resolution": "heating of the cold food",
                                                 "how_resolves": "heating is applied to this cold food",
                                                 "outcome": "replacement"}),
         ]
@@ -52,10 +47,21 @@ class BlockLLM(MockLLM):
             if marker in prompt:
                 self.block_prompts.setdefault(marker, []).append(prompt)
                 if answer is None:
-                    number = self.opposite_numbers.pop(0) if len(self.opposite_numbers) > 1 else self.opposite_numbers[0]
-                    answer = {"number": number, "independence": "food can be heated whether or not this food is cold"}
+                    answer = self._dynamic(marker, prompt)
                 return json.dumps(answer)
         return await super().generate(messages, tools)
+
+
+    def _dynamic(self, marker, prompt):
+        if marker == "Name the processes that develop out of this process":
+            if "Process: cold food" in prompt:
+                return {"elements": ["food that was not heated", "food losing its taste", "heating of food"]}
+            return {"elements": ["choosing a heating method", "bringing food to temperature"]}
+        if marker == "Develop this element of the process":
+            element = prompt.split("Element: ", 1)[1].split("\n", 1)[0]
+            return {"steps": [{"process": f"{element}, made concrete", "how_it_arises": "it grows definite"}]}
+        number = self.opposite_numbers.pop(0) if len(self.opposite_numbers) > 1 else self.opposite_numbers[0]
+        return {"number": number, "independence": "food can be heated whether or not this food is cold"}
 
 
 def engine(llm, **kwargs):
@@ -86,18 +92,36 @@ async def test_blocks_run_in_order_and_the_actor_finishes():
 
 
 @pytest.mark.asyncio
-async def test_development_is_a_chain_not_a_list():
-    e = engine(BlockLLM(), stop_after_roadmap=True)
+async def test_development_is_a_bundle_with_a_block_per_element():
+    llm = BlockLLM()
+    e = engine(llm, stop_after_roadmap=True)
     await e.run(AgentInput(user_message=TASK))
     state = e.state
     simplest = next(d for d in state.get_all_designations() if d.role == DesignationRole.SIMPLEST)
-    relations = {r.source_process_id: r for r in state.get_all_development_relations()}
-    source, texts = simplest.process_id, []
-    while source in relations:
-        emergent = relations[source].emergent_process_id
-        texts.append(state.get_process(emergent).content)
-        source = emergent
-    assert texts == ["food that was not heated", "food that can be heated", "heating of food"]
+    elements = [state.get_process(r.emergent_process_id).content
+                for r in state.get_all_development_relations() if r.source_process_id == simplest.process_id]
+    assert elements == ["food that was not heated", "food losing its taste", "heating of food"]
+    # Each element of both bundles was developed in its own block.
+    assert len(llm.block_prompts["Develop this element of the process"]) == 3 + 2
+    for element in elements:
+        element_id = next(p.id for p in state.get_all_processes() if p.content == element)
+        step = next(r for r in state.get_all_development_relations() if r.source_process_id == element_id)
+        assert state.get_process(step.emergent_process_id).content == f"{element}, made concrete"
+
+
+@pytest.mark.asyncio
+async def test_contradiction_receives_the_simplest_and_the_opposites_bundle():
+    llm = BlockLLM()
+    e = engine(llm, stop_after_roadmap=True)
+    await e.run(AgentInput(user_message=TASK))
+    prompt = llm.block_prompts["State the contradiction"][0]
+    assert "Simplest: cold food\n" in prompt and "Opposite: heating of food" in prompt
+    for text in ("choosing a heating method", "bringing food to temperature, made concrete"):
+        assert text in prompt, text
+    # The simplest comes without its bundle.
+    assert "food that was not heated" not in prompt and "food losing its taste" not in prompt
+    contradiction = e.state.get_all_contradictions()[0]
+    assert len(contradiction.simplest_dev_ref_ids) == 1 and len(contradiction.opposite_dev_ref_ids) == 4
 
 
 @pytest.mark.asyncio
@@ -105,8 +129,9 @@ async def test_only_the_first_block_sees_the_task():
     llm = BlockLLM()
     await engine(llm, stop_after_roadmap=True).run(AgentInput(user_message=TASK))
     assert TASK in llm.block_prompts["State this task as a PROCESS"][0]
-    for marker in ("Find the SIMPLEST process", "Develop this process toward the target", "Find the OPPOSITE",
-                   "Develop this process in its own right", "State the contradiction", "Find the process that resolves"):
+    for marker in ("Find the SIMPLEST process", "Name the processes that develop out of this process",
+                   "Develop this element of the process", "Choose the OPPOSITE", "State the contradiction",
+                   "Resolve this contradiction"):
         assert all(TASK not in p and "What to do" not in p for p in llm.block_prompts[marker]), marker
 
 
@@ -122,7 +147,7 @@ async def test_out_of_range_opposite_is_retried_with_feedback():
     llm = BlockLLM(opposite_numbers=(9, 3))
     result = await engine(llm, stop_after_roadmap=True).run(AgentInput(user_message=TASK))
     assert result.status == "planned"
-    retry = llm.block_prompts["Find the OPPOSITE"][1]
+    retry = llm.block_prompts["Choose the OPPOSITE"][1]
     assert "previous answer was rejected" in retry and "number must be 1..3" in retry
 
 
@@ -148,4 +173,4 @@ async def test_plain_fact_question_skips_the_blocks(tmp_path):
     events = trace_events(trace)
     assert next(ev for ev in events if ev["event_type"] == "block_planning")["outcome"] == "no_contradiction"
     assert "Find the SIMPLEST process" not in llm.block_prompts
-    assert "Develop this process toward the target" not in llm.block_prompts
+    assert "Name the processes that develop out of this process" not in llm.block_prompts
