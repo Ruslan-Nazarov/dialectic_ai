@@ -176,7 +176,8 @@ class MockLLM(BaseLLM):
         if not opposite:
             return move('DESIGNATE_OPPOSITE', {'simplest_id': simplest['id'], 'context_id': sdev['id'],
                  'content': '[SIMULATION] Independently developing process',
-                 'justification': '[SIMULATION] Development does not require the simplest process'})
+                 'caught_from': '[SIMULATION] A determination found in the simplest\'s development',
+                 'justification': '[SIMULATION] That determination points to this process'})
         odev = next((r for r in development if r['source_process_id'] == opposite['process_id']), None)
         if not odev:
             return develop(opposite['process_id'])
@@ -187,6 +188,7 @@ class MockLLM(BaseLLM):
                 'developing_unity_description': '[SIMULATION] Their developing unity'})
         if not data['resolutions']:
             return move('PROPOSE_LEAP', {'contradiction_id': data['contradictions'][0]['id'],
+                'opposite_acting_on_simplest': '[SIMULATION] The opposite acts on the simplest',
                 'resolution_content': '[SIMULATION] Resolution from the unity of both processes', 'resolution_outcome': 'replacement'})
         resolution = data['resolutions'][-1]
         if data['phase'] == 'planning':

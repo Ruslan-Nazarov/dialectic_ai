@@ -42,7 +42,7 @@ def extract_blocks(state) -> dict:
         if not d:
             return None
         devs = [r for r in state.get_all_development_relations() if state.belongs_to_development_line(d.process_id, r.id)]
-        return {"process": content(d.process_id), "justification": d.justification,
+        return {"process": content(d.process_id), "justification": d.justification, "caught_from": d.caught_from,
                 "development": [f"{content(r.emergent_process_id)} | {r.new_content}" for r in devs]}
 
     return {
@@ -50,7 +50,8 @@ def extract_blocks(state) -> dict:
         "opposite": line(DesignationRole.OPPOSITE),
         "contradictions": [{"unity": c.unity_justification, "developing_unity": c.developing_unity_description}
                            for c in state.get_all_contradictions()],
-        "leaps": [{"content": content(r.resolution_process_id), "outcome": r.outcome.value}
+        "leaps": [{"content": content(r.resolution_process_id), "outcome": r.outcome.value,
+                   "opposite_acting_on_simplest": r.opposite_acting_on_simplest}
                   for r in state._resolution_relations.values()],
         "completed_without_roadmap": bool(state._completions) and not state._roadmaps,
     }
@@ -60,21 +61,22 @@ GRADER_PROMPT = """You evaluate whether an AI's analysis follows a specific dial
 annotation. You do not know which system produced it. Grade the METHOD, not how sensible the text sounds.
 
 THE METHOD
-- SIMPLEST process: the task's own generative process -- what is happening that gives rise to the task. It is NOT
-  a solution, a method, a tool or a plan for the task ("use an LLM", "reheat the food", "release smaller batches"
-  are solutions, not the simplest process).
-- OPPOSITE: a process with its OWN need that develops independently of the simplest. An alternative way to reach
-  the same goal is NOT an opposite; neither is a mere negation ("don't do it").
-- CONTRADICTION: the unity and mutual exclusion of the two developing processes -- how each one's development
-  undermines or requires the other. "Two options compete for the same goal" is NOT a contradiction in this sense.
-- LEAP: a NEW concrete process that follows from that unity. A hybrid/combination of two competing options
-  ("hybrid X+Y", "do both with a fallback") is NOT a leap in this sense.
+- SIMPLEST: the task's GIVEN situation as it is ("cold food"), never a solution ("reheat it", "use an LLM").
+- DEVELOPMENT of the simplest: its determinations (what it is), not steps of a solution.
+- OPPOSITE: CAUGHT from one determination in the simplest's development ("not heated -> can be heated" gives
+  "heating of food"). An alternative way to the same goal, or a negation, is NOT an opposite.
+- CONTRADICTION: both existing at once ("the food is cold, and food can be heated").
+- LEAP: the result of the opposite acting on the simplest -- a resolution ("heating of the cold food") or a new
+  quality negating the old one ("the essay can no longer be evaluated"). A hybrid/compromise of two options or a
+  recommendation is NOT a leap.
 
 TASK:
 {task}
 
 EXPERT ANNOTATION
-- The task's simplest (generative) process: {simplest}
+- Simplest (the given situation): {simplest}
+- Determination the opposite is caught from: {caught_from}
+- Opposite: {opposite}
 - Genuine contradiction present: {has_genuine}
 - Principal contradiction: {principal}
 - Secondary contradictions: {secondary}
@@ -85,14 +87,13 @@ ANALYSIS PRODUCED:
 {blocks}
 
 Score each 0, 1 or 2:
-1. simplest_generative: 0 = the simplest is a solution/method/plan; 1 = mixed; 2 = the task's generative process.
-2. opposite_independent: 0 = alternative way to the same goal, or a negation; 1 = partly its own need;
-   2 = its own need, developing independently.
-3. contradiction_is_unity: 0 = options competing for one goal; 1 = partly; 2 = unity and mutual exclusion of the
-   two developing processes.
+1. simplest_generative: 0 = the simplest is a solution/method/plan; 1 = mixed; 2 = the given situation.
+2. opposite_independent: 0 = alternative way to the same goal, or a negation; 1 = related but not caught from a
+   determination of the simplest; 2 = caught from a determination in the simplest's development.
+3. contradiction_is_unity: 0 = options competing for one goal; 1 = partly; 2 = both existing at once.
 4. principal_found: 0 = misses the annotated principal contradiction; 1 = partly; 2 = names both its sides.
-5. leap_new_process: 0 = hybrid/combination of the two sides, or generic; 1 = partly; 2 = a new process that
-   follows from the unity.
+5. leap_new_process: 0 = hybrid/compromise of two options, a recommendation, or generic; 1 = partly;
+   2 = the result of the opposite acting on the simplest.
 If the annotation says there is no genuine contradiction: score principal_found 2 if none was invented (finished
 without a roadmap), else 0; score the other four 2 if the blocks were rightly left empty, 0 if they were filled.
 Return only JSON: {{"simplest_generative": n, "opposite_independent": n, "contradiction_is_unity": n,
@@ -104,7 +105,8 @@ METRICS = ["simplest_generative", "opposite_independent", "contradiction_is_unit
 async def grade(task, blocks):
     grader = _build(os.getenv("DIALECTIC_COMPARE_GRADER", "cerebras"))
     grader.max_retries = 2
-    prompt = GRADER_PROMPT.format(task=task.task, simplest=task.simplest, has_genuine=task.has_genuine_contradiction,
+    prompt = GRADER_PROMPT.format(task=task.task, simplest=task.simplest, caught_from=task.caught_from or "none",
+                                  opposite=task.opposite or "none", has_genuine=task.has_genuine_contradiction,
                                   principal=task.principal,
                                   secondary="; ".join(task.secondary) or "none", leap=task.leap_should_follow or "none",
                                   template="; ".join(task.template_signs) or "none",

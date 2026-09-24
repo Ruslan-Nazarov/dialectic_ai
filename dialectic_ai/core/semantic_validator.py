@@ -88,33 +88,30 @@ rejecting, ask explicitly: "Is this move failing ITS OWN listed criterion below,
 it to the finished task's standard prematurely?" If it is the latter, ACCEPT it and let the
 protocol continue -- a diagnosis, a fix, a final answer are all things COMPLETE must contain, not
 things PROPOSE_SIMPLEST, ASSESS_SIMPLEST, or DEVELOP_PROCESS must already contain.
-- SIMPLEST: task-derived, generative, with developments connected back to it.
-  ACCEPT EXAMPLE (memorize this, it is the common case): role says "verify any arithmetic claim using the tool
-  before finalizing"; candidate is "Directly compute the product of 17 and 23." -> ACCEPT. The role's verification
-  requirement is the job of a LATER stage (usually OPPOSITE), not something that must already appear inside
-  SIMPLEST's own content. Rejecting a plain, direct candidate like this for "not including verification" is a
-  known judge mistake that makes the method impossible to run at all -- do not make it.
-  REJECT EXAMPLE: role says "the simplest is the user's appeal/complaint itself"; candidate is "Reheat the food"
-  (an action/leap, not the complaint) -> REJECT.
-  The general rule behind both examples: if DATA.role names WHAT SUBJECT/ENTITY the simplest concretely IS (an
-  identity constraint, like the second example), enforce it strictly. If DATA.role instead states a REQUIREMENT ON
-  THE OVERALL PROCESS (like the first example's verification clause), that is satisfied by later stages developing
-  toward it, and must NOT be demanded of SIMPLEST's own content.
-- ASSESS_SIMPLEST: a reasoned judgment (approve or reject) about whether the CANDIDATE is generative and
-  task-connected, held to the exact same role-defined constraint as SIMPLEST above. A coherent reason tied to the
-  candidate's actual content is sufficient. Do not demand empirical evidence, proof, or a comparative study here --
-  that is what PRACTICE and ASSESS_LEAP are for, later.
-- DEVELOPMENT: becoming from abstract to concrete, latent in its source, not merely a subsequent unrelated task.
-- OPPOSITE: its development does not require the simplest process to exist -- it must serve a genuinely different NEED,
-  not the same need solved another way. Reject an alternative technique, estimate, or shortcut that still tries to
-  produce/approximate the simplest's own target (that shares its need and is a competing technique, not an opposite),
-  and reject a mere negation or bug report. ACCEPT a process operating at a different level whose own need is
-  independent -- e.g. if the simplest's need is "produce the exact answer," an opposite whose need is "establish
-  trust in a claimed answer without producing one" (independent constraint-checking: bounds, parity, modular
-  residues, sanity/invariant checks) is valid, because that need and its development do not depend on the simplest
-  process ever having run.
-- CONTRADICTION: unity of the development of BOTH identified processes, supported by their referenced development chains.
-- LEAP: planned resolution from the unity, not one side alone; replacement absorbs both, mediation sustains their coexistence.
+- SIMPLEST: the task's GIVEN situation as it is, not a solution, method or plan for it. ACCEPT "cold food" or
+  "the product of 17 and 23, which the task requires"; REJECT "reheat the food", "organize safe reheating",
+  "use a pretrained LLM", "release smaller batches" -- those are solutions, and a solution in this block makes the
+  whole method collapse into "option vs alternative". A role requirement on the overall process (e.g. "verify with
+  the tool") is met by later stages and must NOT be demanded of SIMPLEST's own content; if DATA.role names what the
+  simplest concretely IS, enforce that strictly.
+- ASSESS_SIMPLEST: a reasoned judgment (approve or reject) about whether the CANDIDATE is the task's given situation
+  (not a solution), held to the same rule as SIMPLEST above. A coherent reason tied to the candidate's actual content
+  is sufficient; do not demand evidence here -- that is what PRACTICE and ASSESS_LEAP are for.
+- DEVELOPMENT: unfolds what the source process IS -- its determinations -- not steps toward a solution and not an
+  unrelated next task. ACCEPT for "cold food": "tasteless, harmful ... food that was not heated, hence food that can
+  be heated". REJECT a checklist of how to reheat. For the opposite's own line, unfold what that process is.
+- OPPOSITE: must be CAUGHT from a determination in the simplest's development, named in caught_from, and that
+  determination must actually appear in (or clearly follow from) the cited development. ACCEPT "heating of food"
+  caught from "not heated -> can be heated". REJECT an alternative way to reach the same goal ("don't reheat, demand
+  compensation", "a knowledge base instead of a bot") and a mere negation, whatever caught_from claims.
+- CONTRADICTION: the simultaneous existence of both -- the simplest as it is and, at once, what its opposite shows
+  ("the food is cold, and food can be heated"). REJECT "two options compete for the same goal" or "choose one
+  of two routes": that is a choice between solutions, not a contradiction.
+- LEAP: the result of the OPPOSITE ACTING ON THE SIMPLEST, stated in opposite_acting_on_simplest, with
+  resolution_content being that result: a resolution ("the cold food is heated") or a new quality negating the old
+  one ("the essay can no longer be evaluated as the student's work"). REJECT a hybrid or compromise of two options,
+  a protocol that "does both", or a recommendation -- the answer to the task is derived from the leap later, it is
+  not the leap.
 - BEGIN_EXECUTION: complete coherent task-world and actionable ordered route through it, with no unsupported claim of practice.
 - ACTION: truly tests or realizes its referenced route process, with a concrete expectation and valid known inputs.
   If this action's own route was designated OPPOSITE specifically to provide independent verification, its code

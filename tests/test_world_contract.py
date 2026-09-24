@@ -157,7 +157,8 @@ def revised_with_new_leap(state):
     apply(state, 'REVISE_WORLD', {'observation_ids': [oid], 'reason': 'Expectation disproved'})
     old = next(iter(state._resolution_relations.values()))
     new_process = apply(state, 'PROPOSE_LEAP', {'contradiction_id': old.contradiction_id,
-        'resolution_content': 'Verify by an independent method', 'resolution_outcome': 'replacement'})
+        'resolution_content': 'Verify by an independent method', 'resolution_outcome': 'replacement',
+        'opposite_acting_on_simplest': 'An independent check acts on the result'})
     new = next(r for r in state._resolution_relations.values() if r.id != old.id)
     return old, new
 

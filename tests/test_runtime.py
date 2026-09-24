@@ -93,7 +93,7 @@ def test_6_multiple_source_development_works(state_and_commit):
     des = [d for d in state.get_all_designations() if d.process_id == pid_A][0]
     commit.commit(Proposal(move_type=MoveType.ASSESS_SIMPLEST, payload={"candidate_simplest_id": des.id, "approved": True}, why_this_move_now="w", expected_goal_contribution="e"), state)
     
-    pid_B = commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": pid_A, "content": "B", "justification": "j"}, why_this_move_now="w", expected_goal_contribution="e"), state)
+    pid_B = commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": pid_A, "content": "B", "justification": "j", "caught_from": "c"}, why_this_move_now="w", expected_goal_contribution="e"), state)
     
     pid_C = commit.commit(Proposal(move_type=MoveType.DEVELOP_PROCESS, payload={
         "source_process_id": pid_A, "emergent_content": "C", "potential_containment": "x", "emergence": "x", "concretization": "x", "new_content": "x"
@@ -198,7 +198,7 @@ def test_11_opposite_without_committed_simplest_rejected(state_and_commit):
     pid = commit.commit(Proposal(move_type=MoveType.PROPOSE_SIMPLEST, payload={"content": "s"}, why_this_move_now="w", expected_goal_contribution="e"), state)
     des = [d for d in state.get_all_designations() if d.process_id == pid][0]
     with pytest.raises(ValueError, match="Invalid simplest_id"):
-        commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": pid, "content": "o", "justification": "j"}, why_this_move_now="w", expected_goal_contribution="e"), state)
+        commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": pid, "content": "o", "justification": "j", "caught_from": "c"}, why_this_move_now="w", expected_goal_contribution="e"), state)
 
 def test_12_opposite_without_dev_context_rejected(state_and_commit):
     state, commit = state_and_commit
@@ -206,14 +206,14 @@ def test_12_opposite_without_dev_context_rejected(state_and_commit):
     des = [d for d in state.get_all_designations() if d.process_id == pid][0]
     commit.commit(Proposal(move_type=MoveType.ASSESS_SIMPLEST, payload={"candidate_simplest_id": des.id, "approved": True}, why_this_move_now="w", expected_goal_contribution="e"), state)
     with pytest.raises(ValueError, match="Development context_id does not exist"):
-        commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": "nonexistent", "content": "o", "justification": "j"}, why_this_move_now="w", expected_goal_contribution="e"), state)
+        commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": "nonexistent", "content": "o", "justification": "j", "caught_from": "c"}, why_this_move_now="w", expected_goal_contribution="e"), state)
 
 def test_13_opposite_designation_does_not_mutate_process_type(state_and_commit):
     state, commit = state_and_commit
     pid = commit.commit(Proposal(move_type=MoveType.PROPOSE_SIMPLEST, payload={"content": "s"}, why_this_move_now="w", expected_goal_contribution="e"), state)
     des = [d for d in state.get_all_designations() if d.process_id == pid][0]
     commit.commit(Proposal(move_type=MoveType.ASSESS_SIMPLEST, payload={"candidate_simplest_id": des.id, "approved": True}, why_this_move_now="w", expected_goal_contribution="e"), state)
-    opid = commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": pid, "content": "o", "justification": "j"}, why_this_move_now="w", expected_goal_contribution="e"), state)
+    opid = commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": pid, "content": "o", "justification": "j", "caught_from": "c"}, why_this_move_now="w", expected_goal_contribution="e"), state)
     assert type(state.get_process(opid)).__name__ == "Process"
 
 
@@ -331,7 +331,7 @@ def test_28_opposite_commit_does_not_create_contradiction(state_and_commit):
     pid = commit.commit(Proposal(move_type=MoveType.PROPOSE_SIMPLEST, payload={"content": "s"}, why_this_move_now="w", expected_goal_contribution="e"), state)
     des = [d for d in state.get_all_designations() if d.process_id == pid][0]
     commit.commit(Proposal(move_type=MoveType.ASSESS_SIMPLEST, payload={"candidate_simplest_id": des.id, "approved": True}, why_this_move_now="w", expected_goal_contribution="e"), state)
-    commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": pid, "content": "o", "justification": "j"}, why_this_move_now="w", expected_goal_contribution="e"), state)
+    commit.commit(Proposal(move_type=MoveType.DESIGNATE_OPPOSITE, payload={"simplest_id": des.id, "context_id": pid, "content": "o", "justification": "j", "caught_from": "c"}, why_this_move_now="w", expected_goal_contribution="e"), state)
     assert len(state.get_all_contradictions()) == 0
 
 def test_contradiction_dev_ref_ownership(state_and_commit):
@@ -347,12 +347,12 @@ def test_contradiction_dev_ref_ownership(state_and_commit):
 def test_29_leap_without_contradiction_rejected(state_and_commit):
     state, commit = state_and_commit
     with pytest.raises(ValueError, match="Contradiction does not exist"):
-        commit.commit(Proposal(move_type=MoveType.PROPOSE_LEAP, payload={"contradiction_id": "x", "resolution_outcome": "replacement", "resolution_content": "r"}, why_this_move_now="w", expected_goal_contribution="e"), state)
+        commit.commit(Proposal(move_type=MoveType.PROPOSE_LEAP, payload={"contradiction_id": "x", "resolution_outcome": "replacement", "resolution_content": "r", "opposite_acting_on_simplest": "a"}, why_this_move_now="w", expected_goal_contribution="e"), state)
 
 def test_30_planned_replacement_does_not_claim_realization(state_and_commit):
     state = generate_scenario_2()
     c = state.get_all_contradictions()[0]
-    apply(state,"PROPOSE_LEAP",{"contradiction_id":c.id,"resolution_content":"replacement plan","resolution_outcome":"replacement"})
+    apply(state,"PROPOSE_LEAP",{"contradiction_id":c.id,"resolution_content":"replacement plan","resolution_outcome":"replacement","opposite_acting_on_simplest":"a"})
     assert c.status == ContradictionStatus.DEVELOPING  # A plan never claims realization.
     assert state.get_all_actions() == []
 

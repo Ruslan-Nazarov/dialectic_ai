@@ -60,7 +60,7 @@ def generate_scenario_2() -> RuntimeState:
     # Opposite
     opid = commit.commit(Proposal(
         move_type=MoveType.DESIGNATE_OPPOSITE, payload={
-            "simplest_id": des.id, "context_id": dev1_pid, "content": "Particle theory", "justification": "Discrete energy observed"
+            "simplest_id": des.id, "context_id": dev1_pid, "content": "Particle theory", "caught_from": "Energy exchanged in discrete amounts", "justification": "Discrete energy observed"
         }, why_this_move_now="dev", expected_goal_contribution="dev"
     ), state)
     
@@ -96,6 +96,7 @@ def generate_scenario_2() -> RuntimeState:
             "contradiction_id": con_id,
             "resolution_content": "Quantum Mechanics",
             "resolution_outcome": "mediation",
+            "opposite_acting_on_simplest": "Quanta act on the continuous wave picture",
             "how_preserves_simplest": "p",
             "how_preserves_opposite": "p"
         }, why_this_move_now="leap", expected_goal_contribution="leap"

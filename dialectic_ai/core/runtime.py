@@ -78,6 +78,7 @@ class DialecticalDesignation:
     context_id: Optional[str] = None
     simplest_id: Optional[str] = None
     justification: Optional[str] = None
+    caught_from: Optional[str] = None      # opposite only: the simplest's determination it was caught from
 
 @dataclass(kw_only=True)
 class RuntimeReference:
@@ -135,6 +136,7 @@ class ResolutionRelation:
     confirmed_roadmap_id: Optional[str] = None
     evidence_observation_ids: List[str] = field(default_factory=list)
     practice_explanation: str = ""
+    opposite_acting_on_simplest: str = ""
 
 @dataclass(kw_only=True)
 class Completion:
@@ -421,6 +423,9 @@ class StructuralValidator:
                     return False, "Opposite context belongs to a different goal"
                 if not is_valid_str(proposal.payload.get("content")) or not is_valid_str(proposal.payload.get("justification")):
                     return False, "DESIGNATE_OPPOSITE requires content and justification"
+                if not is_valid_str(proposal.payload.get("caught_from")):
+                    return False, ("DESIGNATE_OPPOSITE requires caught_from: the determination of the simplest, found in "
+                                   "its development, that points to this opposite")
                     
             elif proposal.move_type == MoveType.ESTABLISH_CONTRADICTION:
                 simplest_id = proposal.payload.get("simplest_id")
@@ -463,6 +468,8 @@ class StructuralValidator:
                     return False, "Invalid resolution_outcome"
                 if not is_valid_str(proposal.payload.get("resolution_content")):
                     return False, "PROPOSE_LEAP requires resolution_content"
+                if not is_valid_str(proposal.payload.get("opposite_acting_on_simplest")):
+                    return False, "PROPOSE_LEAP requires opposite_acting_on_simplest: what the opposite does to the simplest"
                     
             elif proposal.move_type == MoveType.COMPLETE:
                 goal = state.get_active_goal()
@@ -643,6 +650,7 @@ class CommitLayer:
                 context_id=proposal.payload["context_id"],
                 simplest_id=proposal.payload["simplest_id"],
                 justification=proposal.payload["justification"],
+                caught_from=proposal.payload.get("caught_from"),
             )
             entities_to_insert.append((state._processes, p.id, p))
             entities_to_insert.append((state._designations, d.id, d))
@@ -668,6 +676,7 @@ class CommitLayer:
                 contradiction_id=contradiction_id,
                 resolution_process_id=p.id,
                 outcome=outcome,
+                opposite_acting_on_simplest=proposal.payload.get("opposite_acting_on_simplest", ""),
             )
             entities_to_insert.append((state._processes, p.id, p))
             entities_to_insert.append((state._resolution_relations, rr.id, rr))

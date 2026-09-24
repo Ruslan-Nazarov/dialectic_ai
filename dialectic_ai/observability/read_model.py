@@ -53,6 +53,7 @@ class RuntimeReadModel:
             "context_id": d.context_id,
             "simplest_id": d.simplest_id,
             "justification": d.justification,
+            "caught_from": d.caught_from,
             "committed": self._state.is_committed(d.id)
         } for d in self._state.get_all_designations()]
 
@@ -115,6 +116,7 @@ class RuntimeReadModel:
             "confirmed_roadmap_id": r.confirmed_roadmap_id,
             "evidence_observation_ids": r.evidence_observation_ids,
             "practice_explanation": r.practice_explanation,
+            "opposite_acting_on_simplest": r.opposite_acting_on_simplest,
             "committed": self._state.is_committed(r.id)
         } for r in getattr(self._state, '_resolution_relations', {}).values()]
 

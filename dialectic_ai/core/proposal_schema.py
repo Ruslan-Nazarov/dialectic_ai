@@ -104,16 +104,17 @@ MOVE_SPECIFICATIONS: Dict[str, Dict[str, Any]] = {
         }
     },
     "DESIGNATE_OPPOSITE": {
-        "description": "Designate a process as the Opposite to the Simplest.",
+        "description": "Designate the Opposite: the process caught from one determination found in the Simplest's development.",
         "payload_schema": {
             "type": "object",
             "properties": {
                 "simplest_id": {"type": "string", "description": "The designation record's OWN 'id' field, taken from the Designations list where role == 'simplest'. Do NOT use that record's process_id, and do NOT use a process id from the Processes list."},
                 "context_id": {"type": "string", "description": "The 'id' of an existing, already-listed Process or Development Relation from the state above that the opposite develops out of. Never the goal_id, never a Designation id."},
-                "content": {"type": "string", "description": "The content of the opposite process"},
-                "justification": {"type": "string", "description": "Justification for why this is the dialectical opposite"}
+                "content": {"type": "string", "description": "The opposite process (e.g. 'heating of food'), not an alternative solution or a negation"},
+                "caught_from": {"type": "string", "description": "The determination of the simplest, found in its development, that points to this opposite (e.g. 'food that was not heated -> can be heated')"},
+                "justification": {"type": "string", "description": "How that determination points to this process"}
             },
-            "required": ["simplest_id", "context_id", "content", "justification"]
+            "required": ["simplest_id", "context_id", "content", "caught_from", "justification"]
         }
     },
     "ESTABLISH_CONTRADICTION": {
@@ -132,15 +133,16 @@ MOVE_SPECIFICATIONS: Dict[str, Dict[str, Any]] = {
         }
     },
     "PROPOSE_LEAP": {
-        "description": "Resolve a contradiction to reach a higher state.",
+        "description": "The leap: the result of the opposite acting on the simplest -- a resolution or a new quality negating the old one.",
         "payload_schema": {
             "type": "object",
             "properties": {
                 "contradiction_id": {"type": "string", "description": "ID of the Contradiction"},
-                "resolution_content": {"type": "string", "description": "The content of the new resolving process"},
+                "opposite_acting_on_simplest": {"type": "string", "description": "What happens when the opposite acts on the simplest (e.g. 'heating acts on the cold food')"},
+                "resolution_content": {"type": "string", "description": "The result: the leap itself (e.g. 'the cold food is heated' or 'the work can no longer be evaluated'), not a recommendation or compromise"},
                 "resolution_outcome": {"type": "string", "enum": ["replacement", "mediation"]}
             },
-            "required": ["contradiction_id", "resolution_content", "resolution_outcome"]
+            "required": ["contradiction_id", "opposite_acting_on_simplest", "resolution_content", "resolution_outcome"]
         }
     },
     "COMPLETE": {
