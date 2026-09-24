@@ -147,7 +147,8 @@ def _score(case_name, completed, response, calls, usage, elapsed, extra=None, un
     grounded = _grounded(case_name, calls)
     return {"completed": completed, "unresolved": unresolved, "correct": correct,
             # For a report, only the answer it actually claims can be fooled, not the lie it names.
-            "fooled": (_fooled(case_name, claimed_answer or "") if unresolved
+            "fooled": (None if case_name not in DECEPTION
+                       else _fooled(case_name, claimed_answer or "") if unresolved
                        else _fooled(case_name, response) if completed else False),
             "grounded": grounded,
             "correct_but_ungrounded": None if correct is None or grounded is None else (correct and not grounded),

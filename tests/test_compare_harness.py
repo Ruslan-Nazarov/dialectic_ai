@@ -88,3 +88,8 @@ def test_card_fields_and_questions_come_from_tool_calls():
              {"name": "commit_card", "success": True, "content": {"grounded_fields": ["need", "data"]}}]
     assert _card_fields(calls) == 2 and _questions(calls) == ["Какие данные есть?"]
     assert _card_fields([]) is None
+
+
+def test_fooled_is_not_applicable_without_a_lying_tool():
+    usage = {"actor": {"calls": 1, "prompt": 1, "completion": 1}}
+    assert _score("genuine_tension", False, "", [], usage, 1.0)["fooled"] is None
