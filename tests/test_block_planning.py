@@ -209,3 +209,17 @@ async def test_a_simplest_that_reaches_no_contradiction_is_rolled_back_and_repla
     assert len([d for d in e.state.get_all_designations() if d.role == DesignationRole.SIMPLEST]) == 1
     retry = next(ev for ev in trace_events(trace) if ev["event_type"] == "simplest_retry")
     assert retry["simplest"] == "food service" and "no opposite" in retry["reason"]
+
+
+class RejectSimplest:
+    async def validate(self, proposal, state, goal):
+        rejected = proposal.move_type.value in ("PROPOSE_SIMPLEST", "ASSESS_SIMPLEST")
+        return SemanticValidationResult(accepted=not rejected, reason="too abstract" if rejected else "ok")
+
+
+@pytest.mark.asyncio
+async def test_the_simplest_is_not_judged_on_its_own():
+    e = DialecticalEngine(DialecticalAgent("Answer the user", BlockLLM(), [web_search()]),
+                          semantic_validator=RejectSimplest(), block_planning=True, stop_after_roadmap=True)
+    result = await e.run(AgentInput(user_message=TASK))
+    assert result.status == "planned"

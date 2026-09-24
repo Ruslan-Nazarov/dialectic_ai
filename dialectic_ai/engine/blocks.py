@@ -19,7 +19,8 @@ The flow:
    element is developed in its own block (abstract -> concrete, a transition, not a list);
 3. opposite: chosen from that bundle -- an element whose own development does not require the
    simplest; the engine links it to the development in which it was found (simplest -> element);
-4. the opposite's development: its own bundle, each element in its own block;
+4. the opposite's development: its own bundle, each element in its own block (toward the task's
+   process too -- without it the opposite drifted off, e.g. heating into the chemistry of cooking);
 5. contradiction: the simplest itself (without its bundle -- the bundle served to find the opposite)
    and the opposite with its bundle, in the unity of their development;
 6. resolution of the contradiction: a process replacing both by taking them in (replacement), or
@@ -27,7 +28,7 @@ The flow:
 7. route: built by the engine from the resolution.
 
 The simplest may not be found at once: whether it was the simplest shows only in whether the analysis
-reaches a contradiction. If it does not (no bundle, no opposite in it, no contradiction), the engine
+reaches a contradiction, so the simplest block is not judged on its own. If it does not (no bundle, no opposite in it, no contradiction), the engine
 rolls the graph back to before that simplest and asks for another one, telling the block which
 candidates did not lead to a contradiction and why -- up to SIMPLEST_ATTEMPTS candidates.
 """
@@ -165,7 +166,7 @@ class BlockPlanner:
                 feedback = f"the answer was not in the required form ({exc})"
         return None
 
-    async def _block(self, template: str, build, **fields):
+    async def _block(self, template: str, build, judged=True, **fields):
         """Asks for one block and submits the move `build(answer)` makes of it, retrying on rejection.
         Returns (result_id, answer) or (None, answer_or_reason)."""
         feedback = ""
@@ -178,7 +179,8 @@ class BlockPlanner:
                 continue
             if proposal is None:
                 return None, answer
-            result_id, reason = await self.engine._submit(proposal, self.validator, self.goal, origin="block")
+            result_id, reason = await self.engine._submit(proposal, self.validator if judged else None, self.goal,
+                                                          origin="block")
             if result_id:
                 return result_id, answer
             feedback = reason
@@ -291,13 +293,14 @@ class BlockPlanner:
             _nonempty(answer["simplest"], "simplest")
             return self._move(MoveType.PROPOSE_SIMPLEST, {"content": str(answer["simplest"]).strip()},
                               "The process from which the whole situation develops.")
-        pid, _ = await self._block(SIMPLEST, simplest_move, process=task_process, tried=tried_note)
+        # The simplest is not judged on its own: it is checked by whether the analysis reaches a contradiction.
+        pid, _ = await self._block(SIMPLEST, simplest_move, judged=False, process=task_process, tried=tried_note)
         if not pid:
             return "fallback", None, None
         candidate = next(d for d in state.get_all_designations() if d.process_id == pid)
         approve = self._move(MoveType.ASSESS_SIMPLEST, {"candidate_simplest_id": candidate.id, "approved": True},
                              "The candidate is the simplest process of the task.")
-        if not (await self.engine._submit(approve, self.validator, self.goal, origin="block"))[0]:
+        if not (await self.engine._submit(approve, None, self.goal, origin="block"))[0]:
             return "fallback", None, None
         simplest = self._designation(DesignationRole.SIMPLEST)
         simplest_text = state.get_process(simplest.process_id).content
@@ -334,7 +337,7 @@ class BlockPlanner:
         opposite_text = state.get_process(opposite.process_id).content
 
         # 4. The opposite's development -- its own bundle; receives the opposite.
-        opposite_bundle = await self._bundle(opposite.process_id, opposite_text)
+        opposite_bundle = await self._bundle(opposite.process_id, opposite_text, target=task_process)
         if not opposite_bundle:
             return None, simplest_text, "the opposite found in its development did not develop"
 
