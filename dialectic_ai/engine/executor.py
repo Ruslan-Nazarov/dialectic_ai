@@ -91,6 +91,9 @@ class DialecticalEngine:
         # For measuring the dialectical blocks alone: end the run as "planned" as soon as the
         # roadmap is accepted, before any action.
         stop_after_roadmap: bool = False,
+        # Each dialectical block is its own narrow model call (see engine/blocks.py); the regular
+        # actor takes over for practice, or for the clear path when no opposite is found.
+        block_planning: bool = False,
     ):
         self.agent = agent
         self.logger = logger or DevelopmentLogger()
@@ -104,6 +107,7 @@ class DialecticalEngine:
         self.domain = domain
         self.auto_planning = auto_planning
         self.stop_after_roadmap = stop_after_roadmap
+        self.block_planning = block_planning
         self._running = False
         self.validation_mode = "semantic"
         self._last_move_type_requested = None
@@ -157,6 +161,15 @@ class DialecticalEngine:
         self._repeat_invalid_move_count = 0
         self._planning_stagnation_count = 0
         await self.logger.trace_event("run_started", {"run_id": self.run_id, "goal": asdict(goal), "validation_mode": self.validation_mode})
+        if self.block_planning:
+            from dialectic_ai.engine.blocks import BlockPlanner
+            outcome = await BlockPlanner(self, semantic_validator, goal).plan()
+            await self.logger.trace_event("block_planning", {"run_id": self.run_id, "outcome": outcome})
+            if outcome == "roadmap" and self.stop_after_roadmap:
+                await self.logger.trace_event("run_finished", {"run_id": self.run_id, "status": "planned"})
+                return RuntimeResult(status="planned", response="", run_id=self.run_id,
+                                     stop_reason="stopped_after_roadmap", validation_mode=self.validation_mode,
+                                     roadmap_id=self.state.active_roadmap_id)
         
         while iteration < self.max_iterations:
             iteration += 1
@@ -621,6 +634,40 @@ class DialecticalEngine:
                                                 "resolution_ids": [leap.id],
                                                 "execution_process_ids": [leap.resolution_process_id]})
         return True
+
+    async def _submit(self, proposal, semantic_validator, goal, origin="engine"):
+        """Validates (structure, then the judge unless the domain exempts the move) and commits one
+        proposal made outside the actor loop. Returns (result_id, None) or (None, reason)."""
+        import copy
+        from dialectic_ai.core.runtime import StructuralValidator
+        ok, error = StructuralValidator().validate(proposal, self.state)
+        if not ok:
+            await self._reject(f"Structural: {error}", proposal)
+            return None, f"Structural: {error}"
+        unjudged = self.domain is not None and proposal.move_type in self.domain.unjudged_moves
+        if semantic_validator and not unjudged:
+            try:
+                verdict = await asyncio.wait_for(semantic_validator.validate(
+                    copy.deepcopy(proposal), copy.deepcopy(self.state), copy.deepcopy(goal)), self.model_timeout)
+            except Exception as exc:
+                return None, f"Semantic validator failed: {type(exc).__name__}: {exc}"
+            if not verdict.accepted:
+                if getattr(verdict, "unavailable", False):
+                    await self._reject("Judge unavailable (no verdict was returned).", proposal, cause=verdict.reason)
+                    return None, "the judge was unavailable; answer the same way again"
+                await self._reject(f"Semantic: {verdict.reason}", proposal)
+                return None, f"Semantic: {verdict.reason}"
+        try:
+            result_id = self.commit_layer.commit(proposal, self.state)
+        except ValueError as exc:
+            await self._reject(str(exc), proposal)
+            return None, str(exc)
+        await self.logger.trace_event("proposal_committed", {"run_id": self.run_id, "proposal": asdict(proposal),
+                                                             "result_id": result_id, "origin": origin})
+        if proposal.move_type == MoveType.BEGIN_EXECUTION:
+            await self.logger.trace_event("roadmap_accepted", {"run_id": self.run_id,
+                                                               "roadmap": asdict(self.state._roadmaps[result_id])})
+        return result_id, None
 
     def _tool_calls_made(self, tool_name: str) -> int:
         return sum(1 for a in self.state.get_all_actions() if a.tool_name == tool_name)

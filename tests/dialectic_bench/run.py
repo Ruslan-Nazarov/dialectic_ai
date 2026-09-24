@@ -124,7 +124,7 @@ async def run_one(task, trial, out, overrides=None):
     agent = DialecticalAgent(ROLES.get(task.name, OPEN_ROLE), llm=actor, tools=[PythonExecutor()])
     judge = LLMSemanticValidator(judge_llm)
     engine = DialecticalEngine(agent, semantic_validator=judge, stop_after_roadmap=True, max_iterations=25,
-                               run_timeout=400, logger=DevelopmentLogger(trace_path=str(out / f"{task.name}_{trial}.jsonl")),
+                               run_timeout=900, logger=DevelopmentLogger(trace_path=str(out / f"{task.name}_{trial}.jsonl")),
                                **(overrides or {}))
     started = time.time()
     result = await engine.run(AgentInput(user_message=task.task))
@@ -173,7 +173,7 @@ async def regrade(out):
     print("\n" + table)
 
 
-async def main(names, repeats, out, concurrency):
+async def main(names, repeats, out, concurrency, overrides=None):
     out.mkdir(parents=True, exist_ok=True)
     tasks = [t for t in TASKS if not names or t.name in names]
     semaphore = asyncio.Semaphore(concurrency)
@@ -181,7 +181,7 @@ async def main(names, repeats, out, concurrency):
     async def guarded(task, trial):
         async with semaphore:
             try:
-                record = await run_one(task, trial, out)
+                record = await run_one(task, trial, out, overrides)
             except Exception as exc:
                 record = {"task": task.name, "trial": trial, "status": "crash", "stop_reason": f"{type(exc).__name__}: {exc}"[:200],
                           "elapsed": 0, "contradictions": 0, "tokens": 0, "blocks": {}, "scores": {}}
@@ -204,8 +204,10 @@ if __name__ == "__main__":
     parser.add_argument("--concurrency", type=int, default=4)
     parser.add_argument("--out", type=Path, default=Path("live_runs/dialectic_bench"))
     parser.add_argument("--regrade", action="store_true", help="re-score saved blocks in --out without running the engine")
+    parser.add_argument("--blocks", action="store_true", help="block planning: each block is its own narrow model call")
     args = parser.parse_args()
     if args.regrade:
         asyncio.run(regrade(args.out))
         raise SystemExit
-    asyncio.run(main({t.strip() for t in args.tasks.split(",") if t.strip()}, args.repeats, args.out, args.concurrency))
+    asyncio.run(main({t.strip() for t in args.tasks.split(",") if t.strip()}, args.repeats, args.out, args.concurrency,
+                     {"block_planning": True} if args.blocks else None))
