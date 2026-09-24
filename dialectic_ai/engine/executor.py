@@ -577,10 +577,13 @@ class DialecticalEngine:
             simplest.process_id, "Concrete steps that carry out the task, each with an expected result")
         opposite = role(DesignationRole.OPPOSITE)
         if not opposite:
+            # A domain that fixes its opposite keeps it here too, so the ablation changes only who plans.
+            fixed = self.domain.opposite if self.domain and self.domain.opposite else None
             await commit(MoveType.DESIGNATE_OPPOSITE, {"simplest_id": simplest.id,
                          "context_id": simplest_dev.emergent_process_id,
-                         "content": "What reality actually reports when the task is carried out",
-                         "justification": "Tool results exist independently of what the plan expects of them"})
+                         "content": fixed or "What reality actually reports when the task is carried out",
+                         "justification": (self.domain.opposite_justification if fixed else
+                                           "Tool results exist independently of what the plan expects of them")})
             opposite = role(DesignationRole.OPPOSITE)
         opposite_dev = development_of(opposite.process_id) or await develop(
             opposite.process_id, "The observed results the expectations will be checked against")

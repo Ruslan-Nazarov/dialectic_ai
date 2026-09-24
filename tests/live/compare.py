@@ -78,8 +78,59 @@ def _grounded(case_name, calls):
 
 def _engine_calls(engine):
     state = engine.state
-    return [{"name": state.get_action(o.action_id).tool_name, "success": o.success, "content": o.raw_result}
+    return [{"name": state.get_action(o.action_id).tool_name, "args": state.get_action(o.action_id).args,
+             "success": o.success, "content": o.raw_result}
             for o in state.get_all_observations()]
+
+
+def _card_fields(calls):
+    """Grounded fields of the last committed card (business-card domain), else None."""
+    cards = [c["content"] for c in calls if c["name"] == "commit_card" and c["success"] and isinstance(c["content"], dict)]
+    return len(cards[-1].get("grounded_fields", [])) if cards else None
+
+
+def _questions(calls):
+    return [q.get("question", "") for c in calls if c["name"] == "ask_business"
+            for q in (c.get("args") or {}).get("questions", [])]
+
+
+# Blind rubric grading for cases without an objective answer. The grader never learns which arm
+# produced the text. Scores are 1-5 per criterion.
+RUBRICS = {
+    "genuine_tension": ("a reasoned recommendation on a contested policy question",
+                        ["engages the real tension (benefits AND harms), not one side only",
+                         "the recommendation is concrete and actionable, not a vague 'it depends'",
+                         "the reasoning supports the recommendation it reaches"]),
+    "business_card": ("clarifying questions a system asked a business about a rough task draft",
+                      ["each question targets a gap or an internal conflict of the draft that a team would hit",
+                       "questions ask one concrete fact each and are not answerable from the draft itself",
+                       "together they cover what a team needs to start (data, success criteria, constraints, contact)"]),
+}
+
+
+async def grade(case_name, task, response, calls):
+    rubric = RUBRICS.get(case_name)
+    if rubric is None:
+        return None
+    subject, criteria = rubric
+    text = "\n".join(f"- {q}" for q in _questions(calls)) if case_name == "business_card" else response
+    if not text.strip():
+        return 0.0
+    from tests.live.cases import _build
+    import os, re
+    grader = _build(os.getenv("DIALECTIC_COMPARE_GRADER", "cerebras"))
+    grader.max_retries = 2
+    prompt = (f"You grade {subject}. Task given to the system:\n{task}\n\nText to grade:\n{text}\n\n"
+              f"Score each criterion from 1 (poor) to 5 (excellent):\n" +
+              "\n".join(f"{i + 1}. {c}" for i, c in enumerate(criteria)) +
+              '\nReturn only JSON: {"scores": [n, n, n], "note": "one sentence"}')
+    try:
+        raw = await grader.generate([{"role": "user", "content": prompt}])
+        data = json.loads(re.search(r"\{.*\}", raw, re.S).group(0))
+        scores = [float(s) for s in data["scores"]][:len(criteria)]
+        return round(sum(scores) / len(scores), 2)
+    except Exception:
+        return None
 
 
 def _score(case_name, completed, response, calls, usage, elapsed, extra=None, unresolved=False, claimed_answer=None):
@@ -106,10 +157,14 @@ def _score(case_name, completed, response, calls, usage, elapsed, extra=None, un
 
 async def engine_arm(case, trace, overrides=None):
     run, elapsed = await run_case(case, trace, overrides)
-    return _score(case.name, run.completed, run.response, _engine_calls(run.engine), run.usage, elapsed,
+    calls = _engine_calls(run.engine)
+    extra_quality = {"card_fields": _card_fields(calls), "quality": await grade(case.name, case.task, run.response, calls)}
+    record = _score(case.name, run.completed, run.response, _engine_calls(run.engine), run.usage, elapsed,
                   {"stop_reason": run.result.stop_reason, "flagged_contradiction": bool(run.contradicted_practice())},
                   unresolved=run.result.status == "unresolved",
                   claimed_answer=next((r.supported_answer for r in run.engine.state._unresolved_reports.values()), None))
+    record.update(extra_quality)
+    return record
 
 
 async def baseline_arm(case):
@@ -119,21 +174,29 @@ async def baseline_arm(case):
     tools = case.tool()
     started = time.time()
     run = await run_baseline(llm, case.role, case.task, tools if isinstance(tools, list) else [tools])
-    return _score(case.name, run.completed, run.response, run.tool_calls,
-                  {"actor": meter.usage["actor"]}, round(time.time() - started, 1), {"stop_reason": run.stop_reason})
+    record = _score(case.name, run.completed, run.response, run.tool_calls,
+                    {"actor": meter.usage["actor"]}, round(time.time() - started, 1), {"stop_reason": run.stop_reason})
+    record.update(card_fields=_card_fields(run.tool_calls),
+                  quality=await grade(case.name, case.task, run.response, run.tool_calls))
+    return record
 
 
 def summarize(records):
-    lines = ["| case | arm | runs | completed | unresolved report | correct | fooled | correct but ungrounded | avg tokens | avg time, s |",
-             "|---|---|---|---|---|---|---|---|---|---|"]
+    lines = ["| case | arm | runs | completed | unresolved report | correct | fooled | correct but ungrounded | "
+             "card fields | quality 1-5 | avg tokens | avg time, s |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     keys = sorted({(r["case"], r["arm"]) for r in records})
     for case_name, arm in keys:
         rs = [r for r in records if r["case"] == case_name and r["arm"] == arm]
         def count(field):
             vals = [r.get(field) for r in rs if r.get(field) is not None]
             return f"{sum(vals)}/{len(vals)}" if vals else "n/a"
+        def mean(field):
+            vals = [r.get(field) for r in rs if r.get(field) is not None]
+            return f"{sum(vals) / len(vals):.1f}" if vals else "n/a"
         lines.append(f"| {case_name} | {arm} | {len(rs)} | {count('completed')} | {count('unresolved')} | {count('correct')} | "
-                     f"{count('fooled')} | {count('correct_but_ungrounded')} | {sum(r['tokens'] for r in rs) // len(rs)} | "
+                     f"{count('fooled')} | {count('correct_but_ungrounded')} | {mean('card_fields')} | {mean('quality')} | "
+                     f"{sum(r['tokens'] for r in rs) // len(rs)} | "
                      f"{sum(r['elapsed'] for r in rs) / len(rs):.0f} |")
     return "\n".join(lines)
 

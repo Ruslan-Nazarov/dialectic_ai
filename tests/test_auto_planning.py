@@ -76,3 +76,15 @@ async def test_revision_gets_a_new_auto_planned_route_and_can_end_unresolved():
     first, second = engine.state._roadmaps.values()
     assert first.resolution_ids != second.resolution_ids
     assert second.revision_observation_ids
+
+
+@pytest.mark.asyncio
+async def test_auto_planning_keeps_a_domain_fixed_opposite():
+    from dialectic_ai.core.domain import Domain
+    from dialectic_ai.core.runtime import DesignationRole
+    domain = Domain(name="d", semantics="s", opposite="A team that knows only the card")
+    engine = DialecticalEngine(DialecticalAgent("g", MockLLM(), [web_search()]), semantic_validator=RecordingJudge(),
+                               auto_planning=True, domain=domain)
+    await engine.run(AgentInput(user_message="Example"))
+    opposite = next(d for d in engine.state.get_all_designations() if d.role == DesignationRole.OPPOSITE)
+    assert engine.state.get_process(opposite.process_id).content == domain.opposite

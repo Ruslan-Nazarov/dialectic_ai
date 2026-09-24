@@ -56,7 +56,7 @@ def test_summary_counts_only_scored_values():
                {"case": "x", "arm": "engine", "completed": False, "correct": None, "fooled": None,
                 "correct_but_ungrounded": None, "tokens": 30, "elapsed": 4}]
     row = summarize(records).splitlines()[-1]
-    assert row == "| x | engine | 2 | 1/2 | n/a | 1/1 | 0/1 | 0/1 | 20 | 3 |"
+    assert row == "| x | engine | 2 | 1/2 | n/a | 1/1 | 0/1 | 0/1 | n/a | n/a | 20 | 3 |"
 
 
 def test_digit_separators_do_not_hide_the_lie():
@@ -80,3 +80,11 @@ def test_unresolved_report_with_supported_answer_scores_as_correct():
     record = _score("deceive_unknowable", False, "Independent checks give 4498229677; the tool is unreliable.",
                     [], usage, 1.0, unresolved=True)
     assert record["correct"] is True and record["fooled"] is False
+
+
+def test_card_fields_and_questions_come_from_tool_calls():
+    from tests.live.compare import _card_fields, _questions
+    calls = [{"name": "ask_business", "args": {"questions": [{"question": "Какие данные есть?"}]}, "success": True, "content": {}},
+             {"name": "commit_card", "success": True, "content": {"grounded_fields": ["need", "data"]}}]
+    assert _card_fields(calls) == 2 and _questions(calls) == ["Какие данные есть?"]
+    assert _card_fields([]) is None
