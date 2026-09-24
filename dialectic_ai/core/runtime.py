@@ -424,8 +424,8 @@ class StructuralValidator:
                 if not is_valid_str(proposal.payload.get("content")) or not is_valid_str(proposal.payload.get("justification")):
                     return False, "DESIGNATE_OPPOSITE requires content and justification"
                 if not is_valid_str(proposal.payload.get("independence")):
-                    return False, ("DESIGNATE_OPPOSITE requires independence: the determination of the simplest, found in "
-                                   "its development, that points to this opposite")
+                    return False, ("DESIGNATE_OPPOSITE requires independence: why the opposite's own development does not "
+                                   "require the simplest")
                     
             elif proposal.move_type == MoveType.ESTABLISH_CONTRADICTION:
                 simplest_id = proposal.payload.get("simplest_id")

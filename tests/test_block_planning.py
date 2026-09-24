@@ -85,7 +85,9 @@ async def test_blocks_run_in_order_and_the_actor_finishes():
     assert state.get_process(opposite.process_id).content == "heating of food"
     assert opposite.independence == "food can be heated whether or not this food is cold"
     # The engine links the opposite to the developing process it was found among.
-    assert state.get_process(opposite.context_id).content == "heating of food"
+    found_in = state.get_development_relation(opposite.context_id)
+    assert found_in.source_process_id == simplest.process_id
+    assert state.get_process(found_in.emergent_process_id).content == "heating of food"
     leap = next(iter(state._resolution_relations.values()))
     assert state.get_process(leap.resolution_process_id).content == "heating of the cold food"
     assert leap.how_resolves == "heating is applied to this cold food"

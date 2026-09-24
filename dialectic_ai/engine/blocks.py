@@ -18,7 +18,7 @@ The flow:
 2. the simplest's development is a BUNDLE: the simplest yields its developing elements, and each
    element is developed in its own block (abstract -> concrete, a transition, not a list);
 3. opposite: chosen from that bundle -- an element whose own development does not require the
-   simplest; the engine links it to that element;
+   simplest; the engine links it to the development in which it was found (simplest -> element);
 4. the opposite's development: its own bundle, each element in its own block;
 5. contradiction: the simplest itself (without its bundle -- the bundle served to find the opposite)
    and the opposite with its bundle, in the unity of their development;
@@ -35,7 +35,9 @@ MAX_ATTEMPTS = 3
 BUNDLE_MAX = 5          # elements per bundle: enough to find the opposite, bounded for cost
 ELEMENT_STEPS_MAX = 3   # how far one element is developed in its own block
 
-REQUEST = """State this task as a PROCESS -- what is happening or being done -- not as a question.
+REQUEST = """State this task as a PROCESS -- what is happening or being done -- not as a question. One short
+sentence about the situation itself: what is going on, not what should be done about it -- no steps, no plan of
+how it will be handled, analysed or decided.
 Examples (other tasks):
 - "Pythagoras' theorem" -> "to get the square of the hypotenuse of a right triangle, add the squares of the legs"
 - "Our website is slow on phones; how do we fix it?" -> "a company is trying to make its site load fast on phones"
@@ -47,6 +49,8 @@ Answer in the task's language. Return only JSON: {{"process": "...", "needs_deve
 SIMPLEST = """Find the SIMPLEST process for this process: the process from which the whole of it develops.
 It must be connected to this process; the processes that develop out of it must approach this process as a
 whole; and each of them must stay connected to it. It is not a piece of the situation and not a solution.
+Nor is it the institution or general activity around the situation (customer service, management, policy-making,
+assessment design, decision-making): it is the process the situation's own content develops from.
 Examples: "a business wants an AI chatbot so clients call support less" -> "sales automation" (it develops into
 automating contact with clients, then answering typical questions automatically, and so into wanting a bot).
 "to get the square of the hypotenuse, add the squares of the legs" -> "a triangle".
@@ -214,10 +218,12 @@ class BlockPlanner:
             steps = await self._answer(ELEMENT, lambda a: _nonempty(a["steps"] and a["steps"][0].get("process"), "steps"),
                                        subject=subject, element=element.text, steps=ELEMENT_STEPS_MAX)
             source_id, source_text = element.process_id, element.text
+            seen = {subject.casefold(), element.text.casefold()}
             for step in (steps or {}).get("steps", [])[:ELEMENT_STEPS_MAX]:
                 text = str(step.get("process", "")).strip()
-                if not text:
+                if not text or text.casefold() in seen:   # a repeat is not a development
                     continue
+                seen.add(text.casefold())
                 committed = await self._develop_step(source_id, source_text, text, str(step.get("how_it_arises") or text))
                 if not committed:
                     break
@@ -281,7 +287,7 @@ class BlockPlanner:
             element = bundle[number - 1]
             chosen["element"] = element
             return self._move(MoveType.DESIGNATE_OPPOSITE, {
-                "simplest_id": simplest.id, "context_id": element.process_id, "content": element.text,
+                "simplest_id": simplest.id, "context_id": element.relation_id, "content": element.text,
                 "independence": str(answer["independence"]).strip(),
                 "justification": f"Element {number} of the simplest's development: {element.describe()}"},
                 "An element of the bundle whose development does not require the simplest.")

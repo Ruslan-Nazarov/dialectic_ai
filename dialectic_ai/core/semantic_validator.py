@@ -100,8 +100,10 @@ things PROPOSE_SIMPLEST, ASSESS_SIMPLEST, or DEVELOP_PROCESS must already contai
   definite as it arises; together the developments move toward the task's process. REJECT juxtaposition -- a
   list of properties or "this, and also that" is change, not development -- and steps of a solution.
 - OPPOSITE: a process found among the simplest's developing processes whose own development does not require
-  the simplest (excluding its existence is not destroying it); independence must say why. REJECT an
-  alternative way to reach the same goal and a mere negation ("don't do it").
+  the simplest (excluding its existence is not destroying it); independence must say why. Being found in the
+  simplest's development (its context) is REQUIRED, not a lack of independence: independence concerns only
+  whether the opposite's OWN development needs the simplest. REJECT an alternative way to reach the same goal
+  and a mere negation ("don't do it").
 - CONTRADICTION: the simplest and the opposite taken in the unity of their development. REJECT "two options
   compete for one goal" or "choose one of two routes": that is a choice between solutions.
 - LEAP: a resolving process -- one that replaces the simplest and the opposite by taking both into its own
