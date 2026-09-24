@@ -89,3 +89,59 @@ async def test_judge_outage_cause_stays_in_trace(tmp_path):
                 if json.loads(l)["event_type"] == "proposal_rejected"]
     assert rejected[0]["cause"] == "Validation error: empty reply"
     assert "empty reply" not in rejected[0]["reason"]
+
+
+def test_explanatory_fields_are_optional():
+    from dialectic_ai.core.proposal_schema import proposal_schema
+    errors = list(Draft202012Validator(proposal_schema(["PROPOSE_SIMPLEST"])).iter_errors(
+        {"move_type": "PROPOSE_SIMPLEST", "payload": {"content": "x"}}))
+    assert not errors
+
+
+@pytest.mark.asyncio
+async def test_judge_waits_only_after_provider_failures(monkeypatch):
+    import asyncio as aio
+    from dialectic_ai.core.semantic_validator import LLMSemanticValidator
+    from dialectic_ai.observability.fixtures import generate_scenario_1
+    slept = []
+
+    async def fake_sleep(seconds):
+        slept.append(seconds)
+    monkeypatch.setattr(aio, "sleep", fake_sleep)
+
+    class RateLimited:
+        calls = 0
+
+        async def generate(self, messages, tools=None):
+            RateLimited.calls += 1
+            if RateLimited.calls < 3:
+                raise RuntimeError("429 Too Many Requests")
+            return '{"accepted": true, "reason": "ok"}'
+
+    class Malformed:
+        async def generate(self, messages, tools=None):
+            return "not json"
+
+    state = generate_scenario_1()
+    goal = next(iter(state._goals.values()))
+    proposal = next(e for e in state._trace if hasattr(e, "move_type"))
+    assert (await LLMSemanticValidator(RateLimited()).validate(proposal, state, goal)).accepted
+    assert slept == [2.0, 6.0]
+    slept.clear()
+    result = await LLMSemanticValidator(Malformed()).validate(proposal, state, goal)
+    assert result.unavailable and slept == []
+
+
+@pytest.mark.asyncio
+async def test_identical_resubmission_in_same_state_is_refused_with_its_reason():
+    import json
+    invalid = json.dumps({"move_type": "PROPOSE_SIMPLEST", "payload": {"content": "   "},
+                          "why_this_move_now": "x", "expected_goal_contribution": "y"})
+    e = engine(FlakyJudge(0), max_rejected_proposals=3)
+    e.agent.llm = MockLLM([invalid])
+    result = await e.run(AgentInput(user_message="Example"))
+    assert result.stop_reason == "max_rejected_proposals"
+    reasons = [ev.validation_error for ev in e.state._trace if getattr(ev, "event_type", "") == "proposal_rejected"]
+    assert not reasons[0].startswith("This exact proposal")
+    assert all(r.startswith("This exact proposal was already rejected") for r in reasons[1:])
+    assert reasons[0] in reasons[1]

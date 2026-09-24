@@ -241,9 +241,11 @@ def proposal_schema(allowed_moves: list[str]) -> dict:
         "properties": {
             "move_type": {"type": "string", "enum": allowed_moves},
             "payload": {"type": "object"},
-            "why_this_move_now": {"type": "string", "minLength": 1},
-            "expected_goal_contribution": {"type": "string", "minLength": 1},
+            # Explanations for the trace and the judge; a missing one is not worth a rejected move
+            # (it cost a full model round-trip 7 times in live traces), so they are optional.
+            "why_this_move_now": {"type": "string"},
+            "expected_goal_contribution": {"type": "string"},
         },
-        "required": ["move_type", "payload", "why_this_move_now", "expected_goal_contribution"],
+        "required": ["move_type", "payload"],
         "additionalProperties": False,
     }

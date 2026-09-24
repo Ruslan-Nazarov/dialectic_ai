@@ -251,3 +251,14 @@ def test_same_action_repeated_is_not_persistence(planned):
     apply(planned, 'REVISE_WORLD', {'observation_ids': [first], 'reason': 'Expectation disproved'})
     from dialectic_ai.core.world import persistent_contradiction
     assert not persistent_contradiction(planned)
+
+
+def test_assess_leap_is_not_offered_once_every_leap_is_assessed(planned):
+    begin(planned)
+    oid = observe(planned)
+    moves = AllowedMovesResolver().allowed_moves(planned)
+    assert MoveType.ASSESS_LEAP in moves and MoveType.COMPLETE not in moves
+    resolution = next(iter(planned._resolution_relations.values()))
+    apply(planned, 'ASSESS_LEAP', {'resolution_id': resolution.id, 'observation_ids': [oid], 'explanation': 'Observed'})
+    moves = AllowedMovesResolver().allowed_moves(planned)
+    assert MoveType.COMPLETE in moves and MoveType.ASSESS_LEAP not in moves

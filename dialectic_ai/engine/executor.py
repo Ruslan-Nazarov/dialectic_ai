@@ -143,6 +143,7 @@ class DialecticalEngine:
         rejected_count = 0
         judge_outages = 0
         iteration = 0
+        self._rejected_in_state = {}
         self._last_move_type_requested = None
         self._repeat_invalid_move_count = 0
         self._planning_stagnation_count = 0
@@ -346,6 +347,19 @@ class DialecticalEngine:
                 expected_goal_contribution=proposal_data.get("expected_goal_contribution", "")
             )
             
+            # 3b. The same proposal in the same state gets the same verdict: say so instead of
+            # validating it again (35 byte-identical resubmissions right after a rejection were
+            # seen in live traces, each spending a model call and often a judge call).
+            repeat_key = self._proposal_key(proposal)
+            if repeat_key in self._rejected_in_state:
+                await self._reject(f"This exact proposal was already rejected in this same state: "
+                                   f"{self._rejected_in_state[repeat_key]} Resubmitting it unchanged will be "
+                                   f"rejected again -- change what that reason names.", proposal)
+                rejected_count += 1
+                if rejected_count >= self.max_rejected_proposals:
+                    return await self._failure("max_rejected_proposals", "Too many rejected proposals")
+                continue
+
             # 4. Structural Validation
             from dialectic_ai.core.runtime import StructuralValidator
             validator = StructuralValidator()
@@ -505,9 +519,22 @@ class DialecticalEngine:
                                                              "result_id": result_id, "origin": "domain"})
         return True
 
+    def _proposal_key(self, proposal):
+        """Identifies a proposal together with the committed state it was made in."""
+        committed = sum(1 for e in self.state._trace if isinstance(e, Proposal))
+        payload = json.dumps(proposal.payload, sort_keys=True, default=str)
+        return (proposal.move_type.value, payload, committed, len(self.state.get_all_observations()))
+
     async def _reject(self, reason, proposal=None, cause=None):
         """`reason` is what the actor sees next; `cause`, when given, is the underlying error kept
         only in the trace -- e.g. the provider error behind a judge outage."""
+        if (proposal is not None and cause is None and not reason.startswith("This exact proposal")
+                and not reason.startswith("Semantic")):
+            # Only deterministic verdicts (schema, structure, tool arguments, commit rules) are
+            # remembered: the same proposal in the same state is certain to fail them again. A
+            # judge's verdict is a model's and may differ on resubmission; outages (cause set)
+            # explicitly ask for an unchanged resubmission.
+            self._rejected_in_state[self._proposal_key(proposal)] = reason
         event = RuntimeEvent(event_type="proposal_rejected", proposal=proposal, validation_error=reason)
         self.state._trace.append(event)
         record = {"run_id": self.run_id, "reason": reason, "proposal": asdict(proposal) if proposal else None}

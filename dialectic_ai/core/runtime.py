@@ -729,10 +729,14 @@ class AllowedMovesResolver:
                 return [MoveType.REVISE_WORLD] + report
             moves = [MoveType.PROPOSE_ACTION]
             if state.get_all_observations():
-                moves += [MoveType.REVISE_WORLD, MoveType.ASSESS_LEAP]
+                moves.append(MoveType.REVISE_WORLD)
                 roadmap = state._roadmaps[state.active_roadmap_id]
+                # Offer ASSESS_LEAP only while a leap of this roadmap is still unassessed: offering it
+                # afterwards invited "Leap has already been assessed" rejections (11 in live traces).
                 if all(state._resolution_relations[r].confirmed_roadmap_id == roadmap.id for r in roadmap.resolution_ids):
                     moves.append(MoveType.COMPLETE)
+                else:
+                    moves.append(MoveType.ASSESS_LEAP)
             return moves + report
         designations = state.get_all_designations()
         candidates = [d for d in designations if d.role == DesignationRole.CANDIDATE_SIMPLEST]

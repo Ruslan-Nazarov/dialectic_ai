@@ -58,6 +58,10 @@ class FakeSemanticValidator(SemanticValidator):
         return self.predefined_results.get(move_name, self.default_result)
 
 class LLMSemanticValidator(SemanticValidator):
+    # Seconds to wait before the 2nd and 3rd attempt after an outage. Retrying at once mostly
+    # re-hit the same rate limit (429s were the largest cause of rejections in live traces).
+    retry_delays = (2.0, 6.0)
+
     def __init__(self, llm):
         self.llm = llm
 
@@ -180,9 +184,17 @@ Return exactly JSON {"accepted": boolean, "reason": "nonempty explanation", "iss
         # later attempt at the same stage. Retry once before falling back to the same fail-closed
         # accepted=False this always returned -- callers (including tests) rely on this method
         # never raising, only ever returning a verdict.
+        import asyncio
+        provider_failed = False
         for attempt in range(3):
+            if attempt and provider_failed:
+                # Only a provider failure (rate limit, network) is worth waiting out; a malformed
+                # verdict is retried at once.
+                await asyncio.sleep(self.retry_delays[min(attempt, len(self.retry_delays)) - 1])
             try:
+                provider_failed = True
                 result = await self.llm.generate([{"role": "user", "content": prompt}])
+                provider_failed = False
                 # Text providers may wrap an otherwise valid verdict in a single
                 # Markdown JSON block. Strip only that complete outer wrapper;
                 # prose, multiple blocks and invalid verdicts still fail closed.
