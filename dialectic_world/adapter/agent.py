@@ -35,6 +35,12 @@ class WorldSession:
         new = await revise_world(self.builder, self.world, fit, agent_data, self.store)
         if new is None:
             return False
+        if new.status != "built":
+            # A revision that broke the world (e.g. no opposite any more) is kept on disk for inspection;
+            # the agent goes on in the last whole version.
+            self.builder.trace.event("revision_not_adopted", version=new.version, status=new.status)
+            self.revisions += 1
+            return False
         self.world, self.revisions = new, self.revisions + 1
         return True
 

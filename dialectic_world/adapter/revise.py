@@ -59,7 +59,12 @@ async def revise_world(ctx: Context, world: World, fit: WorldFit, agent_data: st
     summary = f"новая итерация пучка {bundle}"
     if bundle == "p0":
         old = new.opposite.process_id if new.opposite else None
-        still = old and new.get(old).status == "active" and old in new.last_iteration("p0").developing
+        still = bool(old) and new.get(old).status == "active" and old in new.last_iteration("p0").developing
+        if not still and not result.opposite_id:
+            # The iteration removed the opposite: development goes on until one is found again (A 4.8),
+            # within the bundle's iteration limit.
+            result = await run_bundle(ctx, new, "p0", root, agent_data=data, iterations=ctx.settings.iterations_max)
+            summary += f"; противоположность убрана — ещё итерации пучка p0 ({len(new.bundles['p0'].iterations)} всего)"
         if result.opposite_id and result.opposite_id != old:
             new.opposite = Opposite(process_id=result.opposite_id, why_not_required=result.why_not_required)
             await develop_from_opposite(ctx, new)

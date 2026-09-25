@@ -118,3 +118,56 @@ async def test_the_agent_acts_in_the_world_and_its_mark_triggers_a_revision_with
     second = await run_agent(ScriptedLLM(agent), session, "ещё письмо", tools=tools)
     assert not second.revised and session.world.version == 2       # the limit holds
     assert "письмо с двумя датами" in json.dumps(session.world.revisions[0].trigger, ensure_ascii=False)
+
+
+async def _revision_that_retires_the_opposite(find_again):
+    world, c, model = await built()
+    original = model.respond
+    state = {"revising": False}
+
+    def respond(block, prompt):
+        answer = original(block, prompt)
+        if block == "Compare" and "противоположный процесс (п. 4.8" in prompt and "Новые данные от агента" in prompt:
+            from tests.fake import developing_ids
+            devs = developing_ids(prompt)
+            if not state["revising"]:
+                state["revising"] = True
+                answer.update(opposite_id=None, next_variant=2, retire=[world.opposite.process_id])
+            elif find_again:
+                answer.update(opposite_id=devs[0])
+            else:
+                answer.update(opposite_id=None)
+        return answer
+    model.respond = respond
+    new = await revise_world(c, world, WorldFit(fits=False, process_ids=[world.last_iteration("p0").developing[0]]), "д")
+    return world, new, c
+
+
+async def test_a_revision_that_removes_the_opposite_iterates_until_one_is_found_again():
+    world, new, _ = await _revision_that_retires_the_opposite(find_again=True)
+    assert new.status == "built" and new.opposite.process_id != world.opposite.process_id
+    assert new.contradiction.process_id != world.contradiction.process_id
+
+
+async def test_a_revision_that_loses_the_opposite_is_not_adopted_by_the_session():
+    world, c, model = await built()
+    session = WorldSession(world, c)
+    import dialectic_world.adapter.agent as agent_mod
+    broken = world.model_copy(deep=True)
+    broken.status, broken.version = "no_opposite", 2
+
+    async def fake_revise(*args, **kwargs):
+        return broken
+    original = agent_mod.revise_world
+    agent_mod.revise_world = fake_revise
+    try:
+        adopted = await session.observe(WorldFit(fits=False, process_ids=["P0"]), "д")
+    finally:
+        agent_mod.revise_world = original
+    assert not adopted and session.world.version == 1
+    assert c.trace.events[-1]["kind"] == "revision_not_adopted"
+
+
+async def test_a_revision_that_finds_no_opposite_again_says_so():
+    _, new, _ = await _revision_that_retires_the_opposite(find_again=False)
+    assert new.status == "no_opposite"
