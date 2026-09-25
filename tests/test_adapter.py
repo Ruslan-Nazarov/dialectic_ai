@@ -25,11 +25,15 @@ async def test_the_brief_holds_the_whole_world_with_process_ids():
         assert text in brief, text
 
 
-async def test_the_brief_is_cut_to_its_limit_dropping_internal_processes_first():
+async def test_the_brief_keeps_the_core_and_cuts_internal_processes_first():
     world, _, _ = await built()
     full = WorldAdapter(world, max_chars=10**6).brief()
-    short = WorldAdapter(world, max_chars=len(full) - 10).brief()
-    assert "·" not in short and len(short) <= len(full) - 10
+    internals_start = full.index("  · ")
+    short = WorldAdapter(world, max_chars=internals_start).brief()
+    assert "·" not in short and "Развитие противоречия:" in short
+    tiny = WorldAdapter(world, max_chars=10).brief()                  # the core is never cut
+    for text in ("Простейший процесс P0", "Противоположный процесс", "Противоречие", "Разрешение"):
+        assert text in tiny
 
 
 def test_the_world_fit_mark_is_read_from_json_or_a_last_line():

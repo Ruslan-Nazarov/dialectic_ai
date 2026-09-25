@@ -26,30 +26,37 @@ class WorldAdapter:
         self.world, self.max_chars = world, max_chars
 
     def brief(self) -> str:
+        """The core first (P0, opposite, contradiction, resolution), then the bundles' developing
+        processes, their internal processes last -- so a size limit cuts the least important part."""
         w = self.world
-        out = [f"Область: {w.domain} (мир, версия {w.version})"]
+        core = [f"Область: {w.domain} (мир, версия {w.version})"]
         if w.p0:
-            out.append(f"Простейший процесс P0: {w.get(w.p0.process_id).line()}")
+            core.append(f"Простейший процесс P0: {w.get(w.p0.process_id).line()}")
+        if w.opposite:
+            core.append(f"Противоположный процесс: {w.get(w.opposite.process_id).line()}\n"
+                        f"  для его развития P0 не требуется: {w.opposite.why_not_required}")
+        if w.contradiction:
+            core.append(f"Противоречие: {w.get(w.contradiction.process_id).line()}\n  единство: {w.contradiction.unity}")
+        if w.resolution:
+            core.append(f"Разрешение ({w.resolution.kind}): {w.get(w.resolution.process_id).line()}\n"
+                        f"  {w.resolution.explanation}")
+        developing, internal = [], []
         for name, title in (("p0", "Развитие P0"), ("opposite", "Развитие противоположного"),
                             ("contradiction", "Развитие противоречия")):
             it = w.last_iteration(name)
-            if name == "opposite" and w.opposite:
-                out.append(f"Противоположный процесс: {w.get(w.opposite.process_id).line()}\n"
-                           f"  для его развития P0 не требуется: {w.opposite.why_not_required}")
-            if name == "contradiction" and w.contradiction:
-                out.append(f"Противоречие: {w.get(w.contradiction.process_id).line()}\n  единство: {w.contradiction.unity}")
-            if it:
-                out.append(f"{title}:")
-                for pid in it.developing:
-                    out.append(f"  {w.get(pid).line()}")
-                    out += [f"    · {w.get(i).line()}" for i in it.internal.get(pid, [])]
-        if w.resolution:
-            out.append(f"Разрешение ({w.resolution.kind}): {w.get(w.resolution.process_id).line()}\n"
-                       f"  {w.resolution.explanation}")
-        text = "\n".join(out)
-        if len(text) > self.max_chars:     # drop internal processes first, then cut
-            text = "\n".join(line for line in out if not line.lstrip().startswith("·"))
-        return text[:self.max_chars]
+            if not it:
+                continue
+            developing.append(f"{title}:")
+            developing += [f"  {w.get(pid).line()}" for pid in it.developing]
+            for pid in it.developing:
+                internal += [f"  · (внутри {pid}) {w.get(i).line()}" for i in it.internal.get(pid, [])]
+        text = "\n".join(core)
+        for block in (developing, internal):
+            for line in block:
+                if len(text) + len(line) + 1 > self.max_chars:
+                    return text
+                text += "\n" + line
+        return text
 
     def system_prompt(self, role: str = "") -> str:
         return (f"{role}\n\n" if role else "") + (
