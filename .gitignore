@@ -88,3 +88,6 @@ posts/
 
 # Live suite output (tests/live)
 live_runs/
+
+# engine v3
+worlds/
