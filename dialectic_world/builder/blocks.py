@@ -39,7 +39,8 @@ class Context:
 
 CARRY_FIELD = '"carry": "передача следующему блоку: 1-3 предложения — сжатое развитие до этого места, включая твой результат"'
 TRANSITION_RULE = ('Каждый процесс записывается как переход одного процесса в другой (п. 1.1): "from" — процесс, который '
-                   'переходит, "to" — процесс, в который он переходит, "statement" — краткая формулировка перехода.')
+                   'переходит, "to" — процесс, в который он переходит (оба словами, не номерами), "statement" — '
+                   'краткая формулировка перехода.')
 
 
 def extract_json(text: str) -> dict:
@@ -62,8 +63,16 @@ def _text(data: dict, key: str) -> str:
     return value
 
 
+ID_LIKE = re.compile(r"^\[?[PICR][\w]{0,8}\]?$")
+
+
 def transition(data: dict) -> tuple[str, str, str]:
-    return _text(data, "from"), _text(data, "to"), _text(data, "statement")
+    src, dst = _text(data, "from"), _text(data, "to")
+    for key, value in (("from", src), ("to", dst)):
+        if ID_LIKE.match(value):
+            raise FormError(f"'{key}' = {value!r} — это номер, а не процесс: запиши словами, какой процесс переходит "
+                            "и в какой")
+    return src, dst, _text(data, "statement")
 
 
 def _ids(data: dict, key: str, allowed: set[str], name: str) -> list[str]:
@@ -173,6 +182,7 @@ async def next_developing(ctx: Context, world: World, bundle: str, root: Process
 Пункты алгоритма:
 {clauses("2.1", "4", "4.1", "4.2", "4.3", "4.4", "9")}
 
+Мир области: {world.domain}
 Корень пучка ({ROOT_LABEL[bundle]}):
 {root.line()}
 Развивающие процессы, уже полученные (эта и прошлые итерации):
@@ -209,6 +219,7 @@ async def internals(ctx: Context, world: World, bundle: str, dev: Process, n: in
 Пункты алгоритма:
 {clauses("2.1", "4.5", "9")}
 
+Мир области: {world.domain}
 Развивающий процесс (принимается за простейший):
 {dev.line()}
 Его внутренние процессы на прошлой итерации:
@@ -268,6 +279,7 @@ async def compare(ctx: Context, world: World, bundle: str, root: Process, n: int
 Пункты алгоритма:
 {clauses(*pts)}
 
+Мир области: {world.domain}
 Корень пучка ({ROOT_LABEL[bundle]}):
 {root.line()}
 Развивающие процессы итерации {n} с их внутренними процессами:
@@ -330,6 +342,7 @@ async def contradiction(ctx: Context, world: World) -> tuple[Process, str]:
 Пункты алгоритма:
 {clauses("1.1", "5", "5.1", "6")}
 
+Мир области: {world.domain}
 Простейший процесс P0:
 {p0.line()}
 Противоположный процесс:
@@ -360,6 +373,7 @@ async def resolve(ctx: Context, world: World) -> tuple[Process, str, str]:
 Пункты алгоритма:
 {clauses("1.1", "7", "7.1")}
 
+Мир области: {world.domain}
 Противоречие:
 {c.line()}
 Единство развития: {world.contradiction.unity}

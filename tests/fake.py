@@ -67,7 +67,7 @@ class FakeModel(LLM):
                 answer["retire"] = devs[:1]
             return answer
         if block == "Contradiction":
-            return {"from": "P0", "to": "противоположный", "statement": "единство", "unity": "вместе дают", "carry": "cc"}
+            return {"from": "простейший и противоположный", "to": "их единство", "statement": "единство", "unity": "вместе дают", "carry": "cc"}
         if block == "Resolve":
             return {"from": "противоречие", "to": "разрешение", "statement": "подогрев холодной еды",
                     "kind": "replacement", "explanation": "вбирает оба"}

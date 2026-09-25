@@ -178,3 +178,10 @@ async def test_saved_versions_are_never_overwritten(tmp_path):
     with pytest.raises(FileExistsError):
         store.save(world)
     assert store.load(DOMAIN).get("P0").target == "холодная еда"
+
+
+async def test_a_transition_is_written_in_words_not_in_ids():
+    model = FakeModel()
+    model.overrides["NextDeveloping"] = [{"from": "P0", "to": "P1", "statement": "s", "derived_from": ["P0"], "more": True}]
+    await build_world(DOMAIN, ctx(model))
+    assert "'from' = 'P0' — это номер, а не процесс" in model.calls("NextDeveloping")[1]
