@@ -29,11 +29,27 @@ async def develop_from_contradiction(ctx: Context, world: World, new_contradicti
 
 
 async def build_world(domain: str, ctx: Context, store: WorldStore | None = None) -> World:
+    """Builds and saves the world. A block that fails for good leaves the partial world saved with
+    status "failed" (for inspection) and re-raises."""
+    holder: dict = {}
+    try:
+        return await _build(domain, ctx, store, holder)
+    except Exception as exc:
+        world = holder.get("world")
+        if world is not None:
+            world.status = "failed"
+            ctx.trace.event("world", status="failed", error=f"{type(exc).__name__}: {exc}"[:500])
+            if store:
+                store.save(world)
+        raise
+
+
+async def _build(domain: str, ctx: Context, store: WorldStore | None, holder: dict) -> World:
     s = ctx.settings
     rejected: list[dict] = []
     world = None
     for attempt in range(1, s.p0_attempts + 1):
-        world = World(domain=domain, rejected_p0=list(rejected))
+        world = holder["world"] = World(domain=domain, rejected_p0=list(rejected))
         ctx.carry = ""
         ctx.trace.event("p0_attempt", attempt=attempt)
         p0, from_leap = await find_p0(ctx, world, rejected)

@@ -185,3 +185,29 @@ async def test_a_transition_is_written_in_words_not_in_ids():
     model.overrides["NextDeveloping"] = [{"from": "P0", "to": "P1", "statement": "s", "derived_from": ["P0"], "more": True}]
     await build_world(DOMAIN, ctx(model))
     assert "'from' = 'P0' — это номер, а не процесс" in model.calls("NextDeveloping")[1]
+
+
+async def test_wrong_ids_in_the_iteration_plan_are_dropped_not_fatal():
+    model = FakeModel(opposite_at=2)
+    original = model.respond
+
+    def respond(block, prompt):
+        answer = original(block, prompt)
+        if block == "Compare":
+            answer.update(retire=["I-nope"], promote=["P-nope"], redo_internals=["I-nope"])
+        return answer
+    model.respond = respond
+    c = ctx(model)
+    world = await build_world(DOMAIN, c)
+    assert world.status == "built"
+    assert any(e["kind"] == "plan_ids_dropped" for e in c.trace.events)
+
+
+async def test_a_failed_build_leaves_the_partial_world_saved(tmp_path):
+    model = FakeModel()
+    model.overrides["Resolve"] = ["не json"] * 5
+    store = WorldStore(tmp_path)
+    with pytest.raises(BlockFailed):
+        await build_world(DOMAIN, ctx(model), store)
+    saved = store.load(DOMAIN)
+    assert saved.status == "failed" and saved.contradiction is not None

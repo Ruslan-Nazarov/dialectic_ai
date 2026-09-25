@@ -85,6 +85,17 @@ def _ids(data: dict, key: str, allowed: set[str], name: str) -> list[str]:
     return [str(v) for v in values]
 
 
+def _plan_ids(ctx: "Context", data: dict, key: str, allowed: set[str]) -> list[str]:
+    """The plan of the next iteration is auxiliary: ids that do not fit are dropped (and traced), not
+    re-asked -- a live gpt-5-mini run lost a whole world to swapped ids here."""
+    values = data.get(key) or []
+    values = values if isinstance(values, list) else []
+    dropped = [v for v in values if v not in allowed]
+    if dropped:
+        ctx.trace.event("plan_ids_dropped", field=key, dropped=dropped)
+    return [str(v) for v in values if v in allowed]
+
+
 def _tools_note(ctx: Context) -> str:
     if not ctx.tools:
         return ""
@@ -321,9 +332,9 @@ async def compare(ctx: Context, world: World, bundle: str, root: Process, n: int
             why_not_required=str(data.get("why_not_required") or "") if opp else "",
             sufficient=bool(data.get("sufficient")) and not find_opposite,
             next_variant=None if last else variant, next_changes=str(data.get("next_changes") or ""),
-            retire=_ids(data, "retire", developing_ids, "развивающих процессов"),
-            promote=_ids(data, "promote", internal_ids, "внутренних процессов"),
-            redo_internals=_ids(data, "redo_internals", developing_ids, "развивающих процессов"))
+            retire=[] if last else _plan_ids(ctx, data, "retire", developing_ids),
+            promote=[] if last else _plan_ids(ctx, data, "promote", internal_ids),
+            redo_internals=[] if last else _plan_ids(ctx, data, "redo_internals", developing_ids))
     return await ask(ctx, "Compare", prompt, parse, bundle=bundle, iteration=n)
 
 
