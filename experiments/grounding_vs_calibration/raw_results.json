@@ -1,0 +1,4904 @@
+[
+  {
+    "doc": 1,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "NotMentioned",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.2689414285564953,
+      "none fits": 0.7310585714435047
+    },
+    "v2_confidence": 0.7310585714435047,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 1,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "NotMentioned",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.14804724697889593,
+      "none fits": 0.8519527530211042
+    },
+    "v2_confidence": 0.8519527530211042,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 4,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224592801101994,
+      "none fits": 0.3775407198898007
+    },
+    "v2_confidence": 0.6224592801101994,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 2,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9706877640217055,
+      "none fits": 0.02931223597829446
+    },
+    "v2_confidence": 0.9706877640217055,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 4,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9399133169105596,
+      "none fits": 0.06008668308944043
+    },
+    "v2_confidence": 0.9399133169105596,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 2,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9975273764081859,
+      "none fits": 0.0024726235918141604
+    },
+    "v2_confidence": 0.9975273764081859,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 5,
+    "hypothesis": "nda-3",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9890130570771651,
+      "none fits": 0.01098694292283492
+    },
+    "v2_confidence": 0.9890130570771651,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 5,
+    "hypothesis": "nda-3",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9399133513837908,
+      "none fits": 0.06008664861620912
+    },
+    "v2_confidence": 0.9399133513837908,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 8,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621765587011474,
+      "none fits": 0.4378234412988527
+    },
+    "v2_confidence": 0.5621765587011474,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 8,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9820137850795259,
+      "none fits": 0.0179862149204741
+    },
+    "v2_confidence": 0.9820137850795259,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 26,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7772997881257151,
+      "none fits": 0.222700211874285
+    },
+    "v2_confidence": 0.7772997881257151,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 26,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9046504806853011,
+      "none fits": 0.09534951931469893
+    },
+    "v2_confidence": 0.9046504806853011,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 41,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9770226261434248,
+      "none fits": 0.022977373856575247
+    },
+    "v2_confidence": 0.9770226261434248,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 41,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9914225126979714,
+      "none fits": 0.008577487302028567
+    },
+    "v2_confidence": 0.9914225126979714,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 41,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9947798729695689,
+      "none fits": 0.0052201270304310515
+    },
+    "v2_confidence": 0.9947798729695689,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 41,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9820137878720807,
+      "none fits": 0.01798621212791933
+    },
+    "v2_confidence": 0.9820137878720807,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 46,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9859363739721221,
+      "none fits": 0.014063626027877866
+    },
+    "v2_confidence": 0.9859363739721221,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 46,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082131102105443,
+      "none fits": 0.6791786889789455
+    },
+    "v2_confidence": 0.6791786889789455,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 48,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9399133442786021,
+      "none fits": 0.060086655721397986
+    },
+    "v2_confidence": 0.9399133442786021,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 48,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9706877603832931,
+      "none fits": 0.02931223961670692
+    },
+    "v2_confidence": 0.9706877603832931,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 58,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.962673105728673,
+      "none fits": 0.037326894271326974
+    },
+    "v2_confidence": 0.962673105728673,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 58,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9947798730501871,
+      "none fits": 0.00522012694981281
+    },
+    "v2_confidence": 0.9947798730501871,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 60,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241418055612917,
+      "none fits": 0.07585819443870839
+    },
+    "v2_confidence": 0.9241418055612917,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 60,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9933071494735786,
+      "none fits": 0.006692850526421411
+    },
+    "v2_confidence": 0.9933071494735786,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 62,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9859363711266224,
+      "none fits": 0.01406362887337764
+    },
+    "v2_confidence": 0.9859363711266224,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 62,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9914225138823951,
+      "none fits": 0.008577486117604873
+    },
+    "v2_confidence": 0.9914225138823951,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 65,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585941938496,
+      "none fits": 0.2689414058061505
+    },
+    "v2_confidence": 0.7310585941938496,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 65,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9959298613105334,
+      "none fits": 0.004070138689466613
+    },
+    "v2_confidence": 0.9959298613105334,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 66,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9770226235746345,
+      "none fits": 0.02297737642536547
+    },
+    "v2_confidence": 0.9770226235746345,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 66,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9947798722862172,
+      "none fits": 0.005220127713782681
+    },
+    "v2_confidence": 0.9947798722862172,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 66,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9525741240815593,
+      "none fits": 0.04742587591844063
+    },
+    "v2_confidence": 0.9525741240815593,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 66,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9626730958007609,
+      "none fits": 0.03732690419923913
+    },
+    "v2_confidence": 0.9626730958007609,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 67,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.11920300698678624,
+      "none fits": 0.8807969930132138
+    },
+    "v2_confidence": 0.8807969930132138,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 67,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241418061987109,
+      "none fits": 0.07585819380128914
+    },
+    "v2_confidence": 0.9241418061987109,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 68,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9992903296776445,
+      "none fits": 0.0007096703223555094
+    },
+    "v2_confidence": 0.9992903296776445,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 68,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.999088948986765,
+      "none fits": 0.0009110510132350291
+    },
+    "v2_confidence": 0.999088948986765,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 74,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9988304893752831,
+      "none fits": 0.0011695106247168918
+    },
+    "v2_confidence": 0.9988304893752831,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 74,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519528090694487,
+      "none fits": 0.14804719093055127
+    },
+    "v2_confidence": 0.8519528090694487,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 74,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9706877672917233,
+      "none fits": 0.029312232708276646
+    },
+    "v2_confidence": 0.9706877672917233,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 74,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8175744595289528,
+      "none fits": 0.1824255404710472
+    },
+    "v2_confidence": 0.8175744595289528,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 77,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527781153762,
+      "none fits": 0.1480472218846238
+    },
+    "v2_confidence": 0.8519527781153762,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 77,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9046505106736742,
+      "none fits": 0.09534948932632588
+    },
+    "v2_confidence": 0.9046505106736742,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 80,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9626730985215242,
+      "none fits": 0.037326901478475796
+    },
+    "v2_confidence": 0.9626730985215242,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 80,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9525741225222926,
+      "none fits": 0.047425877477707414
+    },
+    "v2_confidence": 0.9525741225222926,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 85,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3208212630010011,
+      "none fits": 0.6791787369989989
+    },
+    "v2_confidence": 0.6791787369989989,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 85,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.22270020280471087,
+      "none fits": 0.7772997971952891
+    },
+    "v2_confidence": 0.7772997971952891,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 127,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.4378235064130054,
+      "none fits": 0.5621764935869946
+    },
+    "v2_confidence": 0.5621764935869946,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 127,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224592914012743,
+      "none fits": 0.3775407085987257
+    },
+    "v2_confidence": 0.6224592914012743,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 129,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6791787720301617,
+      "none fits": 0.32082122796983825
+    },
+    "v2_confidence": 0.6791787720301617,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 129,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621765044965178,
+      "none fits": 0.4378234955034822
+    },
+    "v2_confidence": 0.5621765044965178,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 181,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9890130572981972,
+      "none fits": 0.010986942701802723
+    },
+    "v2_confidence": 0.9890130572981972,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 310,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585750506438,
+      "none fits": 0.26894142494935636
+    },
+    "v2_confidence": 0.7310585750506438,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 181,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224593776276932,
+      "none fits": 0.37754062237230684
+    },
+    "v2_confidence": 0.6224593776276932,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 310,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585750506438,
+      "none fits": 0.26894142494935636
+    },
+    "v2_confidence": 0.7310585750506438,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 357,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9046505212553544,
+      "none fits": 0.0953494787446456
+    },
+    "v2_confidence": 0.9046505212553544,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 357,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.962673105939039,
+      "none fits": 0.03732689406096093
+    },
+    "v2_confidence": 0.962673105939039,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 361,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621766629852125,
+      "none fits": 0.4378233370147874
+    },
+    "v2_confidence": 0.5621766629852125,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 361,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527794224238,
+      "none fits": 0.14804722057757627
+    },
+    "v2_confidence": 0.8519527794224238,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 387,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.977022625419447,
+      "none fits": 0.02297737458055302
+    },
+    "v2_confidence": 0.977022625419447,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 387,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9706877616287483,
+      "none fits": 0.029312238371251718
+    },
+    "v2_confidence": 0.9706877616287483,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 389,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585439822282,
+      "none fits": 0.26894145601777175
+    },
+    "v2_confidence": 0.7310585439822282,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 389,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6791787027974615,
+      "none fits": 0.32082129720253844
+    },
+    "v2_confidence": 0.6791787027974615,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 401,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241417820217438,
+      "none fits": 0.07585821797825618
+    },
+    "v2_confidence": 0.9241417820217438,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 401,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9706877635323251,
+      "none fits": 0.029312236467674817
+    },
+    "v2_confidence": 0.9706877635323251,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 401,
+    "hypothesis": "nda-19",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.26894147017753206,
+      "none fits": 0.7310585298224679
+    },
+    "v2_confidence": 0.7310585298224679,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 401,
+    "hypothesis": "nda-19",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.4378235203111273,
+      "none fits": 0.5621764796888727
+    },
+    "v2_confidence": 0.5621764796888727,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 433,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9626731033851272,
+      "none fits": 0.03732689661487272
+    },
+    "v2_confidence": 0.9626731033851272,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 433,
+    "hypothesis": "nda-7",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9399133503442684,
+      "none fits": 0.06008664965573156
+    },
+    "v2_confidence": 0.9399133503442684,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 451,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.970687766890406,
+      "none fits": 0.02931223310959401
+    },
+    "v2_confidence": 0.970687766890406,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 451,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8807970720919133,
+      "none fits": 0.11920292790808672
+    },
+    "v2_confidence": 0.8807970720919133,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 452,
+    "hypothesis": "nda-16",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9525741222708396,
+      "none fits": 0.04742587772916032
+    },
+    "v2_confidence": 0.9525741222708396,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 452,
+    "hypothesis": "nda-16",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9890130525436936,
+      "none fits": 0.010986947456306349
+    },
+    "v2_confidence": 0.9890130525436936,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 493,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3208212751447085,
+      "none fits": 0.6791787248552915
+    },
+    "v2_confidence": 0.6791787248552915,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 493,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9859363725896144,
+      "none fits": 0.014063627410385506
+    },
+    "v2_confidence": 0.9859363725896144,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 496,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8807970540679337,
+      "none fits": 0.11920294593206635
+    },
+    "v2_confidence": 0.8807970540679337,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 496,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241417951979718,
+      "none fits": 0.07585820480202826
+    },
+    "v2_confidence": 0.9241417951979718,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 497,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9959298611782594,
+      "none fits": 0.004070138821740442
+    },
+    "v2_confidence": 0.9959298611782594,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 497,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.989013054909679,
+      "none fits": 0.010986945090321151
+    },
+    "v2_confidence": 0.989013054909679,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 521,
+    "hypothesis": "nda-4",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.437823581385254,
+      "none fits": 0.562176418614746
+    },
+    "v2_confidence": 0.562176418614746,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 521,
+    "hypothesis": "nda-4",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9399133430493659,
+      "none fits": 0.060086656950634094
+    },
+    "v2_confidence": 0.9399133430493659,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 523,
+    "hypothesis": "nda-19",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9770226257440887,
+      "none fits": 0.022977374255911294
+    },
+    "v2_confidence": 0.9770226257440887,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 523,
+    "hypothesis": "nda-19",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527403686457,
+      "none fits": 0.14804725963135426
+    },
+    "v2_confidence": 0.8519527403686457,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 537,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "NotMentioned",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7772998529100673,
+      "none fits": 0.22270014708993272
+    },
+    "v2_confidence": 0.7772998529100673,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 537,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3208212301081131,
+      "none fits": 0.6791787698918869
+    },
+    "v2_confidence": 0.6791787698918869,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 552,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3208212781122758,
+      "none fits": 0.6791787218877242
+    },
+    "v2_confidence": 0.6791787218877242,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 552,
+    "hypothesis": "nda-1",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241417930779274,
+      "none fits": 0.07585820692207254
+    },
+    "v2_confidence": 0.9241417930779274,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 555,
+    "hypothesis": "nda-19",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "NotMentioned",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.060086659743997975,
+      "none fits": 0.939913340256002
+    },
+    "v2_confidence": 0.939913340256002,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 555,
+    "hypothesis": "nda-19",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "NotMentioned",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.07585819786560725,
+      "none fits": 0.9241418021343928
+    },
+    "v2_confidence": 0.9241418021343928,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 564,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9859363741381734,
+      "none fits": 0.014063625861826643
+    },
+    "v2_confidence": 0.9859363741381734,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 564,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9046505100718311,
+      "none fits": 0.09534948992816893
+    },
+    "v2_confidence": 0.9046505100718311,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 565,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.880797068679855,
+      "none fits": 0.119202931320145
+    },
+    "v2_confidence": 0.880797068679855,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 565,
+    "hypothesis": "nda-20",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6791786550155208,
+      "none fits": 0.3208213449844792
+    },
+    "v2_confidence": 0.6791786550155208,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 565,
+    "hypothesis": "nda-4",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8175744386061312,
+      "none fits": 0.18242556139386876
+    },
+    "v2_confidence": 0.8175744386061312,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 565,
+    "hypothesis": "nda-4",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9933071486542305,
+      "none fits": 0.006692851345769374
+    },
+    "v2_confidence": 0.9933071486542305,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 600,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585740846368,
+      "none fits": 0.26894142591536324
+    },
+    "v2_confidence": 0.7310585740846368,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 600,
+    "hypothesis": "nda-17",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9890130570700114,
+      "none fits": 0.01098694292998866
+    },
+    "v2_confidence": 0.9890130570700114,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 606,
+    "hypothesis": "nda-4",
+    "group": "hard",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9968273174495368,
+      "none fits": 0.0031726825504633507
+    },
+    "v2_confidence": 0.9968273174495368,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 606,
+    "hypothesis": "nda-4",
+    "group": "hard",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9770226260410436,
+      "none fits": 0.022977373958956306
+    },
+    "v2_confidence": 0.9770226260410436,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 296,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5000000084005265,
+      "none fits": 0.4999999915994734
+    },
+    "v2_confidence": 0.5000000084005265,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 296,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.49999992735784327,
+      "none fits": 0.5000000726421567
+    },
+    "v2_confidence": 0.5000000726421567,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 60,
+    "hypothesis": "nda-20",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.1480472063873095,
+      "none fits": 0.8519527936126905
+    },
+    "v2_confidence": 0.8519527936126905,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 60,
+    "hypothesis": "nda-20",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9820137852745598,
+      "none fits": 0.01798621472544021
+    },
+    "v2_confidence": 0.9820137852745598,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 400,
+    "hypothesis": "nda-20",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.49999995917478196,
+      "none fits": 0.5000000408252181
+    },
+    "v2_confidence": 0.5000000408252181,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 400,
+    "hypothesis": "nda-20",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.4378235516734778,
+      "none fits": 0.5621764483265221
+    },
+    "v2_confidence": 0.5621764483265221,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 600,
+    "hypothesis": "nda-20",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527821044806,
+      "none fits": 0.14804721789551945
+    },
+    "v2_confidence": 0.8519527821044806,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 600,
+    "hypothesis": "nda-20",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585842242672,
+      "none fits": 0.26894141577573283
+    },
+    "v2_confidence": 0.7310585842242672,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 23,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224593815685767,
+      "none fits": 0.37754061843142317
+    },
+    "v2_confidence": 0.6224593815685767,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 23,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527599600999,
+      "none fits": 0.14804724003990016
+    },
+    "v2_confidence": 0.8519527599600999,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 38,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5000000506227679,
+      "none fits": 0.4999999493772321
+    },
+    "v2_confidence": 0.5000000506227679,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 38,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621764649487279,
+      "none fits": 0.4378235350512722
+    },
+    "v2_confidence": 0.5621764649487279,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 526,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6791787425199179,
+      "none fits": 0.32082125748008206
+    },
+    "v2_confidence": 0.6791787425199179,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 526,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.320821425073328,
+      "none fits": 0.679178574926672
+    },
+    "v2_confidence": 0.679178574926672,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 42,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.22270021708779686,
+      "none fits": 0.777299782912203
+    },
+    "v2_confidence": 0.777299782912203,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 42,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082134705520365,
+      "none fits": 0.6791786529447963
+    },
+    "v2_confidence": 0.6791786529447963,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 336,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.06008668823906604,
+      "none fits": 0.939913311760934
+    },
+    "v2_confidence": 0.939913311760934,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 336,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3775407201500736,
+      "none fits": 0.6224592798499263
+    },
+    "v2_confidence": 0.6224592798499263,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 544,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.49999993008657423,
+      "none fits": 0.5000000699134257
+    },
+    "v2_confidence": 0.5000000699134257,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 544,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.22270013883884107,
+      "none fits": 0.7772998611611589
+    },
+    "v2_confidence": 0.7772998611611589,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 26,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224592963260115,
+      "none fits": 0.37754070367398845
+    },
+    "v2_confidence": 0.6224592963260115,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 26,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8807970252323359,
+      "none fits": 0.11920297476766406
+    },
+    "v2_confidence": 0.8807970252323359,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 496,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224593403763392,
+      "none fits": 0.37754065962366073
+    },
+    "v2_confidence": 0.6224593403763392,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 496,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082129909046225,
+      "none fits": 0.6791787009095377
+    },
+    "v2_confidence": 0.6791787009095377,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 99,
+    "hypothesis": "nda-1",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.500000007384549,
+      "none fits": 0.499999992615451
+    },
+    "v2_confidence": 0.500000007384549,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 99,
+    "hypothesis": "nda-1",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.320821420379778,
+      "none fits": 0.679178579620222
+    },
+    "v2_confidence": 0.679178579620222,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 21,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3208213406702399,
+      "none fits": 0.6791786593297601
+    },
+    "v2_confidence": 0.6791786593297601,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 21,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082136472294714,
+      "none fits": 0.6791786352770528
+    },
+    "v2_confidence": 0.6791786352770528,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 41,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.029312232008421008,
+      "none fits": 0.9706877679915791
+    },
+    "v2_confidence": 0.9706877679915791,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 41,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.4378234451144922,
+      "none fits": 0.5621765548855078
+    },
+    "v2_confidence": 0.5621765548855078,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 444,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585410006931,
+      "none fits": 0.2689414589993068
+    },
+    "v2_confidence": 0.7310585410006931,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 444,
+    "hypothesis": "nda-2",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527676216048,
+      "none fits": 0.14804723237839523
+    },
+    "v2_confidence": 0.8519527676216048,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 413,
+    "hypothesis": "nda-7",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.26894141417396356,
+      "none fits": 0.7310585858260364
+    },
+    "v2_confidence": 0.7310585858260364,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 413,
+    "hypothesis": "nda-7",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082135777719883,
+      "none fits": 0.6791786422228012
+    },
+    "v2_confidence": 0.6791786422228012,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 38,
+    "hypothesis": "nda-1",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6791787242175388,
+      "none fits": 0.3208212757824612
+    },
+    "v2_confidence": 0.6791787242175388,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 38,
+    "hypothesis": "nda-1",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082126491941587,
+      "none fits": 0.6791787350805842
+    },
+    "v2_confidence": 0.6791787350805842,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 138,
+    "hypothesis": "nda-20",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.2689414282761178,
+      "none fits": 0.7310585717238821
+    },
+    "v2_confidence": 0.7310585717238821,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 138,
+    "hypothesis": "nda-20",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.26894142885622013,
+      "none fits": 0.7310585711437798
+    },
+    "v2_confidence": 0.7310585711437798,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 42,
+    "hypothesis": "nda-1",
+    "group": "contradiction_easy",
+    "rep": 0,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.18242552401413162,
+      "none fits": 0.8175744759858683
+    },
+    "v2_confidence": 0.8175744759858683,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 42,
+    "hypothesis": "nda-1",
+    "group": "contradiction_easy",
+    "rep": 1,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3208213441497738,
+      "none fits": 0.6791786558502262
+    },
+    "v2_confidence": 0.6791786558502262,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 357,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9914225119591127,
+      "none fits": 0.00857748804088731
+    },
+    "v2_confidence": 0.9914225119591127,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 357,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9820137826245182,
+      "none fits": 0.01798621737548181
+    },
+    "v2_confidence": 0.9820137826245182,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 190,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8175744809900389,
+      "none fits": 0.182425519009961
+    },
+    "v2_confidence": 0.8175744809900389,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 190,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241418243225404,
+      "none fits": 0.07585817567745963
+    },
+    "v2_confidence": 0.9241418243225404,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 21,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527913993067,
+      "none fits": 0.14804720860069323
+    },
+    "v2_confidence": 0.8519527913993067,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 21,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9980732650684749,
+      "none fits": 0.0019267349315250477
+    },
+    "v2_confidence": 0.9980732650684749,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 549,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.985936371673443,
+      "none fits": 0.01406362832655705
+    },
+    "v2_confidence": 0.985936371673443,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 549,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.09534948212532987,
+      "none fits": 0.9046505178746701
+    },
+    "v2_confidence": 0.9046505178746701,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 387,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.437823629447161,
+      "none fits": 0.5621763705528389
+    },
+    "v2_confidence": 0.5621763705528389,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 387,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519528302470109,
+      "none fits": 0.14804716975298918
+    },
+    "v2_confidence": 0.8519528302470109,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 36,
+    "hypothesis": "nda-13",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.851952780108329,
+      "none fits": 0.14804721989167102
+    },
+    "v2_confidence": 0.851952780108329,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 36,
+    "hypothesis": "nda-13",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.4378235091587531,
+      "none fits": 0.5621764908412469
+    },
+    "v2_confidence": 0.5621764908412469,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 55,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9626730958007609,
+      "none fits": 0.03732690419923913
+    },
+    "v2_confidence": 0.9626730958007609,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 55,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9525741058359999,
+      "none fits": 0.04742589416400014
+    },
+    "v2_confidence": 0.9525741058359999,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 429,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310584718307724,
+      "none fits": 0.2689415281692275
+    },
+    "v2_confidence": 0.7310584718307724,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 429,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7772998150733088,
+      "none fits": 0.22270018492669122
+    },
+    "v2_confidence": 0.7772998150733088,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 429,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8175744370584661,
+      "none fits": 0.1824255629415339
+    },
+    "v2_confidence": 0.8175744370584661,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 429,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241418080265132,
+      "none fits": 0.0758581919734867
+    },
+    "v2_confidence": 0.9241418080265132,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 392,
+    "hypothesis": "nda-7",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9770226236266134,
+      "none fits": 0.022977376373386572
+    },
+    "v2_confidence": 0.9770226236266134,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 392,
+    "hypothesis": "nda-7",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241417906308469,
+      "none fits": 0.07585820936915305
+    },
+    "v2_confidence": 0.9241417906308469,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 21,
+    "hypothesis": "nda-7",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9626731016768002,
+      "none fits": 0.03732689832319984
+    },
+    "v2_confidence": 0.9626731016768002,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 21,
+    "hypothesis": "nda-7",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9968273161648856,
+      "none fits": 0.003172683835114511
+    },
+    "v2_confidence": 0.9968273161648856,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 392,
+    "hypothesis": "nda-17",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585308693517,
+      "none fits": 0.26894146913064837
+    },
+    "v2_confidence": 0.7310585308693517,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 392,
+    "hypothesis": "nda-17",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8175744139735814,
+      "none fits": 0.18242558602641856
+    },
+    "v2_confidence": 0.8175744139735814,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 395,
+    "hypothesis": "nda-18",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9820137865811154,
+      "none fits": 0.017986213418884615
+    },
+    "v2_confidence": 0.9820137865811154,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 395,
+    "hypothesis": "nda-18",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9046504930157911,
+      "none fits": 0.09534950698420884
+    },
+    "v2_confidence": 0.9046504930157911,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 157,
+    "hypothesis": "nda-19",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.4378235178204264,
+      "none fits": 0.5621764821795736
+    },
+    "v2_confidence": 0.5621764821795736,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 157,
+    "hypothesis": "nda-19",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6791787059297688,
+      "none fits": 0.32082129407023113
+    },
+    "v2_confidence": 0.6791787059297688,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 11,
+    "hypothesis": "nda-7",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9914225134843103,
+      "none fits": 0.008577486515689701
+    },
+    "v2_confidence": 0.9914225134843103,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 55,
+    "hypothesis": "nda-5",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585486643709,
+      "none fits": 0.2689414513356291
+    },
+    "v2_confidence": 0.7310585486643709,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 11,
+    "hypothesis": "nda-7",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9988304894176391,
+      "none fits": 0.001169510582360887
+    },
+    "v2_confidence": 0.9988304894176391,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 55,
+    "hypothesis": "nda-5",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7772998308496764,
+      "none fits": 0.22270016915032367
+    },
+    "v2_confidence": 0.7772998308496764,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 11,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9046505321807641,
+      "none fits": 0.0953494678192359
+    },
+    "v2_confidence": 0.9046505321807641,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 11,
+    "hypothesis": "nda-3",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224592889720222,
+      "none fits": 0.37754071102797787
+    },
+    "v2_confidence": 0.6224592889720222,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 361,
+    "hypothesis": "nda-4",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519528097938817,
+      "none fits": 0.14804719020611837
+    },
+    "v2_confidence": 0.8519528097938817,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 361,
+    "hypothesis": "nda-4",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9626731099555113,
+      "none fits": 0.03732689004448875
+    },
+    "v2_confidence": 0.9626731099555113,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 38,
+    "hypothesis": "nda-19",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082134064387946,
+      "none fits": 0.6791786593561205
+    },
+    "v2_confidence": 0.6791786593561205,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 38,
+    "hypothesis": "nda-19",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082134064387946,
+      "none fits": 0.6791786593561205
+    },
+    "v2_confidence": 0.6791786593561205,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 555,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.43782351114789414,
+      "none fits": 0.5621764888521058
+    },
+    "v2_confidence": 0.5621764888521058,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 555,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "NotMentioned",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5000000048099617,
+      "none fits": 0.4999999951900383
+    },
+    "v2_confidence": 0.5000000048099617,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 74,
+    "hypothesis": "nda-19",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6791788031792233,
+      "none fits": 0.3208211968207767
+    },
+    "v2_confidence": 0.6791788031792233,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 74,
+    "hypothesis": "nda-19",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7772998927733664,
+      "none fits": 0.22270010722663353
+    },
+    "v2_confidence": 0.7772998927733664,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 181,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5000000952083087,
+      "none fits": 0.4999999047916914
+    },
+    "v2_confidence": 0.5000000952083087,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 181,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8175744172226053,
+      "none fits": 0.18242558277739473
+    },
+    "v2_confidence": 0.8175744172226053,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 41,
+    "hypothesis": "nda-5",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9770226277059295,
+      "none fits": 0.0229773722940705
+    },
+    "v2_confidence": 0.9770226277059295,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 354,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.18242553276800674,
+      "none fits": 0.8175744672319933
+    },
+    "v2_confidence": 0.8175744672319933,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 354,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.43782350674393206,
+      "none fits": 0.562176493256068
+    },
+    "v2_confidence": 0.562176493256068,
+    "v3_quote_found": true,
+    "v3_reverdict": "Entailment",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 41,
+    "hypothesis": "nda-5",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9770226296905427,
+      "none fits": 0.022977370309457366
+    },
+    "v2_confidence": 0.9770226296905427,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 31,
+    "hypothesis": "nda-13",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7772998734702129,
+      "none fits": 0.2227001265297871
+    },
+    "v2_confidence": 0.7772998734702129,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 31,
+    "hypothesis": "nda-13",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241418062868951,
+      "none fits": 0.07585819371310491
+    },
+    "v2_confidence": 0.9241418062868951,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 389,
+    "hypothesis": "nda-4",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9890130553181148,
+      "none fits": 0.010986944681885241
+    },
+    "v2_confidence": 0.9890130553181148,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 389,
+    "hypothesis": "nda-4",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.2227001567459735,
+      "none fits": 0.7772998432540266
+    },
+    "v2_confidence": 0.7772998432540266,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 77,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621765878185214,
+      "none fits": 0.43782341218147863
+    },
+    "v2_confidence": 0.5621765878185214,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 77,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621765773590007,
+      "none fits": 0.43782342264099927
+    },
+    "v2_confidence": 0.5621765773590007,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 361,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241418065423357,
+      "none fits": 0.07585819345766436
+    },
+    "v2_confidence": 0.9241418065423357,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 361,
+    "hypothesis": "nda-8",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9399133307777051,
+      "none fits": 0.06008666922229492
+    },
+    "v2_confidence": 0.9399133307777051,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 546,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621764374292709,
+      "none fits": 0.4378235625707291
+    },
+    "v2_confidence": 0.5621764374292709,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 546,
+    "hypothesis": "nda-15",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621764483703613,
+      "none fits": 0.43782355162963865
+    },
+    "v2_confidence": 0.5621764483703613,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 476,
+    "hypothesis": "nda-4",
+    "group": "entailment",
+    "rep": 0,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9046505216781611,
+      "none fits": 0.0953494783218389
+    },
+    "v2_confidence": 0.9046505216781611,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 476,
+    "hypothesis": "nda-4",
+    "group": "entailment",
+    "rep": 1,
+    "gold": "Entailment",
+    "verdict": "Entailment",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9399133393252361,
+      "none fits": 0.06008666067476391
+    },
+    "v2_confidence": 0.9399133393252361,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 47,
+    "hypothesis": "nda-1",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7772998674990262,
+      "none fits": 0.22270013250097376
+    },
+    "v2_confidence": 0.7772998674990262,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 47,
+    "hypothesis": "nda-1",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224592914743787,
+      "none fits": 0.3775407085256213
+    },
+    "v2_confidence": 0.6224592914743787,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 26,
+    "hypothesis": "nda-16",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5000000127768914,
+      "none fits": 0.4999999872231086
+    },
+    "v2_confidence": 0.5000000127768914,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 26,
+    "hypothesis": "nda-16",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.437823664759437,
+      "none fits": 0.562176335240563
+    },
+    "v2_confidence": 0.562176335240563,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 387,
+    "hypothesis": "nda-17",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3775407148839723,
+      "none fits": 0.6224592851160278
+    },
+    "v2_confidence": 0.6224592851160278,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 387,
+    "hypothesis": "nda-17",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.18242558348979868,
+      "none fits": 0.8175744165102014
+    },
+    "v2_confidence": 0.8175744165102014,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 361,
+    "hypothesis": "nda-11",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6791786946203827,
+      "none fits": 0.32082130537961734
+    },
+    "v2_confidence": 0.6791786946203827,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 361,
+    "hypothesis": "nda-11",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5000000046145636,
+      "none fits": 0.4999999953854363
+    },
+    "v2_confidence": 0.5000000046145636,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 412,
+    "hypothesis": "nda-20",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.97702262907459,
+      "none fits": 0.02297737092541003
+    },
+    "v2_confidence": 0.97702262907459,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 412,
+    "hypothesis": "nda-20",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9959298627648135,
+      "none fits": 0.004070137235186473
+    },
+    "v2_confidence": 0.9959298627648135,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 47,
+    "hypothesis": "nda-17",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.50000010005491,
+      "none fits": 0.4999998999450899
+    },
+    "v2_confidence": 0.50000010005491,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 47,
+    "hypothesis": "nda-17",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3208215438620629,
+      "none fits": 0.679178456137937
+    },
+    "v2_confidence": 0.679178456137937,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 85,
+    "hypothesis": "nda-16",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.07585821369206205,
+      "none fits": 0.924141786307938
+    },
+    "v2_confidence": 0.924141786307938,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 85,
+    "hypothesis": "nda-16",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.03732689069202525,
+      "none fits": 0.9626731093079748
+    },
+    "v2_confidence": 0.9626731093079748,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 25,
+    "hypothesis": "nda-3",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9525741218594698,
+      "none fits": 0.04742587814053022
+    },
+    "v2_confidence": 0.9525741218594698,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 25,
+    "hypothesis": "nda-3",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.6224593338328387,
+      "none fits": 0.3775406661671613
+    },
+    "v2_confidence": 0.6224593338328387,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 336,
+    "hypothesis": "nda-13",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.01098694480307351,
+      "none fits": 0.9890130551969265
+    },
+    "v2_confidence": 0.9890130551969265,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 336,
+    "hypothesis": "nda-13",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.01798621576765317,
+      "none fits": 0.9820137842323469
+    },
+    "v2_confidence": 0.9820137842323469,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 455,
+    "hypothesis": "nda-1",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.18242559365711977,
+      "none fits": 0.8175744063428801
+    },
+    "v2_confidence": 0.8175744063428801,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 455,
+    "hypothesis": "nda-1",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5621764411981117,
+      "none fits": 0.43782355880188834
+    },
+    "v2_confidence": 0.5621764411981117,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 18,
+    "hypothesis": "nda-20",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9770226293834157,
+      "none fits": 0.022977370616584454
+    },
+    "v2_confidence": 0.9770226293834157,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 18,
+    "hypothesis": "nda-20",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9933071462970376,
+      "none fits": 0.006692853702962256
+    },
+    "v2_confidence": 0.9933071462970376,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 357,
+    "hypothesis": "nda-11",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.26894146200914365,
+      "none fits": 0.7310585379908563
+    },
+    "v2_confidence": 0.7310585379908563,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 357,
+    "hypothesis": "nda-11",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.562176544231148,
+      "none fits": 0.4378234557688519
+    },
+    "v2_confidence": 0.562176544231148,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 18,
+    "hypothesis": "nda-15",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9626730997224602,
+      "none fits": 0.03732690027753984
+    },
+    "v2_confidence": 0.9626730997224602,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 18,
+    "hypothesis": "nda-15",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9399133397597961,
+      "none fits": 0.06008666024020396
+    },
+    "v2_confidence": 0.9399133397597961,
+    "v3_quote_found": true,
+    "v3_reverdict": "Contradiction",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 400,
+    "hypothesis": "nda-2",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9525741225650286,
+      "none fits": 0.0474258774349714
+    },
+    "v2_confidence": 0.9525741225650286,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 400,
+    "hypothesis": "nda-2",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8175744612949567,
+      "none fits": 0.1824255387050433
+    },
+    "v2_confidence": 0.8175744612949567,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 289,
+    "hypothesis": "nda-11",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.4378235043580421,
+      "none fits": 0.5621764956419579
+    },
+    "v2_confidence": 0.5621764956419579,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 289,
+    "hypothesis": "nda-11",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.22270019609242994,
+      "none fits": 0.77729980390757
+    },
+    "v2_confidence": 0.77729980390757,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 49,
+    "hypothesis": "nda-18",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.37754067332830243,
+      "none fits": 0.6224593266716976
+    },
+    "v2_confidence": 0.6224593266716976,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 49,
+    "hypothesis": "nda-18",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.02297737924183223,
+      "none fits": 0.9770226207581678
+    },
+    "v2_confidence": 0.9770226207581678,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 444,
+    "hypothesis": "nda-15",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585888463073,
+      "none fits": 0.2689414111536927
+    },
+    "v2_confidence": 0.7310585888463073,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 444,
+    "hypothesis": "nda-15",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.18242554654738646,
+      "none fits": 0.8175744534526136
+    },
+    "v2_confidence": 0.8175744534526136,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 307,
+    "hypothesis": "nda-17",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9992903296547616,
+      "none fits": 0.0007096703452383231
+    },
+    "v2_confidence": 0.9992903296547616,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 307,
+    "hypothesis": "nda-17",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9890130570771651,
+      "none fits": 0.01098694292283492
+    },
+    "v2_confidence": 0.9890130570771651,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 129,
+    "hypothesis": "nda-3",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9241418002648566,
+      "none fits": 0.0758581997351434
+    },
+    "v2_confidence": 0.9241418002648566,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 526,
+    "hypothesis": "nda-16",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.09534949870163632,
+      "none fits": 0.9046505012983637
+    },
+    "v2_confidence": 0.9046505012983637,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 526,
+    "hypothesis": "nda-16",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.09534952497949489,
+      "none fits": 0.9046504750205051
+    },
+    "v2_confidence": 0.9046504750205051,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 129,
+    "hypothesis": "nda-3",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9859363747712027,
+      "none fits": 0.014063625228797358
+    },
+    "v2_confidence": 0.9859363747712027,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 68,
+    "hypothesis": "nda-8",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.7310585916726522,
+      "none fits": 0.2689414083273477
+    },
+    "v2_confidence": 0.7310585916726522,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 68,
+    "hypothesis": "nda-8",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.622459338670824,
+      "none fits": 0.37754066132917596
+    },
+    "v2_confidence": 0.622459338670824,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 213,
+    "hypothesis": "nda-2",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9859363726022796,
+      "none fits": 0.014063627397720343
+    },
+    "v2_confidence": 0.9859363726022796,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 213,
+    "hypothesis": "nda-2",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Contradiction",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9626731059440061,
+      "none fits": 0.037326894055993896
+    },
+    "v2_confidence": 0.9626731059440061,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 389,
+    "hypothesis": "nda-10",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.2227002484313032,
+      "none fits": 0.7772997515686968
+    },
+    "v2_confidence": 0.7772997515686968,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 389,
+    "hypothesis": "nda-10",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.22270015462738632,
+      "none fits": 0.7772998453726137
+    },
+    "v2_confidence": 0.7772998453726137,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 190,
+    "hypothesis": "nda-18",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.3208213997752461,
+      "none fits": 0.6791786002247538
+    },
+    "v2_confidence": 0.6791786002247538,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 190,
+    "hypothesis": "nda-18",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.43782358146101047,
+      "none fits": 0.5621764185389895
+    },
+    "v2_confidence": 0.5621764185389895,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 84,
+    "hypothesis": "nda-11",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.04742589705775656,
+      "none fits": 0.9525741029422435
+    },
+    "v2_confidence": 0.9525741029422435,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 84,
+    "hypothesis": "nda-11",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.037326890890963624,
+      "none fits": 0.9626731091090364
+    },
+    "v2_confidence": 0.9626731091090364,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 66,
+    "hypothesis": "nda-20",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527431576175,
+      "none fits": 0.1480472568423826
+    },
+    "v2_confidence": 0.8519527431576175,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 66,
+    "hypothesis": "nda-20",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.32082132248491696,
+      "none fits": 0.679178677515083
+    },
+    "v2_confidence": 0.679178677515083,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 57,
+    "hypothesis": "nda-12",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.029312241247665877,
+      "none fits": 0.970687758752334
+    },
+    "v2_confidence": 0.970687758752334,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 57,
+    "hypothesis": "nda-12",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.2689414388965268,
+      "none fits": 0.7310585611034732
+    },
+    "v2_confidence": 0.7310585611034732,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 540,
+    "hypothesis": "nda-7",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.8519527516539731,
+      "none fits": 0.14804724834602698
+    },
+    "v2_confidence": 0.8519527516539731,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 540,
+    "hypothesis": "nda-7",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "Entailment",
+    "correct": false,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.9046505145852413,
+      "none fits": 0.0953494854147587
+    },
+    "v2_confidence": 0.9046505145852413,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": false
+  },
+  {
+    "doc": 46,
+    "hypothesis": "nda-8",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.14804731603449084,
+      "none fits": 0.8519526839655092
+    },
+    "v2_confidence": 0.8519526839655092,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 46,
+    "hypothesis": "nda-8",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "some process fits",
+    "v2_probabilities": {
+      "some process fits": 0.5000000509614153,
+      "none fits": 0.49999994903858475
+    },
+    "v2_confidence": 0.5000000509614153,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 446,
+    "hypothesis": "nda-20",
+    "group": "not_mentioned",
+    "rep": 1,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.04742589081863318,
+      "none fits": 0.9525741091813668
+    },
+    "v2_confidence": 0.9525741091813668,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  },
+  {
+    "doc": 446,
+    "hypothesis": "nda-20",
+    "group": "not_mentioned",
+    "rep": 0,
+    "gold": "NotMentioned",
+    "verdict": "NotMentioned",
+    "correct": true,
+    "fits": true,
+    "v2_choice": "none fits",
+    "v2_probabilities": {
+      "some process fits": 0.04742588646482725,
+      "none fits": 0.9525741135351729
+    },
+    "v2_confidence": 0.9525741135351729,
+    "v3_quote_found": true,
+    "v3_reverdict": "NotMentioned",
+    "v3_reverdict_matches_original": true
+  }
+]

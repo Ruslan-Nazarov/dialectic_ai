@@ -1,0 +1,11 @@
+{
+  "n_answers": 258,
+  "n_pairs": 129,
+  "elapsed_seconds": 68.54699999999866,
+  "v2_prompt_tokens": 301455,
+  "v2_completion_tokens": 258,
+  "v3_prompt_tokens": 33818,
+  "v3_completion_tokens": 62352,
+  "v2_calls": 258,
+  "v3_calls": 258
+}

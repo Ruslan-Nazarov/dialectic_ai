@@ -1,0 +1,63 @@
+{
+  "variant1_self_report": {
+    "precision": NaN,
+    "recall": 0.0,
+    "signal_rate_correct": 0.0,
+    "signal_rate_incorrect": 0.0,
+    "precision_ci": {
+      "point": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "n": 0
+    },
+    "recall_ci": {
+      "point": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n": 2000
+    }
+  },
+  "variant2_p_none_fits": {
+    "precision": 0.19230769230769232,
+    "recall": 0.1271186440677966,
+    "auroc": 0.24252421307506053,
+    "auroc_ci": {
+      "point": 0.24252421307506053,
+      "lo": 0.17049347839153695,
+      "hi": 0.3202929508696979,
+      "n": 2000
+    },
+    "signal_rate_correct": 0.45,
+    "signal_rate_incorrect": 0.1271186440677966
+  },
+  "variant2_auxiliary": {
+    "confidence_auroc": 0.2828389830508475,
+    "entropy_auroc": 0.2828389830508475
+  },
+  "variant3_practice": {
+    "quote_not_found": {
+      "precision": NaN,
+      "recall": 0.0
+    },
+    "verdict_disagree": {
+      "precision": 0.5310734463276836,
+      "recall": 0.7966101694915254
+    },
+    "union": {
+      "precision": 0.5310734463276836,
+      "recall": 0.7966101694915254
+    },
+    "union_precision_ci": {
+      "point": 0.5310734463276836,
+      "lo": 0.42696629213483145,
+      "hi": 0.6324324324324324,
+      "n": 2000
+    },
+    "union_recall_ci": {
+      "point": 0.7966101694915254,
+      "lo": 0.6956521739130435,
+      "hi": 0.89,
+      "n": 2000
+    }
+  }
+}
