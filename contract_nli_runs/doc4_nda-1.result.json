@@ -1,0 +1,24 @@
+{
+ "doc": 4,
+ "hypothesis": "nda-1",
+ "gold": "Contradiction",
+ "gold_evidence": [
+  "4. The undertakings in clauses 2 and 3 above apply to all of the information disclosed by the Discloser to the Recipient, regardless of the way or form in which it is disclosed or recorded but they do not apply to:"
+ ],
+ "engine": {
+  "status": "error",
+  "stop_reason": "run_timeout",
+  "verdict": "?",
+  "response": "Run deadline reached; unfinished roadmap preserved",
+  "elapsed_s": 1200,
+  "tokens": {
+   "actor": 70985,
+   "judge": 155779
+  }
+ },
+ "plain": {
+  "verdict": "Contradiction",
+  "response": "{\"answer\":\"Contradiction — Clause 1: \\\"The Discloser intends to disclose information (the Confidential Information) to the Recipient for the purpose of recommendation of future land use of the decommissioned play area on Ship Street (the Purpose).\\\"; Clause 4: \\\"The undertakings in clauses 2 and 3 above apply to all of the information disclosed by the Discloser to the Recipient, regardless of the way or form in which it is disclosed or recorded but they do not apply to: a) any information which is or in future comes into the public domain (unless as a result of the breach of this Agreement); or b) any information which is already known to the Recipient and which was not subject to any obligation of confidence before it was disclosed to the Recipient by the Discloser.\\\"\"}"
+ },
+ "trace": "D:\\Библиотека\\Исследования\\Искусственный интеллект\\AI_agent_hackaton\\live_runs\\contract_nli\\doc4_nda-1.jsonl"
+}

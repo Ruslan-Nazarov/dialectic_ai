@@ -1,0 +1,1542 @@
+[
+ {
+  "doc": 4,
+  "hypothesis": "nda-1",
+  "chars": 2405,
+  "verdict": "NotMentioned",
+  "answer": "{\"answer\":\"NotMentioned — Clause 1: \\\"The Discloser intends to disclose information (the Confidential Information) to the Recipient for the purpose of recommendation of future land use of the decommissioned play area on Ship Street (the Purpose).\\\" Clause 4: \\\"The undertakings in clauses 2 and 3 above apply to all of the information disclosed by the Discloser to the Recipient, regardless of the way or form in which it is disclosed or recorded but they do not apply to: a) any information which is or in future comes into the public domain (unless as a result of the breach of this Agreement); or "
+ },
+ {
+  "doc": 77,
+  "hypothesis": "nda-20",
+  "chars": 3244,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n\\\"At the end of the contract the receiving party shall return the confidential information and any possibly extant copies after receipt of a written request, provided that this is technically feasible and does not violate the retention obligations. As an alternative to that, the receiving party can also ensure in writing the destruction of the received documentation if that is technically feasible.\\\" (Clause 9)\"}"
+ },
+ {
+  "doc": 85,
+  "hypothesis": "nda-17",
+  "chars": 3510,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment. \\\"If not otherwise agreed in writing, the Receiving Party shall, at the request of the Inventor/ Disclosing Party, immediately return all material describing the Information, as stipulated in provision 1. In the event of the following statement not being signed by the Inventor/Disclosing Party, the Receiving Party is not entitled to copy the Information: The Disclosing Party hereby authorizes the Receiving Party to copy or otherwise reproduce the material disclosed to the extent necessary for an appropriate handling of the material.\\\" (Clause 8)\"}"
+ },
+ {
+  "doc": 389,
+  "hypothesis": "nda-7",
+  "chars": 3758,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"If GSEnergy desires to use individuals not employed by GSEnergy, GSEnergy shall not disclose Information to these individuals without obtaining prior written approval from the Company and having appropriate non-disclosure agreements signed in form and substance satisfactory to the Company.\\\" (Clause 3)\"}"
+ },
+ {
+  "doc": 310,
+  "hypothesis": "nda-17",
+  "chars": 4853,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"Receiving Party shall not, without prior written approval of Disclosing Party, use for Receiving Party's own benefit, publish, copy, or otherwise disclose to others, or permit the use by others for their benefit or to the detriment of Disclosing Party, any Sensitive Information.\\\" (Clause 3)\"}"
+ },
+ {
+  "doc": 357,
+  "hypothesis": "nda-17",
+  "chars": 4957,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n\\\"Unless expressly authorized in writing by the Disclosing Party, the Receiving Party agrees to retain the Confidential Information in confidence and shall not copy or disclose the Confidential Information to or use the Confidential Information for the benefit of any third party.\\\" \\n\\\"Each party shall agree upon the request of the Disclosing Party to return to the Disclosing Party all Confidential Information and supporting documentation provided to the Receiving Party. One copy of such documentation shall be retained by Receiving Party for archival/legal purposes.\\\"\"}"
+ },
+ {
+  "doc": 600,
+  "hypothesis": "nda-17",
+  "chars": 5048,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"ListFusion agrees that this Agreement grants only limited rights to use the List for the sole purpose of loading the List into ListFusion's proprietary database system. The List will not be reproduced, transferred, or conveyed to any 3rd party without prior written authorization by Raphael.\\\" \\\"The List will be stored exclusively on ListFusion's secure servers. ListFusion will not use any 3rd party agents, vendors, or other providers to process the List without the written authorization by Raphael.\\\"\"}"
+ },
+ {
+  "doc": 60,
+  "hypothesis": "nda-17",
+  "chars": 5179,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"Receiving Party agrees not to use, divulge, reproduce or otherwise make available the Confidential Information other than for the purposes of the Project and to disclose it only to its officers, agents, employees, partners, and professional advisors as necessary, who shall also be bound to comply with this Agreement.\\\"; \\\"Upon the request of Casino, Receiving Party shall immediately return all Confidential Information received in written or tangible form, including all notes, copies, or media containing such Confidential Information.\\\"\"}"
+ },
+ {
+  "doc": 452,
+  "hypothesis": "nda-16",
+  "chars": 5240,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"Upon termination of the Agreement, Independent Contractor shall redeliver all tangible Confidential Information furnished by the Company. Except to the extent Independent Contractor is advised in writing by counsel that such action is prohibited by law, Independent Contractor will also destroy all written material, memoranda, notes, and other writings or recordings whatsoever prepared by it based upon, containing, or otherwise reflecting any Confidential Information.\\\" (Clause 4)\"}"
+ },
+ {
+  "doc": 48,
+  "hypothesis": "nda-17",
+  "chars": 5292,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\",\"quote\":\"Receiving Party shall not, without the prior written approval of Disclosing Party, use for Receiving Party's benefit, publish, copy, or otherwise disclose to others, or permit the use by others for their benefit or to the detriment of Disclosing Party, any Confidential Information.\"}"
+ },
+ {
+  "doc": 127,
+  "hypothesis": "nda-1",
+  "chars": 5578,
+  "verdict": "NotMentioned",
+  "answer": "{\"answer\":\"NotMentioned - \\\"\\\\\\\"Confidential Information\\\\\\\" of a disclosing party (\\\\\\\"Discloser\\\\\\\") means the following, regardless of its form and including copies made by the receiving party (\\\\\\\"Recipient\\\\\\\"), whether the Recipient becomes aware of it before or after the date of this Agreement:\\\\n- all information treated by the Discloser as confidential; and\\\\n- disclosed by the Discloser to the Recipient or of which the Recipient becomes aware, including but not limited to, the information specified in Schedule 1;\\\" (Clause 3)\"}"
+ },
+ {
+  "doc": 8,
+  "hypothesis": "nda-1",
+  "chars": 5751,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\"}"
+ },
+ {
+  "doc": 67,
+  "hypothesis": "nda-17",
+  "chars": 6425,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment: \\\"(c) Not reproduce the Confidential Information or any part thereof without the express written consent of Disclosing Party;\\\" (Clause 2(c))\"}"
+ },
+ {
+  "doc": 5,
+  "hypothesis": "nda-3",
+  "chars": 6887,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"all such information, of any kind whatsoever (whether in oral, written or electronic form, and including, but not limited to, technical, commercial, financial, accounting, legal and administrative information) pertaining to the Sale of the Munt and the Sellers as may be provided to the Disclosee and their responsible managers, officers, employees, shareholders, members of the Board of Directors and advisors (including financial, legal and tax advisors and auditors) (\\\"Representatives\\\"), by the Sellers, their advisors or their representatives;\\\" (Confidential Informat"
+ },
+ {
+  "doc": 74,
+  "hypothesis": "nda-20",
+  "chars": 6966,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"Upon request of UNIVERSITY at any time VENDOR shall return all or such part of the Confidential Information as UNIVERSITY may designate to be returned.\\\"\"}"
+ },
+ {
+  "doc": 74,
+  "hypothesis": "nda-17",
+  "chars": 6966,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — “Neither VENDOR nor any of its employees, agents, contractors, or subcontractors shall … duplicate … any of the Confidential Information … without the express written consent of UNIVERSITY.” (Provision 2) — see also “including all duplicates and copies thereof” (Provision 4).\"}"
+ },
+ {
+  "doc": 66,
+  "hypothesis": "nda-7",
+  "chars": 7370,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n\\\"(b) be only disclosed to and used by those persons who have a need to know and solely for the purpose specified in this Agreement, within the receiving Party's organisation and to its professional advisors, provided that in this latter case the disclosing Party so notifies the other Party and obtains the authorization from the other Party to make such disclosure, such authorization not being unreasonably withheld, and provided that such advisor(s) agree(s) to be bound by the terms and conditions of this Agreement. (Buyer shall be entitled to freely disclose such inform"
+ },
+ {
+  "doc": 66,
+  "hypothesis": "nda-17",
+  "chars": 7370,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — Clause 4(e): \\\"neither be copied, nor otherwise reproduced nor duplicated in whole or in part where such copying, reproduction or duplication have not been specifically authorized in writing by the disclosing Party.\\\" Clause 4(b): \\\"be only disclosed to and used by those persons who have a need to know and solely for the purpose specified in this Agreement, within the receiving Party's organisation and to its professional advisors, provided that in this latter case the disclosing Party so notifies the other Party and obtains the authorization from the other Party to mak"
+ },
+ {
+  "doc": 497,
+  "hypothesis": "nda-17",
+  "chars": 7483,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment. Relevant clauses: 1. PROPRIETARY INFORMATION: \\\"any documents, reports, memoranda, notes, files or analyses prepared by or on behalf of the receiving party that contain, summarize or are based upon any Proprietary Information\\\"; 2. CONFIDENTIALITY a.: \\\"The receiving party shall protect all of the disclosing party's Proprietary Information as confidential information and, except with the prior written consent of the disclosing party or as otherwise specifically provided herein, shall. not disclose, copy or distribute such Proprietary Information to any other individual, "
+ },
+ {
+  "doc": 451,
+  "hypothesis": "nda-20",
+  "chars": 7718,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\",\"quotes\":[\"\\\"The term \\\"Residuals\\\" means information which may be retained in non-tangible form by person who have had access to the Confidential Information, including without limitation general ideas, concepts, know-how or techniques contained therein.\\\"\",\"\\\"Upon termination of this Agreement, or earlier upon Discloser's request, Recipient shall promptly return or destroy all documents and tangible items in its possession which contain any part of the Confidential Information of Discloser.\\\"\"]}"
+ },
+ {
+  "doc": 493,
+  "hypothesis": "nda-17",
+  "chars": 8193,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n\\\"2.D. Not copy or otherwise duplicate such Confidential Information, or knowingly allow anyone else to copy or otherwise duplicate any such Confidential Information without the Disclosing Party's prior written approval.\\\"\\n\\\"8. Each Recipient Party shall on any copies it may make of any information received hereunder maintain any and all copyright, patent or trademark notices which may appear on such information when so received.\\\"\"}"
+ },
+ {
+  "doc": 181,
+  "hypothesis": "nda-17",
+  "chars": 8248,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\",\"clause\":\"Clause 2.1.1: 'to keep the Confidential Information of the other strictly confidential and not copy, supply or make the same available to any person other than as permitted in Clauses 2.1.2 and 2.1.3 below;'. Clause 2.1.2: 'to use the Confidential Information of the other solely in, and to the extent necessary for the Purpose and not to copy or use any Confidential Information of the other save to the extent necessary for the Purpose;'\"}"
+ },
+ {
+  "doc": 26,
+  "hypothesis": "nda-17",
+  "chars": 8418,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n'4. No Copies. Tangible forms of the CONFIDENTIAL INFORMATION shall not be copied, in whole or in part, without the prior written consent of the DISCLOSING PARTY.'\\n'6. Discovery. In the event that the RECEIVING PARTY is requested or required (by oral questions, interrogatories, requests for information or documents in legal proceedings, subpoena, civil investigative demand or other similar process) to disclose any of the CONFIDENTIAL INFORMATION, the RECEIVING PARTY shall provide the DISCLOSING PARTY with prompt written notice of any such request or requirement so that "
+ },
+ {
+  "doc": 387,
+  "hypothesis": "nda-7",
+  "chars": 8580,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\",\"clauses\":[\"1.1. For a period of three (3) years from the date of entering in to this Agreement, not to disclosure any Information or Item, in any manner whatsoever, directly or indirectly, whether in whole or in part, without the prior written consent of Disclosing Party, to any individual, firm or entity, excepting solely an individual who (a) is an officer, director or employee of Disclosing Party or of the Recipient and (b) has a clear need to know for purposes directly related to the Matter.\",\"3. Non-Disclosure Agreements from Third Parties. If Disclosing Party give"
+ },
+ {
+  "doc": 80,
+  "hypothesis": "nda-7",
+  "chars": 9689,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n\\\"Authorized Person agrees that they will not provide or allow access of the information obtained hereunder to any agent, third party, contractor, subcontractor, or any other public agency, unless authorized in writing by KDOL, and then conditioned upon said agent, third party, contractor, subcontractor, or any other public agency agreeing in writing to be bound by the use and confidentiality terms and conditions of this Confidentiality Agreement.\\\"\\n\\\"Confidential information provided hereunder, or identifiable information derived therefrom, shall not be disclosed to an"
+ },
+ {
+  "doc": 401,
+  "hypothesis": "nda-19",
+  "chars": 9817,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — Clauses establishing ongoing obligations: \\\"Without granting any right or license, the Disclosing Party agrees that the foregoing clauses (i), (ii), (iii) and (v) shall not apply with respect to all obligations after five (5) years following the disclosure thereof or any information that the Receiving Party can document...\\\" and \\\"Immediately upon (i) the decision by either party not to enter into a relationship as a result of the exchange of information hereunder, or (ii) a request by the Disclosing Party at any time, the Receiving Party will turn over to the Disclosin"
+ },
+ {
+  "doc": 401,
+  "hypothesis": "nda-17",
+  "chars": 9817,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment. Quoted clauses: \\\"(v) not to copy or reverse engineer any such Proprietary Information.\\\" and \\\"Immediately upon (i) the decision by either party not to enter into a relationship as a result of the exchange of information hereunder, or (ii) a request by the Disclosing Party at any time, the Receiving Party will turn over to the Disclosing Party all Proprietary Information of the Disclosing Party and all documents or media containing any such Proprietary Information and any and all copies or extracts or derivatives thereof to the extent it is requested by either party in "
+ },
+ {
+  "doc": 129,
+  "hypothesis": "nda-17",
+  "chars": 10089,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment. \\\"the Material shall neither be copied, nor otherwise reproduced nor duplicated in whole or in part where such copying, reproduction or duplication have not been specifically authorized by the Consortium Agreement or otherwise approved in writing by the Steering Committee;\\\" (Section 2, paragraph b)\"}"
+ },
+ {
+  "doc": 433,
+  "hypothesis": "nda-7",
+  "chars": 10104,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"Each party agrees that at all times until termination or expiration of this Agreement it will hold in strict confidence and not disclose to any third party Confidential Information of the other, except as approved in writing by the other party to this Agreement, and will use the Confidential Information for no purpose other than evaluating or pursuing a business relationship with the other party to this Agreement.\\\"; \\\"Each party shall only permit access to Confidential Information of the other party to those of its employees or authorized representatives having a nee"
+ },
+ {
+  "doc": 41,
+  "hypothesis": "nda-7",
+  "chars": 10543,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment; \\\"The Contractor shall not, without the State’s prior written consent, copy, disclose, publish, release, transfer, disseminate, use, or allow access for any purpose or in any form, any Confidential Information except for the sole and exclusive purpose of performing under the Contract. The Contractor shall limit access to the Confidential Information to the Contractor’s Personnel who have a demonstrable need to know such Confidential Information in order to perform under the Contract and who are bound by confidentiality obligations at least as restrictive as those set for"
+ },
+ {
+  "doc": 41,
+  "hypothesis": "nda-17",
+  "chars": 10543,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"The Contractor shall not, without the State’s prior written consent, copy, disclose, publish, release, transfer, disseminate, use, or allow access for any purpose or in any form, any Confidential Information except for the sole and exclusive purpose of performing under the Contract.\\\"; \\\"Confidential Information includes, by way of example only, information that the Contractor views, takes notes from, copies (if the State agrees in writing to permit copying), possesses or is otherwise provided access to and use of by the State in relation to the Contract.\\\"\"}"
+ },
+ {
+  "doc": 46,
+  "hypothesis": "nda-17",
+  "chars": 10548,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n\\\"2.3 Return of Confidential Information. Promptly following the request of the Disclosing Party, the Receiving Party will deliver to the Disclosing Party all confidential information (and copies and extracts thereof) furnished to, or created by or on behalf of, the Receiving Party. Notwithstanding the return of the Confidential Information, the Receiving Party will continue to be bound by its obligations of confidentiality and other obligations hereunder.\\\" \\n\\\"3.9 Storage of Confidential Information. The Confidential Information must not be copied, reproduced, distribu"
+ },
+ {
+  "doc": 361,
+  "hypothesis": "nda-1",
+  "chars": 11657,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment. Quoting decisive clauses: \\\"For purposes of this Agreement, 'BCSI' shall mean: (i) all information designated as such by VELCO... Written information containing BCSI furnished by VELCO shall be labeled 'Confidential BCSI.'\\\"; \\\"For purposes of this Agreement, CEII shall mean: (i) all information designated as such by VELCO... Written information containing CEII that is furnished by VELCO shall be labeled 'Confidential CEII'.\\\"; \\\"For purposes of this agreement, CI shall mean any confidential, proprietary or trade secret information that is owned or controlled, or is spec"
+ },
+ {
+  "doc": 496,
+  "hypothesis": "nda-20",
+  "chars": 12651,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment. Quote: \\\"Receiving Party shall, at Disclosing Party's request, return all originals, copies, reproductions and summaries of Confidential Information and all other tangible materials and devices provided to the Receiving Party as Confidential Information, or at Disclosing Party's option, certify destruction of the same.\\\" (Section 2(e)); \\\"The Receiving Party shall be free to use for any purpose the residuals resulting from access to or work with the Confidential Information of the Disclosing Party, provided that the Receiving Party shall not disclose the Confidential Inf"
+ },
+ {
+  "doc": 555,
+  "hypothesis": "nda-19",
+  "chars": 13399,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"Promptly upon receipt of a written request by the Disclosing Party at any time (which will be effective if actually received or three days after mailed first class postage prepaid to the Receiving Party’s address herein), the Receiving Party will turn over to the Disclosing Party, or, at its sole discretion, destroy and certify to the Receiving party in writing the destruction of all Proprietary Information of the Disclosing Party and all documents or media containing any such Proprietary Information and any and all copies or extracts thereof; provided, however, the C"
+ },
+ {
+  "doc": 65,
+  "hypothesis": "nda-17",
+  "chars": 13725,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n\\\"3.3 The Receiving Party shall not make any copies, reproductions or abstracts of the Confidential Information of the Disclosing Party except as specifically may be required for the Permitted Purpose. All copies, reproductions and abstracts of the Confidential Information shall also be deemed to be Confidential Information of the Disclosing Party to the same extent as any originals.\\\"\"}"
+ },
+ {
+  "doc": 2,
+  "hypothesis": "nda-7",
+  "chars": 15297,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"Recipient will not disclose or permit access to Confidential Information to contract workers, consultants or contractors of Recipient or its Affiliates unless authorized by Disclosing Party in writing and on condition that such persons are bound by obligations of confidentiality inuring to the benefit of Disclosing Party and its Affiliates at least as restrictive as these terms and conditions.\\\" (Section 2) And: \\\"Recipient shall be entitled to retain one copy of the Confidential Information with its legal counsel or other appropriate corporate representative to evide"
+ },
+ {
+  "doc": 552,
+  "hypothesis": "nda-1",
+  "chars": 15556,
+  "verdict": "NotMentioned",
+  "answer": "{\"answer\":\"NotMentioned — Clause 1: \\\"'Confidential Information' shall mean the Purpose (including the contemplated transaction), identity of, and any discussions or negotiations between, the Parties, existence of this Agreement, and any and all information whether in oral, written, graphic or electronic form, including but not limited to, data, know‑how and any and all subject matter...\\\"; Clause 3: \\\"such Representatives shall be informed of the confidential and proprietary nature of the Confidential Information received and that such Representatives shall be bound by the terms hereof or sub"
+ },
+ {
+  "doc": 523,
+  "hypothesis": "nda-19",
+  "chars": 16383,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"The terms of this section “Confidentiality of Evaluation Materials” shall remain in effect for 2 years from the effective date of this agreement.\\\"; \\\"The terms of this section “Use of Evaluation Materials” shall remain in effect for 2 years from the effective date of this agreement.\\\"; \\\"The terms of this section “Non-Disclosure” shall remain in effect for 2 years from the effective date of this agreement.\\\"; \\\"You agree that until two years from the date of this agreement, without the prior approval of the Board of Directors of the Company, neither you nor any of yo"
+ },
+ {
+  "doc": 1,
+  "hypothesis": "nda-1",
+  "chars": 16632,
+  "verdict": "NotMentioned",
+  "answer": "{\"answer\":\"NotMentioned\"}"
+ },
+ {
+  "doc": 62,
+  "hypothesis": "nda-7",
+  "chars": 16684,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — 'If the Receiving Party is a company, the Receiving Party may disclose Confidential Information (i) to the Receiving Party's directors, officers and employees (collectively, \\\"Representatives\\\"), in each case only to the extent reasonably necessary for the Receiving Party's internal use and only after informing each Representative of the restrictions in this Agreement on the disclosure and use of the Confidential Information and that he or she must comply with such restrictions, and (ii) to any other person or entity only with the Disclosing Parties' prior written conse"
+ },
+ {
+  "doc": 564,
+  "hypothesis": "nda-17",
+  "chars": 19913,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment. Quote(s): Clause 2: \\\"Neither Investor nor any of its Representatives shall, directly or indirectly, ... (y) reproduce or otherwise copy any Evaluation Material except in connection with the Transaction, ...\\\"; Clause 6: \\\"(i) reasonably promptly redeliver to the Company or, at the at Investor’s option, destroy all copies (including permanently erasing or deleting any electronic copies) of the Evaluation Material in the possession or control of Investor or any of its Representatives and (ii) reasonably promptly destroy all analyses, notes, data, compilations, summaries, "
+ },
+ {
+  "doc": 565,
+  "hypothesis": "nda-4",
+  "chars": 20047,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — Clause 3(a): \\\"All Evaluation Material (i) shall be used solely for the purpose of evaluating and considering the Transaction; (ii) shall be kept strictly confidential by the Receiving Party; and (iii) shall be provided by the Receiving Party solely to those of its Representatives to whom disclosure is reasonably required to facilitate the Receiving Party's evaluation or consideration of the Transaction, it being the intention of the Parties to restrict the dissemination of Evaluation Material to as small a working group as practicable.\\\"\"}"
+ },
+ {
+  "doc": 565,
+  "hypothesis": "nda-20",
+  "chars": 20047,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\",\"quotes\":\"Clause 3(g): \\\"Notwithstanding any other provision of this Agreement, neither Party will be restricted from using the information contained in the Evaluation Material that is retained in the minds of Representatives who have had access to the other Party's Evaluation Material, unless such use shall infringe on any of such Party's patent rights, trademark rights or copyright rights.\\\"; Clause 6 (last sentence): \\\"Notwithstanding the return, destruction or erasure of Evaluation Material hereunder, the Receiving Party and its Representatives shall continue to be b"
+ },
+ {
+  "doc": 606,
+  "hypothesis": "nda-4",
+  "chars": 23027,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\",\"quote\":\"The Receiving Party: (a) shall take all reasonable steps (defined below) to keep all Confidential Information strictly confidential; (b) shall not disclose or reveal any Confidential Information to any person other than its Representatives who are actively and directly participating in the Evaluation or who otherwise need to know the Confidential Information for the purpose of the Evaluation; (c) shall not use Confidential Information for any purpose other than in connection with the Evaluation.\"}"
+ },
+ {
+  "doc": 537,
+  "hypothesis": "nda-1",
+  "chars": 23747,
+  "verdict": "NotMentioned",
+  "answer": "{\"answer\":\"NotMentioned\\n\\\"1. Confidential Information; Representatives. (a) The Receiving Party is considering a possible business combination transaction ... and, in order to assist the Receiving Party in evaluating the possible Transaction, the Company is prepared to make available to the Receiving Party certain information concerning the business, operations, strategy and prospects of the Company (all such information, the “Confidential Information”). ... (b) The term “Confidential Information” shall include, without limitation, any and all information concerning the Company and its busine"
+ },
+ {
+  "doc": 68,
+  "hypothesis": "nda-7",
+  "chars": 25167,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment\\n\\\"1(g) \\\\\\\"Representatives\\\\\\\" means, in respect of a party, such party’s agents, directors, officers, employees, representatives, consultants and advisers (including legal counsel);\\\"\\n\\n\\\"4. The Recipient may disclose Confidential Information only to the limited group of the Recipient's Representatives, who are actually engaged in and need to know the Confidential Information for the Permitted Purpose, who have been informed of the confidential nature of the Confidential Information, and who agree to keep such information confidential and not use such Confidential Info"
+ },
+ {
+  "doc": 521,
+  "hypothesis": "nda-4",
+  "chars": 40554,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — \\\"The Receiving Party hereby agrees that the Receiving Party and the Receiving Party’s Representatives will use Confidential Information of the Disclosing Party solely for the purpose of evaluating and negotiating a Possible Transaction with the Disclosing Party and for no other purpose.\\\" (Section 3(a))\"}"
+ },
+ {
+  "doc": 58,
+  "hypothesis": "nda-7",
+  "chars": 41779,
+  "verdict": "Entailment",
+  "answer": "{\"answer\":\"Entailment — §2(a): \\\"Recipient shall receive all Information in strict confidence, shall exercise reasonable care to maintain the confidentiality and secrecy of the Information, and, except to the extent expressly permitted by this Non-Disclosure Agreement, shall not divulge Information to any third party without the prior written consent of Disclosing Party. The foregoing notwithstanding, Recipient may disclose Information to its Representatives to the extent each such Representative has a need to know such Information for the Purpose contemplated by this Non-Disclosure Agreement "
+ },
+ {
+  "doc": 446,
+  "hypothesis": "nda-7",
+  "chars": 1606,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction - \\\"____________________ , agrees that, in consideration for being shown or told about certain trade secrets or property belonging to Navidec, Incorporated, ____________________, shall not disclose or cause to be disclosed, disseminated or distributed any information concerning said trade secret or property to any person, entity, business or other individual or company without the prior written permission of Navidec, Incorporated.\\\" \\\"Further, ___________________ , agrees not to use, either directly or indirectly any of the material, ideas, objects or portions thereof "
+ },
+ {
+  "doc": 446,
+  "hypothesis": "nda-2",
+  "chars": 1606,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"____________________ , agrees that, in consideration for being shown or told about certain trade secrets or property belonging to Navidec, Incorporated, ____________________, shall not disclose or cause to be disclosed, disseminated or distributed any information concerning said trade secret or property to any person, entity, business or other individual or company without the prior written permission of Navidec, Incorporated.\\n\\nFurther, ___________________ , agrees not to use, either directly or indirectly any of the material, ideas, objects or portions thereof of"
+ },
+ {
+  "doc": 446,
+  "hypothesis": "nda-5",
+  "chars": 1606,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"____________________ , agrees that, in consideration for being shown or told about certain trade secrets or property belonging to Navidec, Incorporated, ____________________, shall not disclose or cause to be disclosed, disseminated or distributed any information concerning said trade secret or property to any person, entity, business or other individual or company without the prior written permission of Navidec, Incorporated.\\\" \\\"Further, ___________________ , agrees not to use, either directly or indirectly any of the material, ideas, objects or portions thereof "
+ },
+ {
+  "doc": 4,
+  "hypothesis": "nda-20",
+  "chars": 2405,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The Recipient will, on request from the Discloser, return all copies and records of the Confidential Information to the Discloser and will not retain any copies or records of the Confidential Information.\\\" (Clause 6)\"}"
+ },
+ {
+  "doc": 40,
+  "hypothesis": "nda-2",
+  "chars": 2892,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"“Confidential Information” means any information disclosed to the Contractor by the CAO or the House, including, but not limited to: (a) security practices, operational information, business plans, customer data, customer lists, customer names, designs, documents, drawings, engineering information, hardware configuration information, processes, products, product plans, research, services, specifications, software, source code and trade secrets; and (b) any other information designated (orally or in writing) as “confidential,” “proprietary” or of such nature t"
+ },
+ {
+  "doc": 40,
+  "hypothesis": "nda-1",
+  "chars": 2892,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"'Confidential Information' means any information disclosed to the Contractor by the CAO or the House, including, but not limited to: (a) security practices, operational information, business plans, customer data, customer lists, customer names, designs, documents, drawings, engineering information, hardware configuration information, processes, products, product plans, research, services, specifications, software, source code and trade secrets; and (b) any other information designated (orally or in writing) as 'confidential,' 'proprietary' or of such nature that a "
+ },
+ {
+  "doc": 77,
+  "hypothesis": "nda-1",
+  "chars": 3244,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; see clause 2: \\\"Every contract party can disclose confidential information to the other contract party orally or in writing. If the disclosure is in writing, the disclosing party will mark the confidential documents with the additional terms 'Confidential' or 'Liable to Secrecy' so that it is apparent to the other party which information is especially in need to protection.\\\"\"}"
+ },
+ {
+  "doc": 225,
+  "hypothesis": "nda-2",
+  "chars": 3456,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — 2.2. Consists of any of the commercial secrets of the other party; or 2.3 Consists of any other information of a confidential nature belonging to, or connected with, the other party and its activities and clients, and designated by such party as confidential;\"}"
+ },
+ {
+  "doc": 225,
+  "hypothesis": "nda-1",
+  "chars": 3456,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"2.2. Consists of any of the commercial secrets of the other party; or\\\" and \\\"2.3 Consists of any other information of a confidential nature belonging to, or connected with, the other party and its activities and clients, and designated by such party as confidential;\\\"\"}"
+ },
+ {
+  "doc": 57,
+  "hypothesis": "nda-1",
+  "chars": 4008,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"'confidential information' means any information disclosed by one party to the other party in connection with the purpose, which is of a confidential nature irrespective of whether it is marked as such.\\\" (Definitions)\"}"
+ },
+ {
+  "doc": 47,
+  "hypothesis": "nda-2",
+  "chars": 4116,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"clauses\":\"(a) That any information provided on any business is sensitive and confidential, and that its disclosure to others may be damaging to the businesses and their owners.\\n(b) Not to disclose, for a period of three years from the date I/we sign this Non-Disclosure Agreement, any information regarding these businesses to any other person who has not also signed this Agreement, except to secure the advise and recommendations of my business advisors (accountants, attorneys, etc.) \\\"Information\\\" as used in this Agreement shall include the fact that the businesses "
+ },
+ {
+  "doc": 289,
+  "hypothesis": "nda-20",
+  "chars": 4417,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Upon the termination of the business relationship or upon request, whichever is sooner, each party shall return all of the other's Confidential Information, certifying destruction of any copies or partial copies made.\\\" \\\"The obligation of confidentiality shall extend to three years from and including the date of return of the Confidential Information and certification of destruction of any copies made.\\\"\"}"
+ },
+ {
+  "doc": 301,
+  "hypothesis": "nda-7",
+  "chars": 4733,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clauses 2.1.1 and 2.1.3: \\\"2.1.1 Receive and keep the Confidential Information secret and confidential and not disclose such Confidential Information to any third party;\\\" \\\"2.1.3 Not disclose the Confidential Information to any other person without the Discloser’s written consent.\\\"\"}"
+ },
+ {
+  "doc": 301,
+  "hypothesis": "nda-20",
+  "chars": 4733,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; clause 4.1.1: \\\"The Recipient will, on request from the Discloser, return all copies and records of the Confidential Information to the Discloser and will not retain any copies or records of the Confidential Information\\\"; clause 4.1.2: \\\"The Recipient shall make no further use of the Confidential Information.\\\"\"}"
+ },
+ {
+  "doc": 310,
+  "hypothesis": "nda-2",
+  "chars": 4853,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"1. Definition of Sensitive Information. For purposes of this Agreement, 'Sensitive Information' shall include all information or material that • has or could have commercial value or other utility in the business in which Disclosing Party is engaged • might lead to the security of the Disclosing Party’s physical or information assets or the safety of its staff and customers being compromised.\\\"\"}"
+ },
+ {
+  "doc": 310,
+  "hypothesis": "nda-20",
+  "chars": 4853,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Receiving Party shall return to Disclosing Party any and all records, notes, and other written, printed, or tangible materials in its possession pertaining to Sensitive Information within a reasonable time period if Disclosing Party requests it in writing.\\\" (Clause 3)\"}"
+ },
+ {
+  "doc": 357,
+  "hypothesis": "nda-2",
+  "chars": 4957,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Confidential Information is defined as any information, whether written or verbal...\\\"; \\\"Such Confidential Information may include, but is not limited to, business plans, forecasts, content, processes, projections or analysis, software, hardware, product, or system designs, specifications, documentation, code, structure, or protocols.\\\"\"}"
+ },
+ {
+  "doc": 357,
+  "hypothesis": "nda-1",
+  "chars": 4957,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"...at the time of disclosure, marked as being Confidential or Proprietary, or is reasonably identifiable as confidential, proprietary information of the Disclosing Party...\\\"; \\\"Confidential Information that is disclosed verbally will also be included as proprietary.\\\"\"}"
+ },
+ {
+  "doc": 600,
+  "hypothesis": "nda-2",
+  "chars": 5048,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 6: 'Other than the information set out in the data card and agreed to by the parties, ListFusion, its employees, officers and trustees agree not to divulge or disseminate to any person or entity any confidential information about Raphael, including but not limited to personal and financial information, that may arise out of the discharge of their responsibilities as set out herein. Additionally, ListFusion. agrees not to copy, reprint or disseminate the publications, or any information concerning the publication including the articles, graphics or contents wit"
+ },
+ {
+  "doc": 600,
+  "hypothesis": "nda-7",
+  "chars": 5048,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"2. ListFusion agrees that this Agreement grants only limited rights to use the List for the sole purpose of loading the List into ListFusion's proprietary database system. The List will not be reproduced, transferred, or conveyed to any 3rd party without prior written authorization by Raphael.\\\"; \\\"4. The List will be stored exclusively on ListFusion's secure servers. ListFusion will not use any 3rd party agents, vendors, or other providers to process the List without the written authorization by Raphael.\\\"; \\\"6. Other than the information set out in the data card "
+ },
+ {
+  "doc": 600,
+  "hypothesis": "nda-20",
+  "chars": 5048,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"7. Raphael my at any time request the List be completely destroyed, scratched, and purged from all media, including electronic storage, disk, tape, and printed documents.\\n8. ListFusion reserves the right to discontinue services immediately if payment for services is not received when due or with 30 days prior written notice. In the event ListFusion discontinues services, the List will be returned to Raphael and then completely destroyed, scratched, and purged from all media, including electronic storage, disk, tape, and printed documents in possession of Lis"
+ },
+ {
+  "doc": 117,
+  "hypothesis": "nda-2",
+  "chars": 5099,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction: \\\"For purposes of this Agreement, 'Confidential Information' shall mean any and all non-public information, including, without limitation, technical, developmental, marketing, sales, operating, performance, cost, know-how, business plans, business methods, and process information, disclosed to the Recipient.\\\" (Clause 1)\"}"
+ },
+ {
+  "doc": 117,
+  "hypothesis": "nda-1",
+  "chars": 5099,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"For purposes of this Agreement, 'Confidential Information' shall mean any and all non-public information, including, without limitation, technical, developmental, marketing, sales, operating, performance, cost, know-how, business plans, business methods, and process information, disclosed to the Recipient.\\\" and \\\"For convenience, the Disclosing Party may, but is not required to, mark written Confidential Information with the legend 'Confidential' or an equivalent designation.\\\"\"}"
+ },
+ {
+  "doc": 60,
+  "hypothesis": "nda-2",
+  "chars": 5179,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 1: \\\"Confidential Information\\\" means any and all confidential and/or proprietary information disclosed by the Casino to the Receiving Party, which may include without limitation: financial information, business information, marketing data, trade secrets, and other data, materials, products, plans, specifications, reports, manuals, computer software or programs, contractual relationships and other similar information delivered in any form or media.\"}"
+ },
+ {
+  "doc": 60,
+  "hypothesis": "nda-20",
+  "chars": 5179,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Upon the request of Casino, Receiving Party shall immediately return all Confidential Information received in written or tangible form, including all notes, copies, or media containing such Confidential Information. Alternatively, Casino may direct Receiving Party to destroy such Confidential Information, in which case Receiving Party shall confirm such destruction in writing within twenty (20) days thereafter.\\\" (Clause 6)\"}"
+ },
+ {
+  "doc": 452,
+  "hypothesis": "nda-2",
+  "chars": 5240,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"Pursuant to the Agreement to which this Exhibit B is annexed, Company may be disclosing to Independent Contractor certain confidential business plans, development plans, reports, financial information, design documents, specifications, programmer notes, software (its own and/or third party), and/or other information, whether or not so identified (together with any notes, analyses, compilations, studies, or other documents that are based upon, contain, or otherwise reflect such information, the \\\"Confidential Information,\\\" which shall include this Agreement)."
+ },
+ {
+  "doc": 452,
+  "hypothesis": "nda-1",
+  "chars": 5240,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"Pursuant to the Agreement to which this Exhibit B is annexed, Company may be disclosing to Independent Contractor certain confidential business plans, development plans, reports, financial information, design documents, specifications, programmer notes, software (its own and/or third party), and/or other information, whether or not so identified (together with any notes, analyses, compilations, studies, or other documents that are based upon, contain, or otherwise reflect such information, the \\\\\\\"Confidential Information,\\\\\\\" which shall include this Agreement).\\\"\""
+ },
+ {
+  "doc": 452,
+  "hypothesis": "nda-7",
+  "chars": 5240,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\nQuoted clauses:\\n1. Independent Contractor shall use the Confidential Information solely for the purpose of performing the Services specified in the applicable SOW and not for any other purpose. Except to the extent permitted by Section 3 below, Independent Contractor will not disclose the Confidential Information, in whole or in part, to any other party.\\n\\n3. In the event that Independent Contractor is required by law or by interrogatories, requests for information or documents, subpoena, Civil Investigative Demand, or similar process to disclose any information s"
+ },
+ {
+  "doc": 48,
+  "hypothesis": "nda-2",
+  "chars": 5292,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Clause 1: \\\"For purposes of this Agreement, 'Confidential Information' shall include all information or material that has or could have commercial value or other utility in the business in which Disclosing Party is engaged.\\\"\"}"
+ },
+ {
+  "doc": 127,
+  "hypothesis": "nda-2",
+  "chars": 5578,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"Clause 3 - DEFINITIONS AND INTERPRETATIONS: \\\\\\\"Confidential Information\\\\\\\" of a disclosing party (\\\\\\\"Discloser\\\\\\\") means the following, regardless of its form and including copies made by the receiving party (\\\\\\\"Recipient\\\\\\\"), whether the Recipient becomes aware of it before or after the date of this Agreement:\\\\n all information treated by the Discloser as confidential; and\\\\n disclosed by the Discloser to the Recipient or of which the Recipient becomes aware, including but not limited to, the information specified in Schedule 1;\\\" \\n\\\"Schedule 1 (Clause 7)"
+ },
+ {
+  "doc": 321,
+  "hypothesis": "nda-2",
+  "chars": 5740,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"For purposes of this Agreement, \\\\\\\"Confidential Information\\\\\\\" shall mean any and all non-public information, including, without limitation, technical, developmental, marketing, sales, operating, performance, cost, know-how, business plans, business methods, and process information, disclosed to the Recipient.\\\"\"}"
+ },
+ {
+  "doc": 321,
+  "hypothesis": "nda-1",
+  "chars": 5740,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"For convenience, the Disclosing Party may, but is not required to, mark written Confidential Information with the legend \\\"Confidential\\\" or an equivalent designation.\"}"
+ },
+ {
+  "doc": 321,
+  "hypothesis": "nda-20",
+  "chars": 5740,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"clauses\":\"Recipient shall not make any copies of Disclosing Party’s Confidential Information except as needed for the Business Purpose. At the request of Disclosing Party, Recipient shall return to Disclosing Party all Confidential Information of Disclosing Party (including any copies thereof) or certify the destruction thereof.\"}"
+ },
+ {
+  "doc": 157,
+  "hypothesis": "nda-2",
+  "chars": 5810,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction - Clause 1: \\\"For purposes of this Agreement, 'Confidential Information' shall mean information disclosed by the disclosing party (the 'Disclosing Party') to the receiving party (the 'Receiving Party') which relates to product plans, designs, costs, prices and names, finances, marketing plans, business opportunities, research, development, know-how, or personnel, including confidential information disclosed by third parties and information relating to any type of technology;\\\"\"}"
+ },
+ {
+  "doc": 157,
+  "hypothesis": "nda-20",
+  "chars": 5810,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction \\\"6. Return of Confidential Information. The Receiving Party shall immediately return to the Disclosing Party all written Confidential Information of the Disclosing Party and any and all records, notes and other written, printed or tangible materials pertaining to such Confidential Information upon receipt of a written request from the Disclosing Party. At the same time, the Receiving Party shall delete all copies of such records, notes and materials which are stored on its electronic memory devices.\\\"\"}"
+ },
+ {
+  "doc": 84,
+  "hypothesis": "nda-2",
+  "chars": 5939,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Clause 2.1 defines Confidential Information as: \\\"2.1 Confidential Information shall mean: i) all technical, financial and business information disclosed by one Party to the other Party or by another Haldex Group entity to the Supplier including, but not limited to, documents, data, information, prototypes or components relating to devices, methods, materials, apparatus, designs, research, yields and specifications; and ii) information relating to the existence of this Agreement;\\\"\"}"
+ },
+ {
+  "doc": 228,
+  "hypothesis": "nda-7",
+  "chars": 5947,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Clause 2: \\\"Recipient shall hold the Confidential Information in strict confidence and shall take all reasonable and prudent precautions to prevent the Confidential Information from reaching third parties. Recipient shall use the Confidential Information exclusively for HySafe purposes, especially to advice the Governing Board of HySafe.\\\" Clause 3: \\\"Recipient's obligations under this agreement shall not apply to any information which Recipient can document beyond any reasonable doubt was available to the public or known to or developed by the Recipient prior to the "
+ },
+ {
+  "doc": 413,
+  "hypothesis": "nda-7",
+  "chars": 6087,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The receiving party shall not disclose Confidential Information to any third party without the prior written approval of the disclosing party.\\\" (OBLIGATIONS OF RECEIVING PARTY)\"}"
+ },
+ {
+  "doc": 413,
+  "hypothesis": "nda-3",
+  "chars": 6087,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The confidential, proprietary and trade secret information of the disclosing party (hereinafter \\\\\\\"Confidential Information\\\\\\\") provided hereunder, is that information described in the Confidential Information Transmittal Record (CITR) form executed from time to time hereafter.\\\" \\\"All Confidential Information received from the disclosing party shall be in tangible form.\\\"\"}"
+ },
+ {
+  "doc": 413,
+  "hypothesis": "nda-2",
+  "chars": 6087,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The confidential, proprietary and trade secret information of the disclosing party (hereinafter \\\\\\\"Confidential Information\\\\\\\") provided hereunder, is that information described in the Confidential Information Transmittal Record (CITR) form executed from time to time hereafter.\\\" \\\"All information described in a CITR and marked with a \\\\\\\"confidential,\\\\\\\" \\\\\\\"proprietary,\\\\\\\" or similar legend shall be deemed Confidential Information.\\\"\"}"
+ },
+ {
+  "doc": 138,
+  "hypothesis": "nda-17",
+  "chars": 6143,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"(iv) not to copy or reverse engineer any such Proprietary Information.\\\" (Operative provision 1); also clause 3 limits any copies by requiring return or destruction: \\\"Immediately upon the written request by the Disclosing Party at any time, the Receiving Party will return to the Disclosing Party all Proprietary Information and all documents or media containing any such Proprietary Information and any and all copies or extracts thereof, save that where such Proprietary Information is a form incapable of return or has been copied or transcribed into another document"
+ },
+ {
+  "doc": 138,
+  "hypothesis": "nda-20",
+  "chars": 6143,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"3. Immediately upon the written request by the Disclosing Party at any time, the Receiving Party will return to the Disclosing Party all Proprietary Information and all documents or media containing any such Proprietary Information and any and all copies or extracts thereof, save that where such Proprietary Information is a form incapable of return or has been copied or transcribed into another document, it shall be destroyed or erased, as appropriate.\\\"\"}"
+ },
+ {
+  "doc": 18,
+  "hypothesis": "nda-2",
+  "chars": 6225,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; \\\"I acknowledge that The Business Partnership has provided, and/or has agreed to provide in the future, to me information of a confidential or proprietary nature (the Confidential Information)\\\"; \\\"Confidential Information shall mean any information or data relating to any clients of The Business Partnership business or affairs disclosed whether in writing, orally or by any other means.\\\"\"}"
+ },
+ {
+  "doc": 18,
+  "hypothesis": "nda-17",
+  "chars": 6225,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"I agree that in respect of the Confidential Information received from The Business Partnership I will: Treat it as confidential and make no copies thereof not disclose it to any third party without the prior written consent of The Business Partnership and use it solely for the purpose as agreed between parties\\\"; \\\"I further acknowledge that all documents and other material things embodying any of the Confidential Information which is received under this agreement shall remain the property of the supplying party (or other owner thereof) and I shall hold them as bai"
+ },
+ {
+  "doc": 67,
+  "hypothesis": "nda-20",
+  "chars": 6425,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Clause 3: \\\"All information provided by the Disclosing Party shall remain the property of the Disclosing Party. Receiving Party agrees to return all Confidential Information to Disclosing Party within 15 days of written demand by Disclosing Party. When the Receiving Party has finished reviewing the information provided by the Disclosing Party and has made a decision as to whether or not to work with the Disclosing Party, Receiving Party shall return all information to the Disclosing Party without retaining any copies.\\\"\"}"
+ },
+ {
+  "doc": 67,
+  "hypothesis": "nda-7",
+  "chars": 6425,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"(d) Not, directly or indirectly, make known, divulge, publish or communicate the Confidential Information to any person, firm or corporation without the express written consent of Disclosing Party;\\\"\\n\\\"(e) Limit the internal dissemination of the Confidential Information and the internal disclosure of the Confidential Information received from the Disclosing Party to those officers and employees, if any, of the Receiving Party who have a need to know and an obligation to protect it;\\\"\"}"
+ },
+ {
+  "doc": 67,
+  "hypothesis": "nda-2",
+  "chars": 6425,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"1.1 ‘Invention’ ... shall mean all information relating to products, applications, systems, components, technologies and business topics. Including but not limited to prototypes, drawings, data, trade secrets and intellectual property relating to the ‘Patent Pending’ invention named Pipeline Piranha.\\\" \\\"1.2 ‘Confidential Information’ shall mean all information provided by Disclosing Party with respect to the Invention regardless of whether it is written, oral, audio tapes, video tapes, computer discs, machines, prototypes, designs, specifications, articles of manu"
+ },
+ {
+  "doc": 83,
+  "hypothesis": "nda-20",
+  "chars": 6686,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; \\\"Upon the written request of Minnesota Power, the Customer shall return to Minnesota Power all documentation and electronic media containing Information and shall provide written certification that copies of all Information have been destroyed or returned.\\\" (Clause 6)\"}"
+ },
+ {
+  "doc": 99,
+  "hypothesis": "nda-2",
+  "chars": 6913,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"1. The Receiving Party agrees to treat all information provided by the Providing Party in connection with the Business Under Discussion to the Receiving Partner and/or any of its partners, directors, officers, employees, affiliates, insurers, agents, advisors or auditors (the “Representatives”), regardless of the manner in which it is so furnished, together with any analyses, compilations, data, studies or other documents or records, whether of an oral, written or electronically retrievable nature (collectively the “Information”), as strictly confidential.\"}"
+ },
+ {
+  "doc": 99,
+  "hypothesis": "nda-1",
+  "chars": 6913,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"1. The Receiving Party agrees to treat all information provided by the Providing Party in connection with the Business Under Discussion to the Receiving Partner and/or any of its partners, directors, officers, employees, affiliates, insurers, agents, advisors or auditors (the \\\"Representatives\\\"), regardless of the manner in which it is so furnished, together with any analyses, compilations, data, studies or other documents or records, whether of an oral, written or electronically retrievable nature (collectively the \\\"Information\\\"), as strictly confidential"
+ },
+ {
+  "doc": 543,
+  "hypothesis": "nda-2",
+  "chars": 7276,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 543,
+  "hypothesis": "nda-4",
+  "chars": 7276,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"(c) use such Confidential Information only to the extent required to accomplish the Purpose;\\\" and \\\"Subject to Recipient’s obligations of non-disclosure, Recipient shall be free to use the residuals resulting from the use or access to the Confidential Information of Discloser. The term 'residuals' means information in intangible form which is retained in the unaided memory of persons who have had access to the Confidential Information, without reference to such information in tangible or fixed form.\\\"\"}"
+ },
+ {
+  "doc": 543,
+  "hypothesis": "nda-1",
+  "chars": 7276,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction: \\\"Subject to the limitations set forth in Section 2, all information (including but not limited to ideas, techniques, works of authorship, models, inventions, know-how, processes, equipment, algorithms, software source documents and formulae related to the current, future, and proposed products and services of each of the parties and information concerning research, development, financial information, procurement requirements, purchasing, manufacturing, customer lists, business forecasts, sales and merchandising, and marketing plans), disclosed by one party (the \\\\\\\"D"
+ },
+ {
+  "doc": 66,
+  "hypothesis": "nda-2",
+  "chars": 7370,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"clauses\":\"WHEREAS: \\\"WHEREAS, during the performance of this Purchasing Frame Contract, it will become necessary for the Parties hereto to disclose to each other certain technical, financial or business information of a proprietary or confidential nature, hereinafter referred to as “Proprietary Information”;\\\"; Clause 1: \\\"1. As used in this Agreement the term \\\"Proprietary Information\\\" shall mean any information or data disclosed by any Party to the other, pursuant to this Agreement, either in writing or orally, subject to the conditions set forth hereafter, and in"
+ },
+ {
+  "doc": 497,
+  "hypothesis": "nda-20",
+  "chars": 7483,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"a. The receiving party shall protect all of the disclosing party's Proprietary Information as confidential information and, except with the prior written consent of the disclosing party or as otherwise specifically provided herein, shall. not disclose, copy or distribute such Proprietary Information to any other individual, corporation or entity for a period of three (3) years from the date of disclosure.\\\"; \\\"f. Any documents or materials that are furnished by or on behalf of the disclosing party, and all other Proprietary Information in whatever form, including d"
+ },
+ {
+  "doc": 497,
+  "hypothesis": "nda-2",
+  "chars": 7483,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"For purposes of this Agreement, \\\\\\\"Proprietary Information\\\\\\\" shall mean written, documentary or oral information of any kind disclosed by Cyberlux or ICT to the other and designated as proprietary information, including, but not limited to, (a) information of a business, planning, marketing or technical nature, (b) models, tools, hardware and software, and (c) any documents, reports, memoranda, notes, files or analyses prepared by or on behalf of the receiving party that contain, summarize or are based upon any Proprietary Information.\\\"\"}"
+ },
+ {
+  "doc": 471,
+  "hypothesis": "nda-20",
+  "chars": 7562,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; clause 4: \\\"All CONFIDENTIAL INFORMATION will remain the property of the disclosing Party and, upon request of the disclosing Party, the receiving Party shall promptly return to the disclosing Party all CONFIDENTIAL INFORMATION, or any part or reproduction thereof.\\\"\"}"
+ },
+ {
+  "doc": 471,
+  "hypothesis": "nda-7",
+  "chars": 7562,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; \\\"(c) make no disclosures of any CONFIDENTIAL INFORMATION to any party other than officers and employees of a Party to this IRA;\\\" and \\\"(d) limit access to CONFIDENTIAL INFORMATION to those officers and employees having a reasonable need for such INFORMATION and being boUnd by a written obligation to maintain the confidentiality of such INFORMATION;\\\"\"}"
+ },
+ {
+  "doc": 471,
+  "hypothesis": "nda-2",
+  "chars": 7562,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 1: \\\"CONFIDENTIAL INFORMATION\\\" as used in this Agreement means all technical or business information disclosed by one of the Parties to another pursuant to the JRA that is identified at the time of disclosure or within thirty (30) days thereafter as being confidential and proprietary.\"}"
+ },
+ {
+  "doc": 451,
+  "hypothesis": "nda-2",
+  "chars": 7718,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 451,
+  "hypothesis": "nda-1",
+  "chars": 7718,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"\\\"Confidential Information may be disclosed in oral/verbal or tangible form. Discloser shall mark all Confidential Information disclosed in tangible form with a restrictive legend.\\\"\"}"
+ },
+ {
+  "doc": 451,
+  "hypothesis": "nda-4",
+  "chars": 7718,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Section 4: \\\"Recipient may use the Confidential Information solely for evaluation purposes in connection with Recipient business discussions with Discloser.\\\" Section 6: \\\"Notwithstanding anything to the contrary, Recipient shall be free to use for any purposes the Residuals resulting from access to or work with Discloser's Confidential Information.\\\"\"}"
+ },
+ {
+  "doc": 22,
+  "hypothesis": "nda-7",
+  "chars": 7808,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"Clause 2\\na) that it shall treat the Confidential Information directly or indirectly disclosed to it by the Disclosing Party as strictly confidential and will not without obtaining the prior written consent of the Disclosing Party disclose any part of the Confidential Information to any third party, except where compelled by law or regulation;\\\"\\n\\\"Clause 2\\nc) that it shall give access to the Confidential Information only,to those of its employees who need access to the Confidential Information for LOA purposes and will ensure that such employees adhere to the obli"
+ },
+ {
+  "doc": 429,
+  "hypothesis": "nda-7",
+  "chars": 7971,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"Section 2: The receiving party will not disclose any of the disclosing party's Confidential Information to any employees or to any third parties except to the receiving party's employees, parent company and majority-owned subsidiaries who have a need to know and who agree to abide by nondisclosure terms at least as comprehensive as those set forth herein: provided that the receiving party will be liable for breach by any such entity.\"}"
+ },
+ {
+  "doc": 213,
+  "hypothesis": "nda-1",
+  "chars": 8174,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 493,
+  "hypothesis": "nda-2",
+  "chars": 8193,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. \\\"1. For all purposes of this agreement, the following definitions shall apply: A. 'Confidential Information' of a party shall mean any trade secrets, know-how, inventions, products, designs, methods, techniques, systems, processes, software programs, works of authorship, business plans, customer lists, projects, plans, pricing, proposals and any other information which a party discloses to the Recipient Party... Confidential Information shall also include the terms of this agreement, the fact that the information is being made available to the parties hereunder and t"
+ },
+ {
+  "doc": 493,
+  "hypothesis": "nda-20",
+  "chars": 8193,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"Clause 5: \\\"Upon the written request of the Disclosing Party with respect to any Confidential Information disclosed by it hereunder, the Recipient Party shall return to the Disclosing Party any or all of such information and all copies, contracts or other reproductions in whole or in part thereof or, with the written permission of such Disclosing Party, effect the destruction of all of same and certify such destruction in writing to the Disclosing Party.\\\" Clause 2.D: \\\"Not copy or otherwise duplicate such Confidential Information, or knowingly allow anyone e"
+ },
+ {
+  "doc": 181,
+  "hypothesis": "nda-2",
+  "chars": 8248,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"Recital (A): \\\"The parties wish to enter into business discussions and pursuant thereto each of the parties wish to disclose confidential information to the other party hereto about their own intellectual property, business affairs and methods of work.\\\"; Clause 1: “Confidential Information” shall mean all information in whatever form, whether imparted orally or in writing or by other medium including all copies of the same which one party hereto discloses to the other pursuant to the Purpose.\"}"
+ },
+ {
+  "doc": 181,
+  "hypothesis": "nda-20",
+  "chars": 8248,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Each party shall forthwith upon request by the other return to the other all Confidential Information (including, without limitation, all summaries, copies and excerpts of Confidential Information), and other information, given to it by the other and shall expunge and destroy all Confidential Information from any equipment or other device in its possession or control. Furthermore, the receiving party shall destroy all copies of analyses, compilations, studies or other documents or derivative works which contain any Confidential Information. Each party shall on requ"
+ },
+ {
+  "doc": 181,
+  "hypothesis": "nda-7",
+  "chars": 8248,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Clauses: \\\"2.1.1. to keep the Confidential Information of the other strictly confidential and not copy, supply or make the same available to any person other than as permitted in Clauses 2.1.2 and 2.1.3 below;\\\" \\\"2.1.3. not to disclose any Confidential Information to any person or entity other than to such of its employees who need to know for the Purpose (\\\\\\\"Permitted Disclosees\\\\\\\"), provided that the Receiving Party shall ensure that its Permitted Disclosees keep all Confidential Information confidential and only use it on the terms of this Agreement, as if such "
+ },
+ {
+  "doc": 76,
+  "hypothesis": "nda-2",
+  "chars": 8351,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; see clause 1.4: \\\"Confidential Information means any data or information that is proprietary to the Discloser relating to each party’s respective business or affairs (including, but not limited to, current and future products, designs, business plans, operations, know-how, technologies, customers, employees, procurement, contracts, research and development, manufacturing processes and plans, marketing strategies, financial information, intellectual property, and related information) disclosed to Recipient after the effective date of this agreement by the Discloser or "
+ },
+ {
+  "doc": 26,
+  "hypothesis": "nda-2",
+  "chars": 8418,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\n\\\"Contemplate one or more meetings and various communications that will involve the disclosure by one of the parties [DISCLOSING PARTY] to the other party [RECEIVING PARTY] of technical, business, marketing, planning, pricing and other information and data, in written, oral, electronic, magnetic, photographic and/or other forms, including information and data regarding Internet-based transport solutions (Collectively CONFIDENTIAL INFORMATION).\\\"\\n\\n\\\"1. CONFIDENTIAL INFORMATION: AG Projects products and services.\\\"\"}"
+ },
+ {
+  "doc": 387,
+  "hypothesis": "nda-2",
+  "chars": 8580,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"(ii) \\\\\\\"Information\\\\\\\" means all oral, written, or other information whatsoever, including information in documents and other recording media and information embodied in any item, which in connection with the Matter, is (a) obtained by Recipient from or through Disclosing Party, (b) obtained by or through Recipient by an examination of any Item, or (c) created by or through Recipient with the use of information in (a) or (b). It includes but is not limited to ideas, inventions, discoveries, formulas, methods, designs, drawings, specifications, engineering and man"
+ },
+ {
+  "doc": 42,
+  "hypothesis": "nda-2",
+  "chars": 8625,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"a. What is included, \\\\\\\"Confidential information\\\\\\\" is non-public information, know-how and trade secrets in any form that: • Are designated as \\\\\\\"confidential\\\\\\\"; or • A reasonable person knows or reasonably should understand to be confidential.\\\"\"}"
+ },
+ {
+  "doc": 42,
+  "hypothesis": "nda-1",
+  "chars": 8625,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"2. Confidential information. a. What is included, \\\\\\\"Confidential information\\\\\\\" is non-public information, know-how and trade secrets in any form that:\\n• Are designated as \\\\\\\"confidential\\\\\\\"; or\\n• A reasonable person knows or reasonably should understand to be confidential.\\\"\"}"
+ },
+ {
+  "doc": 6,
+  "hypothesis": "nda-2",
+  "chars": 8715,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"1. The confidential, proprietary and trade secret information of the Disclosing Party (hereinafter 'Confidential Information') provided hereunder is any and all information, in whatever form (including electronic data) ... including, but not limited to, portions or parts of the November 1, 2012 Agreement ... intellectual property, techniques, sketches, drawings, models, inventions, know‑how, processes, apparatus, equipment, algorithms, software programs, software source documents, and formulae ... research, experimental work, development, design details and specifi"
+ },
+ {
+  "doc": 165,
+  "hypothesis": "nda-2",
+  "chars": 8752,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The parties wish to explore a business opportunity of mutual interest and in connection with this opportunity, each party may disclose to the other party certain confidential technical and business information which the disclosing party desires the receiving party to treat as confidential.\\\" and \\\"'Confidential Information' means any information disclosed by either party to the other party, either directly or indirectly, in writing, orally or by inspection of tangible objects, including without limitation documents, prototypes, samples, plant and equipment, researc"
+ },
+ {
+  "doc": 540,
+  "hypothesis": "nda-2",
+  "chars": 9227,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction: \\\"The parties expect to make available to one another certain non-public, confidential and/or proprietary information, both oral and written, which may include information concerning their respective business prospects and plans, financial condition, technology, customers, know-how, trade secrets, operations, assets and liabilities (collectively, the 'Evaluation Material').\\\" and Clause 1: \\\"'Evaluation Material' also includes notes, analyses, compilations, studies, plans, interpretations or other documents prepared by the receiving party or its Representatives which "
+ },
+ {
+  "doc": 540,
+  "hypothesis": "nda-4",
+  "chars": 9227,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"2. Non-Disclosure/Security/Use. Each party agrees that, without the prior written consent of the other party, neither it nor its Representatives will disclose to any other person any of the other party’s Evaluation Material, the fact that discussions between the parties are taking place concerning the Transaction, or any terms or other facts relating to the Transaction and will use such Evaluation Materials only for the purpose of evaluating a Transaction.\\\" \\n\\\"4. Residuals. Nothing in this Agreement shall be construed to limit either party’s ability to use “residu"
+ },
+ {
+  "doc": 354,
+  "hypothesis": "nda-19",
+  "chars": 9357,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"10. TERM\\nThis Agreement and Recipient’s obligation to keep Confidential Information confidential expires three (3) years after the Effective Date.\\\"\"}"
+ },
+ {
+  "doc": 43,
+  "hypothesis": "nda-2",
+  "chars": 9564,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The information that is intended to be covered by this agreement shall include, without limitation, any designs, concepts, ideas, technical, scientific, commercial information, know-how, trade secrets and processes, communicated to either party (\\\\\\\"the receiving party\\\\\\\") by the other party (\\\\\\\"the disclosing party\\\\\\\") or acquired by the receiving party from the disclosing party, during the course of the negotiations and discussions referred to in 1 as well as during the course of any appointment of the Company as contemplated in 1. All such information collect"
+ },
+ {
+  "doc": 307,
+  "hypothesis": "nda-20",
+  "chars": 9614,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\": \"Contradiction\"}"
+ },
+ {
+  "doc": 307,
+  "hypothesis": "nda-2",
+  "chars": 9614,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Clause 3: \\\"The term 'Information' shall include all written information, verbal or otherwise presented in tangible or intangible way, including, but not limited to, trade secrets, discoveries, ideas, concepts, know-how, techniques, technology, products, designs, specifications, drawings, diagrams, data, computer programs, business activities and operations, reports, studies and other technical, commercial, financial information of each Party or its Affiliates.'\\\"}ивание}</correct>\"}"
+ },
+ {
+  "doc": 80,
+  "hypothesis": "nda-20",
+  "chars": 9689,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Once confidential information or data obtained hereunder is no longer useful for the purposes described herein, Authorized Person agrees to immediately destroy all such confidential information or data maintained on any information system platform or any form of storage media subject to any schedule of retention established by the Kansas Records Board, in the following manner:\\\"; \\\"Confidential information obtained pursuant to this agreement, and any paper material generated therefrom, such as copies, photo impressions, computer printouts, notes, and work papers, m"
+ },
+ {
+  "doc": 80,
+  "hypothesis": "nda-2",
+  "chars": 9689,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction -- \\\"The term “confidential information” shall include: any information or data maintained by KDOL that has been obtained pursuant to the administration of the Employment Security Law, and includes personally identifiable information (PII) maintained by KDOL such as: • The name of a person • His or her mailing address • His or her taxpayer identification number • Email addresses • Telephone numbers • Social Security Numbers • Bank account numbers • Date and place of birth • Mother’s maiden name • Biometric data (e.g., height, weight, eye color, fingerprints) • The name"
+ },
+ {
+  "doc": 80,
+  "hypothesis": "nda-17",
+  "chars": 9689,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Information provided hereunder, or identifiable information derived therefrom, shall not be copied, downloaded or otherwise placed in any format, including working papers, which may become a public record pursuant to the Kansas Open Records Act (KORA).\\\" Also relevant: \\\"Authorized Person agrees that they will not provide or allow access of the information obtained hereunder to any agent, third party, contractor, subcontractor, or any other public agency, unless authorized in writing by KDOL, and then conditioned upon said agent, third party, contractor, subcontrac"
+ },
+ {
+  "doc": 558,
+  "hypothesis": "nda-2",
+  "chars": 9802,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction: \\\"In connection with these discussions, the parties expect to make available to one another certain non-public, confidential and/or proprietary information, which may include information concerning their respective business prospects and plans, financial condition, technology, operations, assets and liabilities (collectively, the \\\\\\\"Evaluation Material\\\\\\\").\\\" and \\\"1. Evaluation Material. \\\\\\\"Evaluation Material\\\\\\\" also includes notes, studies analyses, compilations, plans, interpretations or other documents prepared by the receiving party or its Representatives to"
+ },
+ {
+  "doc": 24,
+  "hypothesis": "nda-2",
+  "chars": 9814,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction: \\\"Confidential Information means:- (a) information relating to the Disclosing Party regarding its business, partners, customers or financial affairs (including details relating to any software the copyright in respect of which is vested in the Disclosing Party) which is obtained by the Receiving Party, either before or after this undertaking is entered into and either in writing or orally from or pursuant to the discussions with the Personnel of the Disclosing Party; (b) those portions of analyses, compilations, studies, reports and other documents prepared by the Dis"
+ },
+ {
+  "doc": 401,
+  "hypothesis": "nda-2",
+  "chars": 9817,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction: \\\"Each undersigned party (the 'Receiving Party') understands that the other party (the 'Disclosing Party') has disclosed or may disclose information relating to the Disclosing Party's business particularly relating to uniform informer libraries, chemi-informatic tools and the nature of chemical libraries (including, with limitation, names and expertise of employees and consultants, know-how, formulas, processes, ideas, inventions (whether patentable or not), schematics, computer programs, software code, algorithms, development tools, manufacturing capability or proces"
+ },
+ {
+  "doc": 218,
+  "hypothesis": "nda-2",
+  "chars": 9845,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"2. Definition. 'Confidential Information' includes, but is not limited to prototypes, trade secrets, intellectual property, information, technical data, research, products, software, services, development, macros, source code, unreleased software, inventions, ideas, processes, designs, drawings, engineering, marketing, markets, customer information, business plans, business policies or practices, forecasts or financial information, team process, design process, part supply, pricing, development process and procedures, disclosed by Party One and Party Two under this"
+ },
+ {
+  "doc": 218,
+  "hypothesis": "nda-1",
+  "chars": 9845,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 2: \\\"\\\"Confidential Information\\\" includes, but is not limited to prototypes, trade secrets, intellectual property, information, technical data, research, products, software, services, development, macros, source code, unreleased software, inventions, ideas, processes, designs, drawings, engineering, marketing, markets, customer information, business plans, business policies or practices, forecasts or financial information, team process, design process, part supply, pricing, development process and procedures, disclosed by Party One and Party Two under this Ag"
+ },
+ {
+  "doc": 218,
+  "hypothesis": "nda-7",
+  "chars": 9845,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; \\\"(b) be disclosed only to employees of Party Two who have executed written confidentiality agreements with the employer;\\\" \\\"Party One and Party Two pledges and agrees that it shall keep totally confidential any and all of the said information and other such matters arising hereto, and shall not disclose to any other person or persons, corporation, agent or consultant with whom it is or may be associated with, any such confidential information without express permission being given in writing by an authorized officer of other Party.\\\" \\\"Party One and Party Two each a"
+ },
+ {
+  "doc": 476,
+  "hypothesis": "nda-1",
+  "chars": 10009,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"1. \\\"Confidential Information\\\" shall mean all non-public proprietary information provided by the Furnishing Party to the Receiving Party, whether or not marked or otherwise specifically designated as confidential.\"}"
+ },
+ {
+  "doc": 476,
+  "hypothesis": "nda-2",
+  "chars": 10009,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; Clause 1: '\\\"Confidential Information\\\" shall mean all non-public proprietary information provided by the Furnishing Party to the Receiving Party, whether or not marked or otherwise specifically designated as confidential.' Clause 3: 'Highly Confidential Information shall include the identity of Fox's actual and potential customers and vendors; Fox's release schedules and sales trends; the prices and pricing policies of Fox, its vendors and customers; all customer shipment, point-of-sale and returns information; Fox's strategic planning information regarding system im"
+ },
+ {
+  "doc": 296,
+  "hypothesis": "nda-2",
+  "chars": 10027,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; see clause 1: \\\"The term 'Confidential Information' as used herein means all trade secrets or confidential or proprietary information of either party, whether or not marked 'Confidential', whether in written or oral form, relating to such party's business or technology, including without limitation, its products, customer data, development and marketing plans, and financial information. In addition, Confidential Information shall include all terms and conditions of this Agreement including the fact that the parties are having discussions in order to determine the feas"
+ },
+ {
+  "doc": 296,
+  "hypothesis": "nda-1",
+  "chars": 10027,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; clause 1: \\\"The term 'Confidential Information' as used herein means all trade secrets or confidential or proprietary information of either party, whether or not marked 'Confidential', whether in written or oral form, relating to such party's business or technology, including without limitation, its products, customer data, development and marketing plans, and financial information.\\\"\"}"
+ },
+ {
+  "doc": 296,
+  "hypothesis": "nda-17",
+  "chars": 10027,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; \\\"The Receiving Party agrees not to reverse engineer, disassemble, or otherwise restructure and/or copy or in any way recreate in whole or in part any Confidential Information of the Disclosing Party.\\\" (Clause 2)\"}"
+ },
+ {
+  "doc": 296,
+  "hypothesis": "nda-7",
+  "chars": 10027,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The party receiving Confidential Information (the “Receiving Party”) shall not disclose Confidential Information to any third party without the prior written consent of the party disclosing such confidential information (the “Disclosing Party”) and shall restrict dissemination of Confidential Information within its own organization to those employees who have a need to have access to the Confidential Information.\\\"\"}"
+ },
+ {
+  "doc": 129,
+  "hypothesis": "nda-2",
+  "chars": 10089,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; decisive clauses: \\\"For the purpose of the present Agreement, ‘Material’ is defined as any data, test, study or any information in support of the Registration under REACH made available to the Consortium or generated or determined or used in any way by the Consortium to comply with the requirements of REACH and provided to the Receiving Party for the purpose of registration under REACH. This Material shall include, without limitation: (i) Data and/or Studies acquired, licensed, developed or contracted or obligated for by the Consortium pursuant to Section 10 of the Co"
+ },
+ {
+  "doc": 433,
+  "hypothesis": "nda-2",
+  "chars": 10104,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"As used herein, 'CONFIDENTIAL INFORMATION' shall mean any and all technical and non-technical information provided by either party to the other...\\\" (Clause 1)\"}"
+ },
+ {
+  "doc": 212,
+  "hypothesis": "nda-2",
+  "chars": 10193,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"1. The term 'Confidential Information' shall mean any confidential, proprietary, financial or otherwise non-public information... including, without limitation: (a) information concerning the Disclosing Party’s and its affiliates’ business affairs, finances, forecasts, sales and other financial results, records and budgets, and business, marketing, development, sales and other commercial strategies; and (b) notes, analyses, compilations, reports, forecasts, data, statistics, summaries, interpretations and other materials prepared by or for Recipient...\\\"\"}"
+ },
+ {
+  "doc": 585,
+  "hypothesis": "nda-2",
+  "chars": 10211,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Confidential Information\\\" shall mean all confidential or proprietary written, recorded, electronic or oral information or data (including without limitation research, developmental, engineering, manufacturing, technical, marketing, sales, financial, operating, performance, cost, business and process information or data, trade secrets, discoveries, ideas, designs, data, source code, object code, processes, computer programs, developments, flow diagrams, know-how, and computer programming and other software and software techniques). Without limiting the aforesaid, t"
+ },
+ {
+  "doc": 585,
+  "hypothesis": "nda-1",
+  "chars": 10211,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 55,
+  "hypothesis": "nda-3",
+  "chars": 10403,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction - \\\"(a) \\\\\\\"Confidential Information\\\\\\\" means any proprietary information that is disclosed in writing by Disclosing Party (defined herein) to Receiving Party (defined herein) and is duly and recognizably marked \\\\\\\"Confidential\\\\\\\" on each document / sheet. By the execution of this Agreement the parties agree that all and any documents and information/facts specifically listed in Exhibit A to this Agreement is deemed Confidential Information.\\\"\"}"
+ },
+ {
+  "doc": 55,
+  "hypothesis": "nda-17",
+  "chars": 10403,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Receiving Party must not copy, alter, modify, reverse engineer, or attempt to derive the composition or underlying information, structure or ideas of any Confidential Information and must not remove, overprint, deface or change any notice of confidentiality, copyright, trademark, logo, legend or other notices of ownership from any originals or copies of Confidential Information it receives from the Disclosing Party.\\\" (Section 4(a))\"}"
+ },
+ {
+  "doc": 55,
+  "hypothesis": "nda-2",
+  "chars": 10403,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\nClause 2(a): 'Confidential Information' means any proprietary information that is disclosed in writing by Disclosing Party (defined herein) to Receiving Party (defined herein) and is duly and recognizably marked 'Confidential' on each document / sheet. By the execution of this Agreement the parties agree that all and any documents and information/facts specifically listed in Exhibit A to this Agreement is deemed Confidential Information.\\n\\nClause 2(b): Confidential information relates to Disclosing Party’s business (including without limitation, business plans, fin"
+ },
+ {
+  "doc": 41,
+  "hypothesis": "nda-2",
+  "chars": 10543,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"Regardless of the form, format, or media on or in which the Confidential Information is provided and regardless of whether any such Confidential Information is marked as such, \\\"Confidential Information\\\" means (1) any and all information provided by or made available by the State to the Contractor in connection with the Contract and (2) any and all personally identifiable information (PII) (including but not limited to personal information as defined in Md. Ann. Code, General Provisions §4-101(h) and Md. Ann. Code, State Govt. § 10-1301(c)) and protected hea"
+ },
+ {
+  "doc": 41,
+  "hypothesis": "nda-1",
+  "chars": 10543,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. \\\"Regardless of the form, format, or media on or in which the Confidential Information is provided and regardless of whether any such Confidential Information is marked as such, \\\\\\\"Confidential Information\\\\\\\" means (1) any and all information provided by or made available by the State to the Contractor in connection with the Contract and (2) any and all personally identifiable information (PII) (including but not limited to personal information as defined in Md. Ann. Code, General Provisions §4-101(h) and Md. Ann. Code, State Govt. § 10-1301(c)) and protected health"
+ },
+ {
+  "doc": 46,
+  "hypothesis": "nda-2",
+  "chars": 10548,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"1.1 Definition. When used herein, Confidential Information shall mean any information and data (in electronic form, in hard copy or given verbally) of a confidential or proprietary nature which is disclosed by the Disclosing Party to the Receiving Party, including but not limited to, group corporate strategy and initiatives, customer information, Target information, proprietary technical, financial, personnel and/or commercial information with respect to the Proposed Transaction, Transnet or the Target and any information which is disclosed pursuant to this Agreeme"
+ },
+ {
+  "doc": 46,
+  "hypothesis": "nda-7",
+  "chars": 10548,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"2.1 Use of Confidential Information. The Receiving Party may use the Confidential Information solely for the purposes of assessing the Target for purposes of the Proposed Transaction. The Receiving Party recognises that this Agreement imposes an affirmative duty to hold such information in confidence and protect it from dissemination to and use by any unauthorised persons. In the absence of the Disclosing Party’s prior written consent, the Receiving Party shall not produce nor disclose the Confidential Information, or any part thereof, to any third party.\\\"; \\\"2.2 "
+ },
+ {
+  "doc": 498,
+  "hypothesis": "nda-2",
+  "chars": 10611,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 78,
+  "hypothesis": "nda-2",
+  "chars": 11066,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Section 2: \\\"The term \\\\\\\"Confidential Information\\\\\\\" shall mean for purposes of this Agreement, any and all sensitive business, financial and technical information provided prior to the execution of this Agreement and to be provided after the execution of this Agreement by a transmitting Party to the receiving Party, including, without limitation, financial statements, reports and data, customer lists, trade secrets, technical data, proprietary information, and any other confidential information regarding the transmitting Party, its subsidiaries and its respective "
+ },
+ {
+  "doc": 78,
+  "hypothesis": "nda-20",
+  "chars": 11066,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"each Party shall promptly deliver to the other Party all written Confidential Information and any other written material containing or reflecting Confidential Information and will not retain any copies, extracts or other reproductions in whole or in part of such written material. All documents, memoranda, notes and other writings whatsoever prepared by each Party, or respective representatives, based on the information included in the Confidential Information shall be promptly destroyed, and such destruction shall be certified in writing by an authorized officer su"
+ },
+ {
+  "doc": 544,
+  "hypothesis": "nda-2",
+  "chars": 11336,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 1: 'For purposes of this Agreement, “Confidential Information” means, with respect to either party, any and all information in written, representational, electronic, verbal or other form relating directly or indirectly to the present or potential business, operation or financial condition of or relating to the disclosing party (including, but not limited to, information identified as being proprietary and/or confidential or pertaining to, pricing, marketing plans or strategy, volumes, services rendered, customers and suppliers lists, financial or technical or "
+ },
+ {
+  "doc": 544,
+  "hypothesis": "nda-1",
+  "chars": 11336,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"1. For purposes of this Agreement, \\\"Confidential Information\\\" means, with respect to either party, any and all information in written, representational, electronic, verbal or other form relating directly or indirectly to the present or potential business, operation or financial condition of or relating to the disclosing party (including, but not limited to, information identified as being proprietary and/or confidential or pertaining to, pricing, marketing plans or strategy, volumes, services rendered, customers and suppliers lists, financial or technical o"
+ },
+ {
+  "doc": 336,
+  "hypothesis": "nda-2",
+  "chars": 11535,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 3.1: 'Information' shall for the purposes of this agreement include, without limitation, any technical, commercial, scientific information, know-how, trade secrets, processes, machinery, designs, drawings, technical specifications, clients, prospects, historical and forecast financial information, organisational and operational structure and data in whatever form, communicated to the receiving party or acquired by the receiving party from the disclosing party during the course of the parties' association with one another.\"}"
+ },
+ {
+  "doc": 361,
+  "hypothesis": "nda-2",
+  "chars": 11657,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — WHEREAS: '...business confidential information (CI) (collectively referred to as Classified Information);' and Section III: 'For purposes of this agreement, CI shall mean any confidential, proprietary or trade secret information ... It includes information of third parties in VELCO’s possession that VELCO is obligated to keep confidential. CI subject to this Agreement may be in intangible form, such as information communicated orally or by visual observation, or may be embodied in tangible form, such as a document. The term \\\"document\\\" includes written memoranda, dr"
+ },
+ {
+  "doc": 11,
+  "hypothesis": "nda-1",
+  "chars": 12207,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The term 'Confidential Information' means any and all tangible and intangible information disclosed to Receiver in oral, written, graphic, recorded, photographic, any machine-readable or in any other medium or form relating to the intellectual property, management, operations, products, inventions, suppliers, customers, financials of VIDAR or any present or contemplated project, contract or relationship between VIDAR and Receiver, including without limitation, any and all plans, Intellectual Property ... and any information which is identified as being of a confide"
+ },
+ {
+  "doc": 11,
+  "hypothesis": "nda-2",
+  "chars": 12207,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\nThe term \\\"Confidential Information\\\" means any and all tangible and intangible information disclosed to Receiver in oral, written, graphic, recorded, photographic, any machine-readable or in any other medium or form relating to the intellectual property, management, operations, products, inventions, suppliers, customers, financials of VIDAR or any present or contemplated project, contract or relationship between VIDAR and Receiver, including without limitation, any and all plans, Intellectual Property (defined below), know-how, computer programs, software (source and"
+ },
+ {
+  "doc": 21,
+  "hypothesis": "nda-2",
+  "chars": 12238,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 2.1: 'Confidential Information means all confidential information relating to the Purpose which the Disclosing Party or any of its Affiliates, discloses or makes available, to the Receiving Party or any of its Affiliates, before, on or after the Effective Date. This includes: a) the fact that discussions and negotiations are taking place concerning the Purpose and the status of those discussions and negotiations; b) the terms of this Agreement; c) all confidential or proprietary information relating to: the business, affairs, customers, clients, suppliers, pla"
+ },
+ {
+  "doc": 526,
+  "hypothesis": "nda-2",
+  "chars": 12265,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; see Clause 1: \\\"For purposes of this Agreement, 'Information' is defined as confidential or proprietary communications or data of a Party hereto, including business information, financial information, marketing plans, technical or financial information, customer lists or proposals, sketches, models, samples, computer programs and documentation, drawings, specifications, whether conveyed in oral, written, graphic, or electromagnetic form or otherwise, and all notes, analyses, compilations, forecasts, studies, interpretations or other documents prepared by either Party "
+ },
+ {
+  "doc": 526,
+  "hypothesis": "nda-20",
+  "chars": 12265,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction - \\\"At the Disclosing Party’s request, all Information of the Disclosing Party in tangible form, or any copies thereof, that is in the possession of the Receiving Party shall be returned to the Disclosing Party or destroyed,\\\" (Section 12)\"}"
+ },
+ {
+  "doc": 408,
+  "hypothesis": "nda-2",
+  "chars": 12478,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; \\\"For the purposes of this Agreement, the term \\\\\\\"Confidential Information\\\\\\\" shall mean all trade secrets and confidential or proprietary information (and any tangible representation thereof) owned, possessed or used in connection with The Company Business or by the Buyer Parties and its Affiliates; provided, however, that \\\\\\\"Confidential Information\\\\\\\" does not include information which is or becomes generally available to the public other than as a result of a disclosure by a Seller Party.\\\"\"}"
+ },
+ {
+  "doc": 496,
+  "hypothesis": "nda-2",
+  "chars": 12651,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; see Section 1(a): \\\"\\\\\\\"Confidential Information\\\\\\\" means nonpublic information that a party to this Agreement (\\\\\\\"Disclosing Party\\\\\\\") designates as being confidential to the party that receives such information (\\\\\\\"Receiving Party\\\\\\\") or which, under the circumstances surrounding disclosure ought to be treated as confidential by the Receiving Party. \\\\\\\"Confidential Information\\\\\\\" includes, without limitation, information in tangible or intangible form relating to and/or including released or unreleased Disclosing Party software or hardware products, the marke"
+ },
+ {
+  "doc": 496,
+  "hypothesis": "nda-4",
+  "chars": 12651,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\nClause: Section 4(d): 'Further, the Receiving Party shall be free to use for any purpose the residuals resulting from access to or work with the Confidential Information of the Disclosing Party, provided that the Receiving Party shall not disclose the Confidential Information except as expressly permitted pursuant to the terms of this Agreement.'\\nClause: Section 5: 'Furthermore, except as otherwise provided herein or in a separate subsequent written agreement between the parties, the receiver of the Feedback shall be free to use, disclose, reproduce, license or other"
+ },
+ {
+  "doc": 36,
+  "hypothesis": "nda-2",
+  "chars": 12909,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\nConfidential Information: means all confidential information (however recorded, preserved or disclosed) disclosed by a Party or its Representatives to the other Party and that Party's Representatives including but not limited to:\\n(a) the fact that discussions and negotiations are taking place concerning the Purpose and the status of those discussions and negotiations;\\n(b) the existence and terms of this Agreement;\\n(c) any information relating to:\\n(i) the business, affairs, customers, clients, suppliers, plans, intentions, or market opportunities of the Disclosin"
+ },
+ {
+  "doc": 555,
+  "hypothesis": "nda-17",
+  "chars": 13399,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction: \\\"(d) not to copy or reverse engineer any such Proprietary Information.\\\"; see also \\\"Without granting any right or license, the Disclosing Party agrees that the foregoing clauses (a), (b) and (c) shall not apply with respect to any information that...\\\" (showing the exceptions explicitly do not include clause (d)).\"}"
+ },
+ {
+  "doc": 555,
+  "hypothesis": "nda-2",
+  "chars": 13399,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — 'As used herein, the term “Proprietary Information” refers to any and all Information of a confidential, proprietary, or secret nature which is applicable to or related In any way to (i) the business, present or future, of the Disclosing Party, (ii) the research and development or investigations of the Disclosing Party or (iii) the business of any customer of the Disclosing Party; provided, in each case, that such information is delivered to the Receiving Party by the Disclosing Party and (a) is marked or identified in writing as “Confidential”, (b) if verbal or visu"
+ },
+ {
+  "doc": 65,
+  "hypothesis": "nda-2",
+  "chars": 13725,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"clause\":\"1.1 Confidential Information means all information relating to the Project or the Contractor’s proposal for the Project and all information relating to the nature of either Party’s business, affairs or trade secrets, which either Party directly or indirectly receives or acquires from the other Party... (definition is broad and not limited to technical information).\"}"
+ },
+ {
+  "doc": 596,
+  "hypothesis": "nda-2",
+  "chars": 13805,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"2. Non-Disclosure.\\n(a) Seller, Key Personnel and Shareholder, jointly and severally, acknowledge and agree that in the course of ownership and/or employment with the Company that Seller, Key Personnel and Shareholder have acquired and/or the Company has and will continue to provide Seller, Key Personnel and Shareholder with, or access to information regarding the business, procedures, activities and services of the Company, including but not limited to, memorandum, files, forms, techniques, methods and procedures, programs, customer accounts and customer lists, sup"
+ },
+ {
+  "doc": 400,
+  "hypothesis": "nda-20",
+  "chars": 13912,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. \\\"Upon the Company's request, we shall promptly deliver to the Company or destroy all written Evaluation Materials and any other written materials without retaining, in whole or in part, any copies, extracts or other reproductions (whatever the form or storage medium) of such materials.\\\"\"}"
+ },
+ {
+  "doc": 400,
+  "hypothesis": "nda-1",
+  "chars": 13912,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The term 'Evaluation Materials' includes information furnished to us orally or in writing (whatever the form or storage medium) or gathered by inspection, and regardless of whether such information is specifically identified as 'confidential'.\\\"; also \\\"We will treat confidentially any information (whether written or oral) that either the Company or its financial advisor, J.P. Morgan & Co. Incorporated (\\\\\\\"JPM\\\\\\\"), or the Company's other representatives furnish to us in connection with a Possible Transaction involving the Company, together with analyses, compilat"
+ },
+ {
+  "doc": 465,
+  "hypothesis": "nda-7",
+  "chars": 14366,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Relevant clauses: Article 5.4: \\\"Each party agrees (i) to hold the other party's Confidential Information in strict confidence, (ii) not to disclose such Confidential Information to any third parties, and (iii) not to use any Confidential Information for any purpose except for the Business Purpose. Each party may disclose the other party's Confidential Information to its responsible employees with a bona fide need to know, but only to the extent necessary to carry out the Business Purpose. Each party agrees to instruct all such employees not to disclose such Confiden"
+ },
+ {
+  "doc": 49,
+  "hypothesis": "nda-2",
+  "chars": 14712,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Information\\\" means any and all confidential information or data exchanged, submitted or otherwise disclosed in respect of or further to the Purpose or prepared for or in relation to the Purpose, including but not limited to written Submission documentation, due diligence materials, contractual documentation, reports, and the fact that the Parties have entered into this Agreement and are discussing and considering a business relationship.\"}"
+ },
+ {
+  "doc": 53,
+  "hypothesis": "nda-2",
+  "chars": 14759,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"“Information” means any and all confidential information or data exchanged, submitted or otherwise disclosed in respect of or further to the Purpose or prepared for or in relation to the Purpose, including but not limited to written proposal documentation, due diligence materials, contractual documentation, reports, and the fact that the Parties have entered into this Agreement and are discussing and considering a business relationship;\"}"
+ },
+ {
+  "doc": 23,
+  "hypothesis": "nda-1",
+  "chars": 15198,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 23,
+  "hypothesis": "nda-2",
+  "chars": 15198,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 3.5: \\\"Confidential information means any information of whatever form relating to the Project or Discloser or any of its Affiliates or Clients, supplied or made available by Discloser or on its behalf to recipient or Recipient Representatives, copies of any such information regardless of whether such information is identified as confidential or not; and information regarding:\\\"; Clause 3.5.1: \\\"The existence of the Project\\\"; Clause 3.5.2: \\\"The identity of the Discloser and the willingness of the Discloser to enter into discussions and/or negotiations regard"
+ },
+ {
+  "doc": 2,
+  "hypothesis": "nda-2",
+  "chars": 15297,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 2,
+  "hypothesis": "nda-1",
+  "chars": 15297,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — 1. CONFIDENTIAL INFORMATION. The term 'Confidential Information' as used herein means all nonpublic information relating to the Subject Matter that is disclosed by either party, its Affiliates (as defined below), or their agents (where applicable, collectively referred to as the 'Disclosing Party'), directly or indirectly, in writing, orally or by inspection of premises or tangible objects to the other party (the 'Recipient') that is: (i) marked confidential or proprietary, or (ii) given the nature of the information or the circumstances surrounding its disclosure, r"
+ },
+ {
+  "doc": 552,
+  "hypothesis": "nda-2",
+  "chars": 15556,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; see clause 1: \\\"‘Confidential Information’ shall mean the Purpose (including the contemplated transaction), identity of, and any discussions or negotiations between, the Parties, existence of this Agreement, and any and all information whether in oral, written, graphic or electronic form, including but not limited to, data, know-how and any and all subject matter ... pertaining to Verenium’s research, financial data, sales information, inventions, development, materials, technology, trade secrets, work in process, marketing, business plans, regulatory information and "
+ },
+ {
+  "doc": 584,
+  "hypothesis": "nda-1",
+  "chars": 16171,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Section 1(a): \\\"All information that is furnished directly or indirectly by the Disclosing Party or any of its Representatives (as defined below), whether or not marked as confidential and whether furnished before or after the date hereof, whether in oral, written or electronic form, together with any notes, reports, summaries, analyses, compilations, forecasts, studies, interpretations, memoranda or other materials prepared by the Receiving Party or any of its Representatives that contain, references to or are based upon, in whole or in part, any information so furn"
+ },
+ {
+  "doc": 523,
+  "hypothesis": "nda-1",
+  "chars": 16383,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"You will treat confidentially any information (whether written or oral) that either we or our financial advisor, Mesirow Financial, Inc. (\\\\\\\"Mesirow\\\\\\\"), or our other representatives furnish to you in connection with a Possible Transaction, together with analyses, compilations, studies or other documents prepared by you, or by your representatives (as defined hereinafter) which contain or otherwise reflect such information or your review of, or interest in, the Company (collectively, the 'Evaluation Materials').\\\" \\\"The term 'Evaluation Materials' includes inform"
+ },
+ {
+  "doc": 523,
+  "hypothesis": "nda-20",
+  "chars": 16383,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Upon the Company’s request, you shall promptly deliver to the Company or destroy all written Evaluation Materials and any other written materials without retaining, in whole or in part, any copies, extracts or other reproductions (whatever the form or storage medium) of such materials, and shall certify the destruction of such materials in writing to the Company.\\\"\"}"
+ },
+ {
+  "doc": 1,
+  "hypothesis": "nda-2",
+  "chars": 16632,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"For purposes of this Agreement, 'Confidential Information' means any data or information that is proprietary to the Parties and not generally known to the public, whether in tangible or intangible form, whenever and however disclosed, including but not limited to: c. Protected Health Information in both physical and electronic form (PHI and ePHI); d. Personal Identifiable Information (PII); g. any Copyright application code, source code, technical design (not released for open use), trade secret, scientific or technical information, invention, design, process, proc"
+ },
+ {
+  "doc": 38,
+  "hypothesis": "nda-1",
+  "chars": 17211,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"Failure to mark any of the Confidential Information as confidential or proprietary shall not affect its status as Confidential Information.\\\" (Section 2)\"}"
+ },
+ {
+  "doc": 38,
+  "hypothesis": "nda-2",
+  "chars": 17211,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"As used in this Agreement, 'Confidential Information' shall mean any and all technical and non-technical information about State, including, but not limited to data and information processed by State in connection with evaluating the Services.\\\"; \\\"The term shall also include all 'protected health information' (as defined by 45 C.F.R. § 160.103) and any other personally identifiable information (\\\\\\\"PII\\\\\\\") regarding any individual who is, or may become, eligible for the State's Plan (including, but not limited to, such Plan's travel benefit).\\\"\"}"
+ },
+ {
+  "doc": 412,
+  "hypothesis": "nda-2",
+  "chars": 18295,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction: \\\"The term \\\\\\\"Confidential Information\\\\\\\", as used herein, means all information or material not generally known by non-Company personnel constituting Assets and acquired by Buyer under the Purchase Agreement which (i) gives the Company some competitive business advantage or the opportunity of obtaining such advantage or the disclosure of which could be detrimental to the interests of the Company; (ii) which is owned by the Company or in which the Company has an interest and (iii) which is either (A) marked \\\\\\\"Confidential Information,\\\\\\\" \\\\\\\"Proprietary Informati"
+ },
+ {
+  "doc": 395,
+  "hypothesis": "nda-2",
+  "chars": 18371,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction; see Article V definitions: \\\"As used in this Agreement, the terms \\\\\\\"CompuCom's Confidential Information\\\\\\\" means proprietary or confidential information concerning the Business including, without limitation, information regarding prices charged for Products, the assets, liabilities, and financial condition of the Business, names and identities of customers and analyses of the amount and types of Products purchased by each such customer.\\\" and \\\"As used in this Agreement, the terms \\\\\\\"Seller's Confidential Information\\\\\\\" means proprietary or confidential informati"
+ },
+ {
+  "doc": 444,
+  "hypothesis": "nda-2",
+  "chars": 18416,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"As used in this Agreement, the terms \\\\\\\"CompuCom's Confidential Information\\\\\\\" means proprietary or confidential information concerning the Business including, without limitation, information regarding prices charged for Products, the assets, liabilities, and financial condition of the Business, names and identities of customers and analyses of the amount and types of Products purchased by each such customer.\\\" (Article V, Section 5.1)\\n\\\"As used in this Agreement, the terms \\\\\\\"Seller's Confidential Information\\\\\\\" means proprietary or confidential information an"
+ },
+ {
+  "doc": 542,
+  "hypothesis": "nda-20",
+  "chars": 18470,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 3: \\\"All written Confidential Information delivered by one party hereto to the other party pursuant to the Agreement shall be and remain the property of the delivering party, and upon the written request of the delivering party, the receiving party shall (i) promptly return such Confidential Information and shall not retain any copies or other reproductions or extracts thereof, (ii) destroy or have destroyed all memoranda, notes, reports, analyses, compilations, studies, interpretations, or other documents derived from or containing Confidential Information, a"
+ },
+ {
+  "doc": 542,
+  "hypothesis": "nda-2",
+  "chars": 18470,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"WHEREAS, Polycom and PictureTel may consider engaging in discussions with respect to a possible negotiated business combination involving PictureTel and Polycom or their respective subsidiaries (the 'Transaction') and, prior to or during the course of any such discussions, PictureTel and Polycom each may have disclosed or, in the future, may disclose and make available to the other certain information concerning its business prospects, financial condition, operations, assets and liabilities;\\\" and \\\"WHEREAS, all such information furnished to a party or its Represen"
+ },
+ {
+  "doc": 564,
+  "hypothesis": "nda-20",
+  "chars": 19913,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction - Clause 6: \\\"At any time upon the written request of the Company, Investor will, at its own expense, (i) reasonably promptly redeliver to the Company or, at the at Investor's option, destroy all copies (including permanently erasing or deleting any electronic copies) of the Evaluation Material in the possession or control of Investor or any of its Representatives and (ii) reasonably promptly destroy all analyses, notes, data, compilations, summaries, forecasts, studies or other documents and materials prepared by Investor or any of its Representatives in connection wi"
+ },
+ {
+  "doc": 564,
+  "hypothesis": "nda-1",
+  "chars": 19913,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"For purposes of this Agreement, the term “Evaluation Material” shall mean any and all information provided to Investor by or on behalf of the Company in connection with the Transaction whether in writing, orally, visually, electronically or in machine readable form, through demonstration or in any other manner, and shall include, without limitation, any information regarding or relating to the Company’s operations, business opportunities, costs, finances, personnel, marketing and promotion plans, financial statements, financial information and business practices or"
+ },
+ {
+  "doc": 564,
+  "hypothesis": "nda-2",
+  "chars": 19913,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n1. Evaluation Material. For purposes of this Agreement, the term “Evaluation Material” shall mean any and all information provided to Investor by or on behalf of the Company in connection with the Transaction whether in writing, orally, visually, electronically or in machine readable form, through demonstration or in any other manner, and shall include, without limitation, any information regarding or relating to the Company’s operations, business opportunities, costs, finances, personnel, marketing and promotion plans, financial statements, financial information and "
+ },
+ {
+  "doc": 227,
+  "hypothesis": "nda-20",
+  "chars": 20823,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Quoted clauses: 8.1.1 \\\"the Recipient must return or procure the return to the Disclosers or, as the Disclosers may require, destroy or procure the destruction of any and all materials containing the Confidential Information together with all copies;\\\" 8.1.3 \\\"the Recipient must delete or procure the deletion of all electronic copies of Confidential Information;\\\" 8.1.4 \\\"the Recipient must make, and procure that the Authorised Persons shall make, no further Use of the Confidential Information.\\\"\"}"
+ },
+ {
+  "doc": 227,
+  "hypothesis": "nda-2",
+  "chars": 20823,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"quote\":\"\\\"Confidential Information means any information in whatever form (whether in writing, electronic or digital form, verbally or by inspection of documents, computer systems or sites or pursuant to discussions or by any other means ) which is confidential in nature, designated orally or in writing by the Disclosers as confidential or which may reasonably be considered by a business person to be commercially sensitive provided by the Disclosers (directly or indirectly) by any means to the Recipient (or to any Authorised Person) including without limitation via i"
+ },
+ {
+  "doc": 227,
+  "hypothesis": "nda-1",
+  "chars": 20823,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n'Confidential Information means any information in whatever form (whether in writing, electronic or digital form, verbally or by inspection of documents, computer systems or sites or pursuant to discussions or by any other means ) which is confidential in nature, designated orally or in writing by the Disclosers as confidential or which may reasonably be considered by a business person to be commercially sensitive provided by the Disclosers (directly or indirectly) by any means to the Recipient (or to any Authorised Person) including without limitation via its legal r"
+ },
+ {
+  "doc": 432,
+  "hypothesis": "nda-2",
+  "chars": 21514,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 611,
+  "hypothesis": "nda-2",
+  "chars": 22377,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"1.1 Subject to Section 1.2 below, 'Confidential Information' means confidential, secret, proprietary or other non-public information pertaining to the business, operations, brands, marketing plans, financial matters, legal matters, products, projects, business plans or practices, research and development, product development, intellectual property, financial models, trademarks, trade secrets, accounting and financing data, and methods of production, distribution or procurement, suppliers, distributors, consultants, advisors or employees, directors or officers of CE"
+ },
+ {
+  "doc": 606,
+  "hypothesis": "nda-1",
+  "chars": 23027,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"and identified as confidential or proprietary at the time of disclosure by the Disclosing Party or otherwise disclosed in a manner such that a reasonable person would understand its confidential nature.\\\" (Section 2)\\n\\\"Where the Confidential Information has not been reduced to written or other tangible form at the time of disclosure, and such disclosure is made orally or visually, the Disclosing Party agrees to identify it as confidential or proprietary at the time of disclosure.\\\" (Section 2)\"}"
+ },
+ {
+  "doc": 606,
+  "hypothesis": "nda-2",
+  "chars": 23027,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"As used herein, \\\\\\\"Confidential Information\\\\\\\" shall mean all information furnished by the Disclosing Party or its Representatives (defined below) to the Receiving Party or its Representatives, whether orally, in writing, electronically or in other tangible form, and identified as confidential or proprietary at the time of disclosure by the Disclosing Party or otherwise disclosed in a manner such that a reasonable person would understand its confidential nature, including but not limited to, information that is related to: (a) the business plans or operations of "
+ },
+ {
+  "doc": 537,
+  "hypothesis": "nda-2",
+  "chars": 23747,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Section 1(a): \\\"the Company is prepared to make available to the Receiving Party certain information concerning the business, operations, strategy and prospects of the Company (all such information, the ‘Confidential Information’)\\\"; Section 1(b): \\\"The term ‘Confidential Information’ shall include, without limitation, any and all information concerning the Company and its business, operations, strategic initiatives, financing, employees, strategies or prospects that is furnished to the Receiving Party or its Representatives...\\\"\"}"
+ },
+ {
+  "doc": 539,
+  "hypothesis": "nda-2",
+  "chars": 23765,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Quoted clause deciding: Section 1(b): 'The term \\\"Confidential Information\\\" shall include, without limitation, any and all information concerning the Company and its business, operations, strategic initiatives, financing, employees, strategies or prospects that is furnished to the Receiving Party or its Representatives by or on behalf of the Company, whether furnished before or after the date of this Agreement, including, without limitation, any written or oral analyses, business or strategic plans, compilations, studies, data, reports, interpretations, projections, "
+ },
+ {
+  "doc": 30,
+  "hypothesis": "nda-2",
+  "chars": 24090,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction. Deciding clause: 1.2.2 \\\"Confidential Information\\\" means any confidential information, documentation or data of whatever nature relating to a Party or its subsidiaries which may have been or which may be obtained by or disclosed to the other Party during the course of its relationship with such Party, whether in writing, in electronic form or pursuant to discussions, including without limitation: trade secrets, know-how, marketing and advertising strategies, strategic objectives, planning or ideas, research, business activities, business relationships, products or pr"
+ },
+ {
+  "doc": 68,
+  "hypothesis": "nda-2",
+  "chars": 25167,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — Clause 1(b)(i) defines Confidential Information very broadly and not limited to technical information: \\\"(b) 'Confidential Information' means: (i) all data and information, in whatever form communicated or maintained, whether orally, in writing, electronically, in computer readable form or otherwise, that the Receiver or any of its Representatives (in each case on behalf of the Company) and/or the Company or any of the Company's Representatives discloses or has disclosed to, or that is gathered by inspection by, the Recipient or any of the Recipient's Representatives"
+ },
+ {
+  "doc": 591,
+  "hypothesis": "nda-2",
+  "chars": 26190,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"The term 'Evaluation Material' means information (whether oral, written, electronic or otherwise) concerning Provider which has been or is furnished to Recipient or its Representatives (as defined below) by or on behalf of Provider in connection with Recipient’s evaluation of a Possible Transaction, including Provider’s business, financial condition, operations, assets, liabilities, personnel and contracts...\\\" (Section 2(c))\"}"
+ },
+ {
+  "doc": 549,
+  "hypothesis": "nda-2",
+  "chars": 29312,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\"}"
+ },
+ {
+  "doc": 549,
+  "hypothesis": "nda-20",
+  "chars": 29312,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\\n\\\"Employee agrees that all Confidential Information and all records, documents and materials relating to all Confidential Information (including all copies thereof) shall be and remain the sole and exclusive property of a Banking Organization, and upon Employee’s termination of employment, all such Confidential Information, whether in paper or electronic form, shall be returned to a Financial Institution in good condition, without Employee retaining a copy thereof, including, but not limited to, retaining an electronic copy on any electronic device regardless of wheth"
+ },
+ {
+  "doc": 546,
+  "hypothesis": "nda-2",
+  "chars": 33478,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"As used in this letter agreement (this “Agreement”), the term “Evaluation Material” means all information regarding the Company, its affiliates and its and their respective businesses, technology, products, prospects and plans, a Transaction (including the fact that the Company or its affiliates may pursue a Transaction with you and the existence and terms of this Agreement) and other information furnished to you or your Representatives (as defined below) by the Company or any of its Representatives in connection with the Transaction, irrespective of form or medium"
+ },
+ {
+  "doc": 521,
+  "hypothesis": "nda-2",
+  "chars": 40554,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction — \\\"'Confidential Information' means all information relating, directly or indirectly, to the Disclosing Party or the business, products, markets, research and development, condition (financial or other), operations, assets, liabilities, results of operations, cash flows or prospects of the Disclosing Party ... and any product offerings, content partners, product pricing, product availability ... marketing plans, forecasts and strategies of the Disclosing Party (in each case, whether prepared by the Disclosing Party, its Representatives or otherwise) which is delivered"
+ },
+ {
+  "doc": 58,
+  "hypothesis": "nda-2",
+  "chars": 41779,
+  "verdict": "Contradiction",
+  "answer": "{\"answer\":\"Contradiction\",\"clause\":\"§1(a)(i): \\\"all financial, technical and other non-public or proprietary information which is furnished or disclosed orally, in writing, electronically or in other form or media by Disclosing Party and/or its Representatives to Recipient and/or its Representatives in connection with the Purpose...\\\"\"}"
+ }
+]

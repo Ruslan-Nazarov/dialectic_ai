@@ -1,0 +1,24 @@
+{
+ "doc": 446,
+ "hypothesis": "nda-7",
+ "gold": "Contradiction",
+ "gold_evidence": [
+  "____________________ , agrees that, in consideration for being shown or told about certain trade secrets or property belonging to Navidec, Incorporated, ____________________, shall not disclose or cause to be disclosed, disseminated or distributed any information concerning said trade secret or property to any person, entity, business or other individual or company without the prior written permission of Navidec, Incorporated."
+ ],
+ "engine": {
+  "status": "completed",
+  "stop_reason": null,
+  "verdict": "Contradiction",
+  "response": "Contradiction\n\nQuoted clause(s):\n\"____________________ , agrees that, in consideration for being shown or told about certain trade secrets or property belonging to Navidec, Incorporated, ____________________, shall not disclose or cause to be disclosed, disseminated or distributed any information concerning said trade secret or property to any person, entity, business or other individual or company without the prior written permission of Navidec, Incorporated.\"\n\n\"Further, ___________________ , agrees not to use, either directly or indirectly any of the material, ideas, objects or portions thereof of said trade secret or property disclosed by Navidec, Incorporated in any manner whatsoever without the prior written consent of Navidec, Incorporated.\"",
+  "elapsed_s": 998,
+  "tokens": {
+   "actor": 86064,
+   "judge": 200829
+  }
+ },
+ "plain": {
+  "verdict": "Contradiction",
+  "response": "{\"answer\":\"Contradiction — \\\"____________________ , agrees that, in consideration for being shown or told about certain trade secrets or property belonging to Navidec, Incorporated, ____________________, shall not disclose or cause to be disclosed, disseminated or distributed any information concerning said trade secret or property to any person, entity, business or other individual or company without the prior written permission of Navidec, Incorporated.\\\" \\\"Further, ___________________ , agrees not to use, either directly or indirectly any of the material, ideas, objects or portions thereof of said trade secret or property disclosed by Navidec, Incorporated in any manner whatsoever without the prior written consent of Navidec, Incorporated.\\\"\"}"
+ },
+ "trace": "D:\\Библиотека\\Исследования\\Искусственный интеллект\\AI_agent_hackaton\\live_runs\\contract_nli\\doc446_nda-7.jsonl"
+}

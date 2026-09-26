@@ -1,0 +1,188 @@
+[
+ {
+  "doc": 296,
+  "hypothesis": "nda-2",
+  "group": "contradiction_easy",
+  "arm": "plain",
+  "rep": 0,
+  "gold": "Contradiction",
+  "verdict": "Contradiction",
+  "fits": null,
+  "fit_note": "",
+  "fit_ids": [],
+  "seconds": 5.9,
+  "answer": "Contradiction -- \"1. Definition. The term 'Confidential Information' as used herein means all trade secrets or confidential or proprietary information of either party, whether or not marked 'Confidential', whether in written or oral form, relating to such party's business or technology, including without limitation, its products, customer data, development and marketing plans, and financial information. In addition, Confidential Information shall include all terms and conditions of this Agreement including the fact that the parties are having discussions in order to determine the feasibility of a commercial relationship.\""
+ },
+ {
+  "doc": 296,
+  "hypothesis": "nda-2",
+  "group": "contradiction_easy",
+  "arm": "placebo",
+  "rep": 0,
+  "gold": "Contradiction",
+  "verdict": "Contradiction",
+  "fits": true,
+  "fit_note": "",
+  "fit_ids": [],
+  "seconds": 6.7,
+  "answer": "Contradiction -- \"1. Definition. The term \\\"Confidential Information\\\" as used herein means all trade secrets or confidential or proprietary information of either party, whether or not marked \\\"Confidential\\\", whether in written or oral form, relating to such party's business or technology, including without limitation, its products, customer data, development and marketing plans, and financial information.\"; \"In addition, Confidential Information shall include all terms and conditions of this Agreement including the fact that the parties are having discussions in order to determine the feasibility of a commercial relationship.\""
+ },
+ {
+  "doc": 296,
+  "hypothesis": "nda-2",
+  "group": "contradiction_easy",
+  "arm": "world",
+  "rep": 0,
+  "gold": "Contradiction",
+  "verdict": "Contradiction",
+  "fits": true,
+  "fit_note": "",
+  "fit_ids": [],
+  "seconds": 7.0,
+  "answer": "Contradiction -- \"The term \"Confidential Information\" as used herein means all trade secrets or confidential or proprietary information of either party, whether or not marked \"Confidential\", whether in written or oral form, relating to such party's business or technology, including without limitation, its products, customer data, development and marketing plans, and financial information.\" and \"In addition, Confidential Information shall include all terms and conditions of this Agreement including the fact that the parties are having discussions in order to determine the feasibility of a commercial relationship.\""
+ },
+ {
+  "doc": 1,
+  "hypothesis": "nda-1",
+  "group": "hard",
+  "arm": "plain",
+  "rep": 0,
+  "gold": "Contradiction",
+  "verdict": "NotMentioned",
+  "fits": null,
+  "fit_note": "",
+  "fit_ids": [],
+  "seconds": 7.2,
+  "answer": "NotMentioned -- \"For purposes of this Agreement, 'Confidential Information' means any data or information that is proprietary to the Parties and not generally known to the public, whether in tangible or intangible form, whenever and however disclosed, including but not limited to: ... i. any other information that should reasonably be recognized as sensitive or confidential information of the Recipient or the disclosing party.\" (Section 1)"
+ },
+ {
+  "doc": 1,
+  "hypothesis": "nda-1",
+  "group": "hard",
+  "arm": "world",
+  "rep": 0,
+  "gold": "Contradiction",
+  "verdict": "NotMentioned",
+  "fits": true,
+  "fit_note": "",
+  "fit_ids": [
+   "P0"
+  ],
+  "seconds": 9.5,
+  "answer": "NotMentioned -- \"For purposes of this Agreement, 'Confidential Information' means any data or information that is proprietary to the Parties and not generally known to the public, whether in tangible or intangible form, whenever and however disclosed, including but not limited to: a. the documents described in the Whereas clause above; b. Critical Infrastructure Information... (Clause 1)\""
+ },
+ {
+  "doc": 1,
+  "hypothesis": "nda-1",
+  "group": "hard",
+  "arm": "placebo",
+  "rep": 0,
+  "gold": "Contradiction",
+  "verdict": "NotMentioned",
+  "fits": true,
+  "fit_note": "",
+  "fit_ids": [
+   "P0",
+   "R3c4877"
+  ],
+  "seconds": 10.3,
+  "answer": "NotMentioned -- \"For purposes of this Agreement, \\\"Confidential Information\\\" means any data or information that is proprietary to the Parties and not generally known to the public, whether in tangible or intangible form, whenever and however disclosed, including but not limited to:\" (Section 1)"
+ },
+ {
+  "doc": 357,
+  "hypothesis": "nda-3",
+  "group": "entailment",
+  "arm": "world",
+  "rep": 0,
+  "gold": "Entailment",
+  "verdict": "Entailment",
+  "fits": true,
+  "fit_note": "",
+  "fit_ids": [
+   "Pb5d28e"
+  ],
+  "seconds": 10.3,
+  "answer": "Entailment -- \"Confidential Information is defined as any information, whether written or verbal, of either party hereto, (Disclosing Party) which is disclosed to or observed by the other party (Receiving Party) in connection with or as a result of the evaluation of any possible transaction between the University of Arkansas at Little Rock and ______________________________ and which is, at the time of disclosure, marked as being Confidential or Proprietary, or is reasonably identifiable as confidential, proprietary information of the Disclosing Party pertaining to information in the areas of (subject matter): _______________________________________________ ___________________________.\"; \"Confidential Information that is disclosed verbally will also be included as proprietary.\""
+ },
+ {
+  "doc": 357,
+  "hypothesis": "nda-3",
+  "group": "entailment",
+  "arm": "placebo",
+  "rep": 0,
+  "gold": "Entailment",
+  "verdict": "Entailment",
+  "fits": true,
+  "fit_note": "",
+  "fit_ids": [
+   "Pb5d28e",
+   "P5202dc"
+  ],
+  "seconds": 9.8,
+  "answer": "Entailment -- \"Confidential Information is defined as any information, whether written or verbal...\"; \"Confidential Information that is disclosed verbally will also be included as proprietary.\""
+ },
+ {
+  "doc": 47,
+  "hypothesis": "nda-1",
+  "group": "not_mentioned",
+  "arm": "plain",
+  "rep": 0,
+  "gold": "NotMentioned",
+  "verdict": "Contradiction",
+  "fits": null,
+  "fit_note": "",
+  "fit_ids": [],
+  "seconds": 12.7,
+  "answer": "Contradiction -- \"(a) That any information provided on any business is sensitive and confidential, and that its disclosure to others may be damaging to the businesses and their owners.\" and \"(b) Not to disclose, for a period of three years from the date I/we sign this Non-Disclosure Agreement, any information regarding these businesses to any other person who has not also signed this Agreement, except to secure the advise and recommendations of my business advisors (accountants, attorneys, etc.) \\\"Information\\\" as used in this Agreement shall include the fact that the businesses are for sale, plus any other data provided.\""
+ },
+ {
+  "doc": 47,
+  "hypothesis": "nda-1",
+  "group": "not_mentioned",
+  "arm": "placebo",
+  "rep": 0,
+  "gold": "NotMentioned",
+  "verdict": "NotMentioned",
+  "fits": true,
+  "fit_note": "",
+  "fit_ids": [
+   "Pb5d28e",
+   "Pc21d6f",
+   "R3c4877"
+  ],
+  "seconds": 12.7,
+  "answer": "NotMentioned -- \"(b) Not to disclose, for a period of three years from the date I/we sign this Non-Disclosure Agreement, any information regarding these businesses to any other person who has not also signed this Agreement, except to secure the advise and recommendations of my business advisors (accountants, attorneys, etc.) \\\"Information\\\" as used in this Agreement shall include the fact that the businesses are for sale, plus any other data provided.\"; \"5. I/we acknowledge that we will receive confidential information about the Seller's business, operations, customers, and employees and agree not to start a business similar to the sellers listed above and not to solicit or contact Seller's employees or customers for a period of three years from the date herein.\""
+ },
+ {
+  "doc": 47,
+  "hypothesis": "nda-1",
+  "group": "not_mentioned",
+  "arm": "world",
+  "rep": 0,
+  "gold": "NotMentioned",
+  "verdict": "NotMentioned",
+  "fits": true,
+  "fit_note": "",
+  "fit_ids": [
+   "Pb5d28e",
+   "P5202dc",
+   "Pc21d6f"
+  ],
+  "seconds": 14.2,
+  "answer": "NotMentioned -- \"(a) That any information provided on any business is sensitive and confidential, and that its disclosure to others may be damaging to the businesses and their owners.\"; \"(b) Not to disclose, for a period of three years from the date I/we sign this Non-Disclosure Agreement, any information regarding these businesses to any other person who has not also signed this Agreement, except to secure the advise and recommendations of my business advisors (accountants, attorneys, etc.) \\\"Information\\\" as used in this Agreement shall include the fact that the businesses are for sale, plus any other data provided.\"; \"5. I/we acknowledge that we will receive confidential information about the Seller's business, operations, customers, and employees and agree not to start a business simil"
+ },
+ {
+  "doc": 357,
+  "hypothesis": "nda-3",
+  "group": "entailment",
+  "arm": "plain",
+  "rep": 0,
+  "gold": "Entailment",
+  "verdict": "Entailment",
+  "fits": null,
+  "fit_note": "",
+  "fit_ids": [],
+  "seconds": 23.4,
+  "answer": "Entailment -- \"Confidential Information is defined as any information, whether written or verbal, of either party hereto, (Disclosing Party) which is disclosed to or observed by the other party (Receiving Party) in connection with or as a result of the evaluation of any possible transaction between the University of Arkansas at Little Rock and ______________________________ and which is, at the time of disclosure, marked as being Confidential or Proprietary, or is reasonably identifiable as confidential, proprietary information of the Disclosing Party pertaining to information in the areas of (subject matter): _______________________________________________ ___________________________.\"; \"Confidential Information that is disclosed verbally will also be included as proprietary.\"} PMID: N/A."
+ }
+]
