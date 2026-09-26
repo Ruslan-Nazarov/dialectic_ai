@@ -1,0 +1,11 @@
+[
+  {
+    "id": "Case 1",
+    "target": "Classify this item",
+    "p0": "The process of individually classifying each item through a fresh human judgment.",
+    "p1": "The process of extracting and explicitly formulating a general classification rule from repeated individual classifications.",
+    "emergence_rationale": "Repeated individual classifications reveal a recurring criterion.",
+    "potential_rationale": "The criterion being formalized already exists implicitly in the repeated individual judgments.",
+    "determinacy_rationale": "Formulating the rule makes explicit the previously implicit logic of the individual judgments."
+  }
+]
