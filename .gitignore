@@ -65,6 +65,7 @@ cover/
 trace.jsonl
 *_trace.jsonl
 *_memory.json
+token_metrics.json
 
 # IDEs
 .idea/

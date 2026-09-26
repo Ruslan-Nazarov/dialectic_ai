@@ -1,5 +1,12 @@
 # DialecticAI — Runtime V2
 
+**Status: archive.** Frozen after the owner's algorithm made v2's approach (a judge model
+checking every move) obsolete; kept, unmodified, only because the numbers in
+`../ENGINE_V2_LESSONS.md` and `../RESEARCH_HISTORY_AND_PROGRAM.md` are computed from this
+code and its logs (see [archive/run_logs/INDEX.md](archive/run_logs/INDEX.md)). For the
+active engine see [../dialectic_world/](../dialectic_world/) (v3). `archive/docs/` holds
+superseded planning documents kept for the same reason.
+
 An experimental agent runtime with an enforced dialectical **world-roadmap**.
 First the model derives a simplest process, its development, an independently developing
 opposite, their contradiction and a proposed leap. Only an accepted complete roadmap
@@ -61,6 +68,9 @@ python -m pytest tests/test_canary_real_provider.py -v
 
 ## Dashboard
 
+Moved to `archive/dashboard/` along with the rest of this archive (unused in the current
+pipeline). To run it anyway:
+
 ```powershell
 python -m dialectic_ai.api.server
 ```
@@ -68,7 +78,7 @@ python -m dialectic_ai.api.server
 In another terminal:
 
 ```powershell
-cd dashboard
+cd archive/dashboard
 npm ci
 npm run dev
 ```
