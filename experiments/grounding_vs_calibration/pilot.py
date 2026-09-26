@@ -12,10 +12,10 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
-from data import ROOT, active_process_ids, load_world, load_world_answers
-from decider import SurrogateDecider
+from data import GOLD_FILE, active_process_ids, load_world, load_world_answers
+from decider import build_decider
 from llm_call import chat_call
-from retrieval import PracticeSignal, keyword_search, quote_found_verbatim
+from retrieval import QuoteReverdictSignal, keyword_search, quote_found_verbatim
 from variants import build_state, variant1_signal, variant2_error_signal
 
 SURROGATE_MODEL = "gpt-4o-mini"
@@ -23,7 +23,7 @@ BASE_URL = "https://api.openai.com/v1"
 API_KEY_ENV = "OPENAI_API_KEY"
 AGENT_MODEL = "gpt-5-mini"  # for the re-verdict call in variant 3, matching the original agent model
 
-GOLD_DATA_PATH = ROOT / "live_runs" / "contract_nli" / "contract-nli" / "test.json"
+GOLD_DATA_PATH = GOLD_FILE
 
 
 def load_contract_texts() -> dict[int, str]:
@@ -69,7 +69,7 @@ def main():
     contract_texts = load_contract_texts()
     hyp_texts = load_hypothesis_texts()
 
-    decider = SurrogateDecider(SURROGATE_MODEL, BASE_URL, API_KEY_ENV)
+    decider = build_decider(SURROGATE_MODEL, BASE_URL, API_KEY_ENV)
 
     total_prompt_tok = 0
     total_completion_tok = 0
@@ -89,14 +89,14 @@ def main():
         total_prompt_tok += r.prompt_tokens
         total_completion_tok += r.completion_tokens
     # Variant 3: one search (no call, code only) + one re-verdict call per answer, when a quote exists.
-    v3_signals: list[PracticeSignal] = []
+    v3_signals: list[QuoteReverdictSignal] = []
     for a in answers:
         text = contract_texts.get(a.doc, "")
         hyp_text = hyp_texts.get(a.hypothesis, "")
         hits = keyword_search(text, hyp_text)
         quote = hits[0] if hits else None
         if quote is None:
-            v3_signals.append(PracticeSignal(quote_found=False, reverdict=None, reverdict_matches_original=None))
+            v3_signals.append(QuoteReverdictSignal(quote_found=False, reverdict=None, reverdict_matches_original=None))
             continue
         found = quote_found_verbatim(text, quote)
         reverdict = None
@@ -107,7 +107,7 @@ def main():
             total_prompt_tok += call_result_holder.get("prompt_tokens", 0)
             total_completion_tok += call_result_holder.get("completion_tokens", 0)
         v3_signals.append(
-            PracticeSignal(
+            QuoteReverdictSignal(
                 quote_found=found,
                 reverdict=reverdict,
                 reverdict_matches_original=(reverdict == a.verdict) if reverdict else None,

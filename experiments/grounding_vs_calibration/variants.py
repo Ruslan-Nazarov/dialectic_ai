@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from data import Answer, load_world
 from decider import ChoiceResult, Decider
-from retrieval import PracticeSignal, keyword_search, quote_found_verbatim
+from retrieval import QuoteReverdictSignal, keyword_search, quote_found_verbatim
 
 
 # ---------------------------------------------------------------------------
@@ -67,19 +67,19 @@ def variant2_error_signal(results: list[ChoiceResult], p_none_threshold: float =
 
 
 # ---------------------------------------------------------------------------
-# Variant 3: practice (external signal via quote retrieval + code-checked re-verdict).
+# Variant 3: quote-anchored re-verdict (quote retrieval is code-only; re-verdict is a model call).
 # ---------------------------------------------------------------------------
 def variant3_signal_for_row(
     answer: Answer,
     contract_text: str,
     quote: str | None,
     reverdict_from_quote,  # callable(quote:str, statement:str) -> verdict string, or None
-) -> PracticeSignal:
+) -> QuoteReverdictSignal:
     if quote is None:
-        return PracticeSignal(quote_found=False, reverdict=None, reverdict_matches_original=None)
+        return QuoteReverdictSignal(quote_found=False, reverdict=None, reverdict_matches_original=None)
     found = quote_found_verbatim(contract_text, quote)
     if not found:
-        return PracticeSignal(quote_found=False, reverdict=None, reverdict_matches_original=None)
+        return QuoteReverdictSignal(quote_found=False, reverdict=None, reverdict_matches_original=None)
     reverdict = reverdict_from_quote(quote, answer) if reverdict_from_quote else None
     matches = (reverdict == answer.verdict) if reverdict is not None else None
-    return PracticeSignal(quote_found=True, reverdict=reverdict, reverdict_matches_original=matches)
+    return QuoteReverdictSignal(quote_found=True, reverdict=reverdict, reverdict_matches_original=matches)

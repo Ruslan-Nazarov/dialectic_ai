@@ -26,7 +26,7 @@ answers that turn out to be *correct* than on ones that are wrong (signal rate 0
 inverted is addressed in the post-hoc breakdown below (§ Post-hoc analysis) — in short, `P(none fits)`
 tracks which gold class the statement belongs to, not whether the agent's answer about it was right.
 
-**Variant 3 (practice): a moderate signal with a lot of false positives.** Its combined error signal has
+**Variant 3 (quote-anchored re-verdict, renamed from "practice" -- see below): a moderate signal with a lot of false positives.** Its combined error signal has
 precision 0.531 / recall 0.797 (95% CI on precision [0.427, 0.632], recall [0.696, 0.890]) — it catches
 80% of wrong answers, but 59% of the answers it flags are actually correct (see § Post-hoc analysis for
 the full confusion table and the "flag everything" baseline comparison). All of that signal comes from
@@ -46,9 +46,9 @@ recall is 0.
 | 2. Choice (main) | `P(none fits)` (continuous; binary cutoff 0.5 for precision/recall) | 0.192 | 0.127 | **0.243** [0.170, 0.320] | 0.450 | 0.127 |
 | 2. Auxiliary | top-choice confidence | -- | -- | 0.283 | -- | -- |
 | 2. Auxiliary | normalized entropy | -- | -- | 0.283 | -- | -- |
-| 3. Practice — quote not found | binary | n/a (never fires) | 0.000 | n/a | 0.000 | 0.000 |
-| 3. Practice — verdict disagree | binary | 0.531 | 0.797 | n/a (binary) | 0.593 | 0.797 |
-| 3. Practice — union (frozen) | binary | **0.531** [0.427, 0.632] | **0.797** [0.696, 0.890] | n/a (binary, per prereg) | 0.593 | 0.797 |
+| 3. Quote-anchored re-verdict — quote not found | binary | n/a (never fires) | 0.000 | n/a | 0.000 | 0.000 |
+| 3. Quote-anchored re-verdict — verdict disagree | binary | 0.531 | 0.797 | n/a (binary) | 0.593 | 0.797 |
+| 3. Quote-anchored re-verdict — union (frozen) | binary | **0.531** [0.427, 0.632] | **0.797** [0.696, 0.890] | n/a (binary, per prereg) | 0.593 | 0.797 |
 
 n = 258 answers (129 doc/hypothesis pairs × 2 reps), 140 correct / 118 wrong per the sanity-checked gold
 label. All CIs: 95%, bootstrap n=2000, resampled by whole (doc, hypothesis) pair (both reps move
@@ -161,7 +161,7 @@ not about whether the agent's specific answer to it was correct. This is the exp
   actual behavior, only about a stand-in built on the same interface.
 - **Model confound between variants 2 and 3.** Variant 2 runs on `gpt-4o-mini` (the only model on hand
   confirmed to support logprobs); variant 3's re-verdict call runs on `gpt-5-mini` (matching the original
-  agent). Any observed difference between "calibration" and "practice" is confounded with this model
+  agent). Any observed difference between "calibration" and "quote-anchored re-verdict" is confounded with this model
   difference, not purely a difference in mechanism. This was flagged in the preregistration amendment
   before the full run, not discovered after the fact.
 - **Variant 3's retrieval tool cannot fail the "quote not found" way by construction** (see above) — its

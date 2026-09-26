@@ -6,15 +6,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+EXP_DIR = Path(__file__).resolve().parent
 EVAL_V3 = ROOT / "contract_nli_runs" / "eval_v3.json"
-GOLD_FILE = ROOT / "live_runs" / "contract_nli" / "contract-nli" / "test.json"
-WORLD_FILE = (
-    ROOT
-    / "live_runs"
-    / "v3_worlds"
-    / "договоры_о_неразглашении_nda_одна_сторона_раскрывает_другой_"
-    / "v1.json"
-)
+GOLD_FILE = EXP_DIR / "data" / "contract-nli" / "test.json"
+WORLD_FILE = EXP_DIR / "data" / "world_nda_v1.json"
 
 
 @dataclass
@@ -40,6 +35,11 @@ def _load_json(path: Path) -> dict:
 
 def load_gold_map(gold_file: Path = GOLD_FILE) -> dict[tuple[int, str], str]:
     """(doc_id, hypothesis_key) -> gold choice, straight from ContractNLI test.json."""
+    if not gold_file.exists():
+        raise FileNotFoundError(
+            f"{gold_file} not found. Run `python download_contract_nli.py` first "
+            "(fetches the official CC BY 4.0 dataset; not committed to this repo)."
+        )
     data = _load_json(gold_file)
     out: dict[tuple[int, str], str] = {}
     for doc in data["documents"]:

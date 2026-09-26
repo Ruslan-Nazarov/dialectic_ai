@@ -19,10 +19,10 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
-from data import ROOT, active_process_ids, load_world, load_world_answers
-from decider import ChoiceResult, SurrogateDecider
+from data import GOLD_FILE, active_process_ids, load_world, load_world_answers
+from decider import ChoiceResult, build_decider
 from llm_call import chat_call
-from retrieval import PracticeSignal, keyword_search, quote_found_verbatim
+from retrieval import QuoteReverdictSignal, keyword_search, quote_found_verbatim
 from variants import build_state
 
 SURROGATE_MODEL = "gpt-4o-mini"
@@ -31,7 +31,7 @@ API_KEY_ENV = "OPENAI_API_KEY"
 AGENT_MODEL = "gpt-5-mini"
 MAX_WORKERS = 16
 
-GOLD_DATA_PATH = ROOT / "live_runs" / "contract_nli" / "contract-nli" / "test.json"
+GOLD_DATA_PATH = GOLD_FILE
 OUT_DIR = Path(__file__).resolve().parent
 
 
@@ -81,13 +81,13 @@ def run_variant3_for_answer(a, contract_texts, hyp_texts) -> dict:
     hits = keyword_search(text, hyp_text)
     quote = hits[0] if hits else None
     if quote is None:
-        return {"signal": PracticeSignal(False, None, None), "prompt_tokens": 0, "completion_tokens": 0}
+        return {"signal": QuoteReverdictSignal(False, None, None), "prompt_tokens": 0, "completion_tokens": 0}
     found = quote_found_verbatim(text, quote)
     if not found:
-        return {"signal": PracticeSignal(False, None, None), "prompt_tokens": 0, "completion_tokens": 0}
+        return {"signal": QuoteReverdictSignal(False, None, None), "prompt_tokens": 0, "completion_tokens": 0}
     reverdict, pt, ct = reverdict_from_quote(quote, hyp_text)
     return {
-        "signal": PracticeSignal(True, reverdict, reverdict == a.verdict),
+        "signal": QuoteReverdictSignal(True, reverdict, reverdict == a.verdict),
         "prompt_tokens": pt,
         "completion_tokens": ct,
     }
@@ -99,7 +99,7 @@ def main():
     process_ids = active_process_ids(world)
     contract_texts = load_contract_texts()
     hyp_texts = load_hypothesis_texts()
-    decider = SurrogateDecider(SURROGATE_MODEL, BASE_URL, API_KEY_ENV)
+    decider = build_decider(SURROGATE_MODEL, BASE_URL, API_KEY_ENV)
 
     started = time.monotonic()
 
@@ -133,7 +133,7 @@ def main():
     raw = []
     for i, a in enumerate(answers):
         r2 = v2_results[i]
-        s3: PracticeSignal = v3_out[i]["signal"]
+        s3: QuoteReverdictSignal = v3_out[i]["signal"]
         raw.append(
             {
                 "doc": a.doc,

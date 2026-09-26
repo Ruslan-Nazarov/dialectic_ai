@@ -1,4 +1,7 @@
-"""Verbatim quote check and single-quote re-verdict for variant 3 (practice / external signal).
+"""Verbatim quote check and single-quote re-verdict for variant 3: quote-anchored re-verdict
+(renamed from "practice / external signal" -- see PREREGISTRATION.md's 2026-09-27 amendment. The
+quote-found check is code-only and external, but the re-verdict step is a second model call, so
+"external signal" overstated how independent of the model this variant actually is).
 
 No ContractNLI evidence spans are used anywhere here -- only raw contract text and keyword/sentence
 search, matching the preregistration's ban on evidence-span leakage.
@@ -39,7 +42,7 @@ def quote_found_verbatim(contract_text: str, quote: str) -> bool:
 
 
 @dataclass
-class PracticeSignal:
+class QuoteReverdictSignal:
     quote_found: bool
     reverdict: str | None
     reverdict_matches_original: bool | None

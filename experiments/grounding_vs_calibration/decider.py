@@ -181,6 +181,26 @@ class SurrogateDecider:
         )
 
 
+def build_decider(
+    surrogate_model: str = "gpt-4o-mini",
+    surrogate_base_url: str = "https://api.openai.com/v1",
+    surrogate_api_key_env: str = "OPENAI_API_KEY",
+) -> Decider:
+    """One switch for which Decider implementation runs: the `DECIDER_IMPL` env var.
+
+    DECIDER_IMPL=surrogate (default) -> SurrogateDecider on a real logprob-capable model.
+    DECIDER_IMPL=jev                 -> JevDecider. UNTESTED: NO ACCESS KEY. Raises immediately;
+                                         set TYPESAFE_API_KEY once TypeSafe access exists, and this
+                                         switch is the only change needed to actually use it.
+    """
+    impl = os.environ.get("DECIDER_IMPL", "surrogate").strip().lower()
+    if impl == "jev":
+        return JevDecider()
+    if impl == "surrogate":
+        return SurrogateDecider(surrogate_model, surrogate_base_url, surrogate_api_key_env)
+    raise ValueError(f"unknown DECIDER_IMPL={impl!r}; expected 'surrogate' or 'jev'")
+
+
 class JevDecider:
     """UNTESTED: NO ACCESS KEY. Written from TypeSafe AI's public docs for POST /v1/systemone.
 
@@ -192,6 +212,11 @@ class JevDecider:
         self.base_url = base_url
 
     def choice(self, state: str, options: list[str]) -> ChoiceResult:
+        raise NotImplementedError(
+            "JevDecider is untested (no TypeSafe access key) and must not be called in this experiment."
+        )
+
+    def choice_binary_none(self, state: str, process_options: list[str]) -> ChoiceResult:
         raise NotImplementedError(
             "JevDecider is untested (no TypeSafe access key) and must not be called in this experiment."
         )

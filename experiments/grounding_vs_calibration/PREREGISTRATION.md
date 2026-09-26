@@ -40,7 +40,8 @@ is only the test bed already available (contract_nli_runs/eval_v3.json), not the
    "none fits" option. Returns a probability distribution over options.
    Confidence = P(top choice) (same definition Jev/TypeSafe use: concentration of the distribution).
    Error signal = low confidence, or "none fits" selected.
-3. **Practice (external signal)**: agent gets a text-search tool over the contract (`doc["text"]`, keyword/
+3. **Quote-anchored re-verdict** (originally called "practice (external signal)"; renamed 2026-09-27, see
+   amendment below): agent gets a text-search tool over the contract (`doc["text"]`, keyword/
    sentence search only — no evidence-span gold data passed in). It must return a verbatim quote it relied
    on. Code (not a model) checks: (a) does the quote appear verbatim in the contract text; (b) re-deciding
    the verdict from that one quote alone, does it match the original verdict. Error signal = quote not
@@ -55,7 +56,18 @@ the answer. The retrieval tool only searches raw contract text.
 - `SurrogateDecider`: a real logprob-supporting non-reasoning chat model (see model choice below).
 - `JevDecider`: written from TypeSafe's public docs for `POST /v1/systemone`, marked
   **"untested: no access key"** in code and never invoked in this run. Swapping implementations is one
-  config value.
+  config value (`DECIDER_IMPL` env var — see `README.md`).
+
+### Correction/rename — after post-hoc analysis, before external release (2026-09-27)
+
+The post-hoc breakdown (`post_hoc.py`, see RESULTS.md) showed the mechanical "quote not found" check
+never fires in this run's data — by construction, `keyword_search()` returns sentences copied verbatim
+from the contract, so `quote_found_verbatim()` is guaranteed true. All of variant 3's detection power
+comes from `verdict_disagree`, i.e. a second model call re-judging the verdict from one quote, not from
+an independent code-only check. Calling this variant "practice (external signal)" overstated how
+independent of the model it actually is. **Renamed to "quote-anchored re-verdict"** throughout code
+(`PracticeSignal` → `QuoteReverdictSignal` in `retrieval.py`) and RESULTS.md. This is a naming and
+documentation correction only — no metric, threshold, or number changes as a result.
 
 ## Model choice for variant 2
 
