@@ -17,20 +17,26 @@ active processes were offered as options in variant 2.
 
 ## Headline answer
 
-**Calibration does not help, on this data.** Variant 2's frozen main signal, `P(none fits)` from the
+**Variant 2 (calibration): below random.** The frozen main signal, `P(none fits)` from the
 Choice-with-probabilities surrogate, scores **AUROC 0.243** (95% CI [0.170, 0.320], bootstrap n=2000,
 resampled by (doc, hypothesis) pair). That CI sits entirely *below* 0.5 — the frozen threshold for
 "calibration does not help" was any CI overlapping or below 0.5, and this result is stronger than that:
 the signal is not merely uninformative, it's **inverted**. The model reports "none fits" more often on
-answers that turn out to be *correct* than on ones that are wrong (signal rate 0.450 vs 0.127). This
-was not anticipated and is reported as found, not adjusted for.
+answers that turn out to be *correct* than on ones that are wrong (signal rate 0.450 vs 0.127). *Why* it's
+inverted is addressed in the post-hoc breakdown below (§ Post-hoc analysis) — in short, `P(none fits)`
+tracks which gold class the statement belongs to, not whether the agent's answer about it was right.
 
-Variant 3 (practice, external signal) clearly separates correct from incorrect: precision 0.531 / recall
-0.797 for its combined signal (95% CI on precision [0.427, 0.632], recall [0.696, 0.890]). Variant 1
-(self-report) is completely uninformative — not close to chance, *zero variance*: every one of the 258
-`world`-arm rows has `fits = True` (matches `eval_v3.md`'s own tally: "world world_fit marks: fits=258,
-does not fit=0, missing=0"), so its precision is undefined (no positive signal ever fires) and recall is
-0.
+**Variant 3 (practice): a moderate signal with a lot of false positives.** Its combined error signal has
+precision 0.531 / recall 0.797 (95% CI on precision [0.427, 0.632], recall [0.696, 0.890]) — it catches
+80% of wrong answers, but 59% of the answers it flags are actually correct (see § Post-hoc analysis for
+the full confusion table and the "flag everything" baseline comparison). All of that signal comes from
+one sub-mechanism (model re-verdict from a quote); the mechanical "quote not found" check never fires at
+all in this run, for a structural reason explained below.
+
+Variant 1 (self-report) is completely uninformative — not close to chance, *zero variance*: every one of
+the 258 `world`-arm rows has `fits = True` (matches `eval_v3.md`'s own tally: "world world_fit marks:
+fits=258, does not fit=0, missing=0"), so its precision is undefined (no positive signal ever fires) and
+recall is 0.
 
 ## Metrics table
 
@@ -89,6 +95,60 @@ surrogate Decider therefore runs on `gpt-4o-mini`.
    this run's tool cannot exercise that path. Flagged as a limitation below, not silently absorbed into
    the union metric's apparent strength.
 
+## Post-hoc analysis (after seeing results, 2026-09-26)
+
+Everything in this section was run *after* the frozen results above and is exploratory: it does not
+change any frozen metric, threshold, or verdict, and none of it was preregistered. Computed by
+`post_hoc.py`, raw numbers in `post_hoc_summary.json`.
+
+### Variant 3, full confusion table
+
+| Signal | TP | FP | TN | FN | Flag rate | FP rate\|correct | Precision | Recall |
+|---|---|---|---|---|---|---|---|---|
+| **Baseline — flag everything** | 118 | 140 | 0 | 0 | 1.000 | 1.000 | 0.457 | 1.000 |
+| Quote not found (mechanical, code) | 0 | 0 | 140 | 118 | 0.000 | 0.000 | n/a (never fires) | 0.000 |
+| Verdict disagree (model re-verdict) | 94 | 83 | 57 | 24 | 0.686 | 0.593 | 0.531 | 0.797 |
+| **Union (frozen metric)** | 94 | 83 | 57 | 24 | 0.686 | 0.593 | 0.531 | 0.797 |
+
+The union signal is identical to "verdict disagree" alone in this run — the mechanical quote-check
+contributes nothing, for the structural reason already noted (retrieval always returns a real substring
+of the contract, so it can never fail to be "found"). So whatever discriminative power variant 3 has
+here comes entirely from a second model call (re-deciding the verdict from one quote), not from an
+external, code-only check — the "external signal" in this design is only external in the sense that the
+quote is fixed by search, not chosen post-hoc by the model; the actual judgment that catches errors is
+still a model call.
+
+Against the "flag everything" baseline (precision 0.457, since that's just the base rate of wrong
+answers): the union signal's precision (0.531) is only modestly above that baseline, while its 59%
+false-positive rate among *correct* answers means well over half of what it flags is actually fine. This
+supports the "moderate signal, many false positives" characterization rather than "the practice signal
+solves detection."
+
+### Variant 2, breakdown by gold class and by difficulty group
+
+| Gold class | n | correct/wrong | mean P(none fits) | AUROC |
+|---|---|---|---|---|
+| Contradiction | 138 | 51 / 87 | 0.296 | 0.180 |
+| Entailment | 60 | 55 / 5 | 0.243 | 0.578 |
+| NotMentioned | 60 | 34 / 26 | 0.493 | 0.048 |
+
+| Difficulty group | n | correct/wrong | mean P(none fits) | AUROC |
+|---|---|---|---|---|
+| contradiction_easy | 40 | 40 / 0 | 0.538 | n/a (no wrong answers in this group) |
+| entailment | 60 | 55 / 5 | 0.243 | 0.578 |
+| hard | 98 | 11 / 87 | 0.197 | 0.283 |
+| not_mentioned | 60 | 34 / 26 | 0.493 | 0.048 |
+
+This confirms the hypothesis behind the "reflects class, not correctness" reading: mean `P(none fits)`
+varies by roughly 2x across gold classes (0.243 to 0.493) largely independent of how often the agent was
+actually right in that class, and AUROC swings from 0.048 (NotMentioned — worse than inverted) to 0.578
+(Entailment — mildly better than chance) depending on which class is being scored. A signal whose
+predictive direction flips sign across classes is not a usable calibration signal on its own; it is
+picking up something about the statement's gold category (plausibly: how much of the NDA world's
+process vocabulary a NotMentioned statement can plausibly be phrased against, versus an Entailment one),
+not about whether the agent's specific answer to it was correct. This is the explanation for the
+"below random" headline above, not a justification for softening it.
+
 ## Limitations
 
 - **One world, one domain, one agent model.** Everything here is the NDA world (`v1.json`) built once,
@@ -126,3 +186,5 @@ surrogate Decider therefore runs on `gpt-4o-mini`.
 | Variant 2 AUROC | 0.243 [0.170, 0.320] | `analyze.py`, printed from `metrics.auroc` + `metrics.bootstrap_ci` over `raw_results.json` | printed programmatically, `analyze.py:114-121`, not hand-typed |
 | Variant 3 union precision/recall | 0.531 / 0.797 | `analyze.py`, `metrics.precision_recall` over `raw_results.json` | printed programmatically |
 | Token/call/time totals | see cost table above | `run_summary.json`, generated by `full_run.py` | printed programmatically, not hand-typed |
+| Variant 3 confusion table (post-hoc) | see table above | `post_hoc.py:confusion()`, printed to `post_hoc_summary.json` | printed programmatically, exploratory (not frozen) |
+| Variant 2 by-gold-class / by-group breakdown (post-hoc) | see tables above | `post_hoc.py`, printed to `post_hoc_summary.json` | printed programmatically, exploratory (not frozen) |

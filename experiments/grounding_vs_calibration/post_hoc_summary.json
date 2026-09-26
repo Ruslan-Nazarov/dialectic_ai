@@ -1,0 +1,97 @@
+{
+  "variant3_full_table": {
+    "baseline_flag_everything": {
+      "precision": 0.4573643410852713,
+      "recall": 1.0,
+      "flag_rate": 1.0,
+      "false_positive_rate_among_correct": 1.0,
+      "TP": 118,
+      "FP": 140,
+      "TN": 0,
+      "FN": 0
+    },
+    "quote_not_found (mechanical, code-checked)": {
+      "TP": 0,
+      "FP": 0,
+      "TN": 140,
+      "FN": 118,
+      "flag_rate": 0.0,
+      "false_positive_rate_among_correct": 0.0,
+      "precision": NaN,
+      "recall": 0.0
+    },
+    "verdict_disagree (model re-verdict)": {
+      "TP": 94,
+      "FP": 83,
+      "TN": 57,
+      "FN": 24,
+      "flag_rate": 0.686046511627907,
+      "false_positive_rate_among_correct": 0.5928571428571429,
+      "precision": 0.5310734463276836,
+      "recall": 0.7966101694915254
+    },
+    "union (frozen metric)": {
+      "TP": 94,
+      "FP": 83,
+      "TN": 57,
+      "FN": 24,
+      "flag_rate": 0.686046511627907,
+      "false_positive_rate_among_correct": 0.5928571428571429,
+      "precision": 0.5310734463276836,
+      "recall": 0.7966101694915254
+    }
+  },
+  "variant2_by_gold_class": {
+    "Contradiction": {
+      "n": 138,
+      "mean_p_none_fits": 0.29595156742831186,
+      "auroc": 0.18007662835249041,
+      "n_correct": 51,
+      "n_wrong": 87
+    },
+    "Entailment": {
+      "n": 60,
+      "mean_p_none_fits": 0.24261759933305807,
+      "auroc": 0.5781818181818181,
+      "n_correct": 55,
+      "n_wrong": 5
+    },
+    "NotMentioned": {
+      "n": 60,
+      "mean_p_none_fits": 0.4928076543009613,
+      "auroc": 0.04751131221719457,
+      "n_correct": 34,
+      "n_wrong": 26
+    }
+  },
+  "variant2_by_group": {
+    "contradiction_easy": {
+      "n": 40,
+      "mean_p_none_fits": 0.5379656440734886,
+      "auroc": NaN,
+      "n_correct": 40,
+      "n_wrong": 0
+    },
+    "entailment": {
+      "n": 60,
+      "mean_p_none_fits": 0.24261759933305807,
+      "auroc": 0.5781818181818181,
+      "n_correct": 55,
+      "n_wrong": 5
+    },
+    "hard": {
+      "n": 98,
+      "mean_p_none_fits": 0.1971703116547703,
+      "auroc": 0.2831765935214211,
+      "n_correct": 11,
+      "n_wrong": 87
+    },
+    "not_mentioned": {
+      "n": 60,
+      "mean_p_none_fits": 0.4928076543009613,
+      "auroc": 0.04751131221719457,
+      "n_correct": 34,
+      "n_wrong": 26
+    }
+  }
+}
