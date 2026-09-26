@@ -1,0 +1,38 @@
+COMMIT: PROPOSE_SIMPLEST
+COMMIT: ASSESS_SIMPLEST
+COMMIT: DESIGNATE_OPPOSITE
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+REJECT: Semantic: The proposal misidentifies the SIMPLEST process. According to the task‑specific definitions, the SIMPLEST process must be the user's appeal itself (the complaint about cold food), not the generative action "Подогреть еду." Because the simpl
+  move: ESTABLISH_CONTRADICTION
+REJECT: Semantic: The proposal misidentifies the SIMPLEST process: according to the task‑specific definitions the SIMPLEST must be the user's appeal (the complaint about cold food), but the proposal uses the generative action "Подогреть еду". Because the SIM
+  move: ESTABLISH_CONTRADICTION
+REJECT: Semantic: The proposal incorrectly designates the SIMPLEST process as the generative action "Подогреть еду". According to the task‑specific definitions, the SIMPLEST must be the user's appeal itself (the complaint about cold food). Because the simple
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: A contradiction requires committed development of BOTH processes
+  move: ESTABLISH_CONTRADICTION
+REJECT: Semantic: The proposal misidentifies the SIMPLEST process. According to the task‑specific definitions, the SIMPLEST must be the user's appeal itself (the complaint about cold food), but the proposal uses the generative action "Подогреть еду" as the s
+  move: ESTABLISH_CONTRADICTION
+REJECT: Semantic: The proposal claims to be the SIMPLEST process, but according to the task‑specific definitions the SIMPLEST process is the user's appeal itself (the statement that the food is cold and can be reheated). The submitted payload "Подогреть еду.
+  move: PROPOSE_SIMPLEST
+REJECT: Semantic: The proposal is intended to be the SIMPLEST process, which by the task‑specific definition must be the user's appeal itself. The user's appeal consists of the full statement "Еда холодная. Сотрудник столовой подтвердил, что может её подогре
+  move: PROPOSE_SIMPLEST
+COMMIT: PROPOSE_SIMPLEST
+COMMIT: ASSESS_SIMPLEST
+COMMIT: DESIGNATE_OPPOSITE
+REJECT: Semantic: The proposal adds information that is not present in the original appeal (a specific method proposed by the staff) and the so‑called concretization remains vague, providing no actionable instruction. This violates the requirement that devel
+  move: DEVELOP_PROCESS
+COMMIT: CONNECT_DEVELOPMENT
+REJECT: Semantic: The proposed DEVELOP_PROCESS move adds a normative recommendation ('Необходимо воспользоваться возможностью подогрева еды') that is not explicitly present in the source process and does not provide a concrete, actionable instruction. The co
+  move: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+REJECT: Structural: A contradiction requires committed development of BOTH processes
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: A contradiction requires committed development of BOTH processes
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: A contradiction requires committed development of BOTH processes
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: A contradiction requires committed development of BOTH processes
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: A contradiction requires committed development of BOTH processes
+  move: ESTABLISH_CONTRADICTION

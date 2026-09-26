@@ -1,0 +1,26 @@
+{
+  "prompt_tokens": 114549,
+  "completion_tokens": 5841,
+  "total_tokens": 120390,
+  "total_calls": 1561,
+  "by_provider": {
+    "gigachat": {
+      "prompt_tokens": 114549,
+      "completion_tokens": 5841,
+      "total_tokens": 120390,
+      "calls": 45,
+      "exact_calls": 45
+    },
+    "mock": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "calls": 1516,
+      "exact_calls": 1516,
+      "estimated_calls": 0
+    }
+  },
+  "exact_calls": 1561,
+  "estimated": false,
+  "last_updated": "2026-09-25T02:49:53.997713+00:00"
+}

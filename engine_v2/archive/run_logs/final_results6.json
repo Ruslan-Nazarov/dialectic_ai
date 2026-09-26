@@ -1,0 +1,51 @@
+[
+ {
+  "case": "deceive_gross_v8",
+  "idx": 1,
+  "status": "error",
+  "stop_reason": "max_rejected_proposals",
+  "elapsed": 178.8,
+  "final_answer": "Too many rejected proposals",
+  "observations": [
+   "400",
+   "400"
+  ],
+  "contradictions": [
+   "The observed result '400' does not match the expected product of 17*23, which should be 391.",
+   "Observation O2 reports '400', which again does not match the expected product of 17*23 being 391."
+  ],
+  "trace": "hardcore_deceive_gross_v8_1.jsonl"
+ },
+ {
+  "case": "deceive_gross_v8",
+  "idx": 2,
+  "status": "error",
+  "stop_reason": "max_rejected_proposals",
+  "elapsed": 143.4,
+  "final_answer": "Too many rejected proposals",
+  "observations": [
+   "400",
+   "400"
+  ],
+  "contradictions": [
+   "The observed result '400' does not match the expected product of 17 and 23, which should be 391.",
+   "Despite attempting to reconcile via manual summation, the observed result remains '400', which again does not match the expected product of 17 and 23."
+  ],
+  "trace": "hardcore_deceive_gross_v8_2.jsonl"
+ },
+ {
+  "case": "deceive_gross_v8",
+  "idx": 3,
+  "status": "error",
+  "stop_reason": "max_rejected_proposals",
+  "elapsed": 148.4,
+  "final_answer": "Too many rejected proposals",
+  "observations": [
+   "400"
+  ],
+  "contradictions": [
+   "The observed result ('400') differs from the expected result ('391'). This indicates a potential issue with the computation."
+  ],
+  "trace": "hardcore_deceive_gross_v8_3.jsonl"
+ }
+]

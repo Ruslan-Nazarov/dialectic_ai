@@ -1,0 +1,10 @@
+COMMIT PROPOSE_SIMPLEST content= Подогреть еду. result_id= 67e43f97-79d6-48a9-a8e3-febc2fb452e0
+COMMIT ASSESS_SIMPLEST approved= True candidate= ef50750c-b5c3-428c-8331-f2b5bd3c6123
+COMMIT DESIGNATE_OPPOSITE
+COMMIT DEVELOP_PROCESS
+COMMIT DEVELOP_PROCESS
+COMMIT PROPOSE_SIMPLEST content= Еда холодная. Сотрудник столовой подтвердил, что может её подогреть. Что делать? result_id= c380a9c2-b9b4-4ad0-b71a-4997cf427152
+COMMIT ASSESS_SIMPLEST approved= True candidate= a00b3669-f065-4d1f-82a9-49f876170cfe
+COMMIT DESIGNATE_OPPOSITE
+COMMIT CONNECT_DEVELOPMENT
+COMMIT DEVELOP_PROCESS

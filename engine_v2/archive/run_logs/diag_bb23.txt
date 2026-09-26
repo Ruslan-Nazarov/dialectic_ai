@@ -1,0 +1,39 @@
+--- run 2 ---
+COMMIT: PROPOSE_SIMPLEST
+COMMIT: ASSESS_SIMPLEST
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+COMMIT: DESIGNATE_OPPOSITE
+REJECT: Proposal schema: 'PROPOSE_ACTION' is not one of ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE']
+COMMIT: CONNECT_DEVELOPMENT
+REJECT: Proposal schema: 'PROPOSE_ACTION' is not one of ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE']
+COMMIT: DEVELOP_PROCESS
+REJECT: Structural: opposite dev ref c7b2a9c2-0ffe-4b63-b560-ecb4390755ed does not belong to opposite development line
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: opposite dev ref c7b2a9c2-0ffe-4b63-b560-ecb4390755ed does not belong to opposite development line
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: opposite dev ref c7b2a9c2-0ffe-4b63-b560-ecb4390755ed does not belong to opposite development line
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: opposite dev ref c7b2a9c2-0ffe-4b63-b560-ecb4390755ed does not belong to opposite development line
+  move: ESTABLISH_CONTRADICTION
+REJECT: Structural: opposite dev ref c7b2a9c2-0ffe-4b63-b560-ecb4390755ed does not belong to opposite development line
+  move: ESTABLISH_CONTRADICTION
+--- run 3 ---
+COMMIT: PROPOSE_SIMPLEST
+COMMIT: ASSESS_SIMPLEST
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+COMMIT: DEVELOP_PROCESS
+COMMIT: DESIGNATE_OPPOSITE
+REJECT: Proposal schema: 'PROPOSE_ACTION' is not one of ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE']
+REJECT: Semantic: The CONNECT_DEVELOPMENT proposal attempts to link the final calculation step (division) to a verification process. Verification is not a nat
+  move: CONNECT_DEVELOPMENT
+REJECT: Proposal schema: 'PROPOSE_LEAP' is not one of ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE']
+REJECT: Semantic: The proposal attempts to link the final calculation step (division) to a verification process, but verification is not a natural development
+  move: CONNECT_DEVELOPMENT
+REJECT: Proposal schema: 'PROPOSE_LEAP' is not one of ['DEVELOP_PROCESS', 'CONNECT_DEVELOPMENT', 'DESIGNATE_OPPOSITE']

@@ -1,0 +1,362 @@
+[
+  {
+    "id": "C_POS_1",
+    "label": "Development",
+    "target": "Learning to speak a language",
+    "p0": "Memorizing vocabulary and individual phrases.",
+    "p1": "Abstracting and understanding general grammar rules.",
+    "emergence_rationale": "Memorizing enough phrases reveals underlying structural patterns.",
+    "potential_rationale": "The grammatical rules are implicitly present in the phrases being memorized.",
+    "determinacy_rationale": "Formulating grammar rules makes the previously blind memorization intelligible as applying a structure.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": true,
+      "emergence": true,
+      "retroactive_determinacy": true,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_POS_2",
+    "label": "Development",
+    "target": "Building a scalable web application",
+    "p0": "Writing raw HTML and CSS for each individual page.",
+    "p1": "Creating a reusable UI component library.",
+    "emergence_rationale": "Duplicating code across pages naturally pushes towards extracting common components.",
+    "potential_rationale": "The common layout and styling patterns exist implicitly within the raw pages.",
+    "determinacy_rationale": "The component library defines the exact structure that the raw pages were attempting to replicate.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": true,
+      "emergence": true,
+      "retroactive_determinacy": true,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_POS_3",
+    "label": "Development",
+    "target": "Solving physics problems",
+    "p0": "Hand-calculating the trajectory of individual thrown objects.",
+    "p1": "Formulating the general kinematic equations of motion.",
+    "emergence_rationale": "Repeated calculations reveal constant mathematical relations.",
+    "potential_rationale": "The kinematic equations are the implicit mathematical ground of the individual trajectories.",
+    "determinacy_rationale": "The general equations explain why the hand-calculations yielded those specific numbers.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": true,
+      "emergence": true,
+      "retroactive_determinacy": true,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_POS_4",
+    "label": "Development",
+    "target": "Organizing community rules",
+    "p0": "Resolving individual disputes on a case-by-case basis.",
+    "p1": "Writing a formal legal code or constitution.",
+    "emergence_rationale": "Case-by-case resolutions establish precedents that demand formalization.",
+    "potential_rationale": "The formal laws are derived directly from the principles implicit in the prior dispute resolutions.",
+    "determinacy_rationale": "The legal code provides a definitive framework that clarifies the logic of past decisions.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": true,
+      "emergence": true,
+      "retroactive_determinacy": true,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_WF_1",
+    "label": "Workflow",
+    "target": "Making soup",
+    "p0": "Chopping vegetables into pieces.",
+    "p1": "Boiling the chopped vegetables in water.",
+    "emergence_rationale": "The recipe dictates that chopping is followed by boiling.",
+    "potential_rationale": "Boiling is an external action applied to the vegetables, not a potential hidden in the chopping process.",
+    "determinacy_rationale": "Boiling does not make the nature of chopping more determinate; it just physically processes the result.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": true
+    }
+  },
+  {
+    "id": "C_WF_2",
+    "label": "Workflow",
+    "target": "Software release",
+    "p0": "Compiling the source code into a binary.",
+    "p1": "Running the integration test suite on the binary.",
+    "emergence_rationale": "The CI pipeline requires compilation to finish before testing begins.",
+    "potential_rationale": "Testing is an external verification process, not a hidden potential within the compiler.",
+    "determinacy_rationale": "Testing verifies the binary but does not make the compilation process itself more conceptually determinate.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": true
+    }
+  },
+  {
+    "id": "C_WF_3",
+    "label": "Workflow",
+    "target": "Applying for a loan",
+    "p0": "Filling out the personal details form.",
+    "p1": "Clicking the submit button to send the form.",
+    "emergence_rationale": "The form must be completed before it can be submitted.",
+    "potential_rationale": "Submission is an external network action, not an implicit structure of the form filling.",
+    "determinacy_rationale": "Submission sends the data but doesn't change the conceptual determination of the data.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": true
+    }
+  },
+  {
+    "id": "C_WF_4",
+    "label": "Workflow",
+    "target": "Parsing data",
+    "p0": "Opening a file handle on the disk.",
+    "p1": "Reading lines of text from the file handle.",
+    "emergence_rationale": "You must have an open handle to read lines.",
+    "potential_rationale": "Reading lines is a subsequent API call, not a potential embedded in the act of opening a handle.",
+    "determinacy_rationale": "Reading lines consumes the file but doesn't clarify what opening the file meant.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": true
+    }
+  },
+  {
+    "id": "C_REN_1",
+    "label": "Renaming",
+    "target": "User management",
+    "p0": "Referring to a person using the system as a 'Customer'.",
+    "p1": "Referring to a person using the system as a 'Client'.",
+    "emergence_rationale": "A management directive requested a vocabulary change.",
+    "potential_rationale": "The concept of 'Client' is identical to 'Customer' in this context.",
+    "determinacy_rationale": "It provides no new conceptual determination, merely a different label.",
+    "expected_vector": {
+      "distinctness": false,
+      "immanence": true,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_REN_2",
+    "label": "Renaming",
+    "target": "Data storage",
+    "p0": "Storing elements in an array called 'my_list'.",
+    "p1": "Storing elements in an array called 'user_list'.",
+    "emergence_rationale": "The developer renamed the variable for better readability.",
+    "potential_rationale": "The data structure and its contents remain exactly the same.",
+    "determinacy_rationale": "Renaming the variable does not change the logic or structure of the data.",
+    "expected_vector": {
+      "distinctness": false,
+      "immanence": true,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_REN_3",
+    "label": "Renaming",
+    "target": "Traveling",
+    "p0": "Walking on the left side of the road.",
+    "p1": "Walking on the left pavement.",
+    "emergence_rationale": "Pedestrians shifted slightly to use the paved area.",
+    "potential_rationale": "The mode of travel and direction are identical.",
+    "determinacy_rationale": "It's just a more specific description of the exact same physical action.",
+    "expected_vector": {
+      "distinctness": false,
+      "immanence": true,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_REN_4",
+    "label": "Renaming",
+    "target": "Sorting",
+    "p0": "Sorting an array with function 'sort_asc()'.",
+    "p1": "Sorting an array with an alias function 'order_up()'.",
+    "emergence_rationale": "The developer used an alias provided by the library.",
+    "potential_rationale": "The underlying algorithm and execution are identical.",
+    "determinacy_rationale": "No new computational logic is introduced.",
+    "expected_vector": {
+      "distinctness": false,
+      "immanence": true,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_EXT_1",
+    "label": "External",
+    "target": "Data processing",
+    "p0": "Processing data locally on the hard drive.",
+    "p1": "Uploading data to the cloud.",
+    "emergence_rationale": "The local hard drive ran out of space.",
+    "potential_rationale": "The necessity to upload comes from a hardware limitation, not the data processing logic itself.",
+    "determinacy_rationale": "Uploading does not make the local processing more conceptually determinate.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_EXT_2",
+    "label": "External",
+    "target": "Reaching destination",
+    "p0": "Driving a car along the highway.",
+    "p1": "Stopping the car completely.",
+    "emergence_rationale": "A traffic light turned red.",
+    "potential_rationale": "The ground for stopping is an external traffic signal, not the act of driving itself.",
+    "determinacy_rationale": "Stopping does not reveal the inner nature of driving.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_EXT_3",
+    "label": "External",
+    "target": "Working",
+    "p0": "Writing code for a new feature.",
+    "p1": "Attending a mandatory HR meeting.",
+    "emergence_rationale": "The HR department scheduled a mandatory compliance meeting.",
+    "potential_rationale": "The meeting is an external organizational requirement, unrelated to the code being written.",
+    "determinacy_rationale": "The meeting does not make the code feature more determinate.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_EXT_4",
+    "label": "External",
+    "target": "Reading",
+    "p0": "Reading a physical book in a room.",
+    "p1": "Turning on a desk lamp.",
+    "emergence_rationale": "The sun set and the room became too dark to read.",
+    "potential_rationale": "The ground for turning on the lamp is the external lack of sunlight.",
+    "determinacy_rationale": "The lamp illuminates the room but does not conceptually develop the act of reading.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": true,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_DRIFT_1",
+    "label": "Drift",
+    "target": "Fix a math function",
+    "p0": "Debugging the mathematical logic of the function.",
+    "p1": "Writing a rhyming poem about how hard math is.",
+    "emergence_rationale": "The programmer got frustrated and needed a creative outlet.",
+    "potential_rationale": "Writing a poem is unrelated to the logic of the math function.",
+    "determinacy_rationale": "A poem does not fix the math function.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": false,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_DRIFT_2",
+    "label": "Drift",
+    "target": "Develop a chess bot",
+    "p0": "Implementing the Minimax algorithm for chess.",
+    "p1": "Playing a game of online poker.",
+    "emergence_rationale": "The developer wanted to gamble instead of working.",
+    "potential_rationale": "Poker has completely different rules and goals than chess.",
+    "determinacy_rationale": "Playing poker does not develop the chess bot.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": false,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_DRIFT_3",
+    "label": "Drift",
+    "target": "Build a house",
+    "p0": "Laying the concrete foundation for the house.",
+    "p1": "Selling life insurance policies to strangers.",
+    "emergence_rationale": "The builder decided to change careers.",
+    "potential_rationale": "Selling insurance is a completely different target process than building a house.",
+    "determinacy_rationale": "Selling insurance does not build the house.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": false,
+      "workflow_only": false
+    }
+  },
+  {
+    "id": "C_DRIFT_4",
+    "label": "Drift",
+    "target": "Optimize database query",
+    "p0": "Adding indexes to the SQL tables.",
+    "p1": "Redesigning the company's graphical logo.",
+    "emergence_rationale": "The marketing team requested a new logo.",
+    "potential_rationale": "Graphic design is orthogonal to database performance.",
+    "determinacy_rationale": "A new logo does not make the query run faster.",
+    "expected_vector": {
+      "distinctness": true,
+      "immanence": false,
+      "emergence": false,
+      "retroactive_determinacy": false,
+      "target_continuity": false,
+      "workflow_only": false
+    }
+  }
+]

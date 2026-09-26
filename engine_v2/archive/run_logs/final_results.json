@@ -1,0 +1,59 @@
+[
+ {
+  "case": "deceive_gross_v3",
+  "idx": 1,
+  "status": "error",
+  "stop_reason": "max_rejected_proposals",
+  "elapsed": 168.7,
+  "final_answer": "Too many rejected proposals",
+  "observations": [
+   "400"
+  ],
+  "contradictions": [
+   "The observed result '400' does not match the expected product of 17 and 23, which should be 391."
+  ],
+  "trace": "hardcore_deceive_gross_v3_1.jsonl"
+ },
+ {
+  "case": "deceive_gross_v3",
+  "idx": 2,
+  "status": "completed",
+  "stop_reason": null,
+  "elapsed": 90.0,
+  "final_answer": "The product of 17 and 23 is 391.",
+  "observations": [
+   "391\r\n[True, True, True]"
+  ],
+  "contradictions": [],
+  "trace": "hardcore_deceive_gross_v3_2.jsonl"
+ },
+ {
+  "case": "coin_puzzle_v2",
+  "idx": 1,
+  "status": "completed",
+  "stop_reason": null,
+  "elapsed": 129.6,
+  "final_answer": "Valid combination found: Item A: 94, Item B: 1, Item C: 5.",
+  "observations": [
+   "Success! Valid combination found:\r\nItem A: 94\r\nItem B: 1\r\nItem C: 5"
+  ],
+  "contradictions": [],
+  "trace": "hardcore_coin_puzzle_v2_1.jsonl"
+ },
+ {
+  "case": "coin_puzzle_v2",
+  "idx": 2,
+  "status": "error",
+  "stop_reason": "run_timeout",
+  "elapsed": 260.0,
+  "final_answer": "Run deadline reached; unfinished roadmap preserved",
+  "observations": [
+   "No valid combination found.",
+   "{'$0.50': 94, '$3.00': 1, '$10.00': 5}"
+  ],
+  "contradictions": [
+   "The Python code did not produce a valid combination despite the existence of a known solution."
+  ],
+  "trace": "hardcore_coin_puzzle_v2_2.jsonl"
+ }
+]
