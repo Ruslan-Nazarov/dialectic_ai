@@ -1,3 +1,0 @@
-{"timestamp": "2026-09-22T16:47:10.365321+00:00", "event_type": "run_started", "run_id": "0d448d65-ca03-4d3d-aba1-0534c59fdb42", "goal": {"id": "73da9f12-f282-4c47-b986-046d7d02da66", "content": "Calculate 17 * 23 using the python_executor tool and report the result.", "active": true}, "validation_mode": "semantic"}
-{"timestamp": "2026-09-22T16:47:10.367023+00:00", "event_type": "allowed_moves", "run_id": "0d448d65-ca03-4d3d-aba1-0534c59fdb42", "iteration": 1, "moves": ["PROPOSE_SIMPLEST"], "phase": "planning"}
-{"timestamp": "2026-09-22T16:47:12.906858+00:00", "event_type": "run_finished", "run_id": "0d448d65-ca03-4d3d-aba1-0534c59fdb42", "status": "error", "stop_reason": "provider_error"}

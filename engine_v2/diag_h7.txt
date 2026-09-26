@@ -1,2 +1,0 @@
-PROPOSE_SIMPLEST {"content": "Подогреть еду."}
-DESIGNATE_OPPOSITE {"simplest_id": "1ea26af8-2b0a-4581-beba-31b73a6ee4b6", "context_id": "eba6fef0-b31d-4544-bdf8-ad75bd7e0dc5", "content": "Сотрудник подтверждает возможность подогрева.", "justification": "Это противоположность ситуации жалобы, где еда холодная и требует подогрева."}
