@@ -24,9 +24,12 @@ it's this experiment's own artifact, not a third-party dataset.
 
 ## Run
 
+Needs an `OPENAI_API_KEY` (env or repo-root `.env`) for `pilot.py`/`full_run.py` — `data.py` and
+`pytest tests/` need no API key at all, only the downloaded dataset.
+
 ```bash
 python data.py            # sanity check: recomputes 54.3% accuracy against ContractNLI gold
-python -m pytest tests/    # unit tests against stub data, no API calls
+python -m pytest tests/    # unit tests -- data-dependent ones skip with a clear message until step 2 above
 python pilot.py            # 10 real answers, all 3 variants, cost estimate
 python full_run.py         # all 258 answers, all 3 variants, parallel -- writes raw_results.json
 python analyze.py          # frozen metrics from PREREGISTRATION.md -- writes metrics_summary.json
@@ -38,6 +41,11 @@ One command for the whole pipeline (assumes the dataset is already downloaded):
 ```bash
 python -m pytest tests/ -q && python full_run.py && python analyze.py && python post_hoc.py
 ```
+
+**Cost of a full run** (258 answers, all 3 variants; actual numbers from the run behind RESULTS.md):
+~301k prompt + ~260 completion tokens on `gpt-4o-mini` (variant 2) and ~34k prompt + ~62k completion
+tokens on `gpt-5-mini` (variant 3's re-verdict) — roughly 335k prompt / 63k completion tokens total,
+~516 API calls, ~70s wall-clock with the default 16 parallel workers. Variant 1 makes no calls.
 
 ## Switching variant 2's Decider to Jev
 

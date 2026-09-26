@@ -3,7 +3,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from data import load_world_answers, sanity_check_accuracy
+import pytest
+
+from data import GOLD_FILE, load_world_answers, sanity_check_accuracy
+
+pytestmark = pytest.mark.skipif(
+    not GOLD_FILE.exists(),
+    reason="ContractNLI not downloaded -- run download_contract_nli.py first",
+)
 
 
 def test_real_data_loads_258_rows_and_reconciles_with_reported_accuracy():
