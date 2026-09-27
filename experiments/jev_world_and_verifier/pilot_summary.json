@@ -1,0 +1,67 @@
+{
+  "n_calls": 87,
+  "total_input_tokens": 600678,
+  "total_output_tokens": 17694,
+  "elapsed_seconds": 39.5,
+  "pilot_cost_usd": 0.025228476000000003,
+  "exp1": {
+    "docs": [
+      1,
+      2,
+      4
+    ],
+    "designated_doc": 1,
+    "n_batched_calls": 18,
+    "n_single_calls": 51,
+    "descriptive_accuracy_rep0": {
+      "no_world": 0.7254901960784313,
+      "nda_world": 0.7647058823529411,
+      "control_world": 0.7450980392156863
+    },
+    "stability_mean": 0.009172113289760348,
+    "stability_max": 0.1,
+    "n_stability": 459,
+    "independence_mean": 0.010522875816993463,
+    "independence_max": 0.10999999999999999,
+    "n_independence": 153,
+    "verdict": "STOP: batching moves answers more than repeat noise",
+    "avg_tokens_per_batched_call": 8500.333333333334,
+    "avg_tokens_per_single_call": 7472.117647058823,
+    "projected_cost_batched_usd": 0.13173816600000002,
+    "projected_cost_single_usd": 1.9686489480000002
+  },
+  "exp2": {
+    "pairs": [
+      {
+        "doc": 1,
+        "hyp": "nda-1"
+      },
+      {
+        "doc": 2,
+        "hyp": "nda-7"
+      },
+      {
+        "doc": 4,
+        "hyp": "nda-1"
+      },
+      {
+        "doc": 5,
+        "hyp": "nda-3"
+      }
+    ],
+    "n_answers": 24,
+    "n_batched_calls": 8,
+    "n_single_calls": 10,
+    "stability_mean": 0.017083333333333336,
+    "stability_max": 0.07000000000000006,
+    "n_stability": 24,
+    "independence_mean": 0.016999999999999994,
+    "independence_max": 0.06999999999999995,
+    "n_independence": 10,
+    "verdict": "OK: batching within repeat-noise envelope",
+    "avg_tokens_per_batched_call": 3742.5,
+    "avg_tokens_per_single_call": 3665.4,
+    "projected_cost_batched_usd": 0.020276865,
+    "projected_cost_single_usd": 0.11900087640000002
+  }
+}
