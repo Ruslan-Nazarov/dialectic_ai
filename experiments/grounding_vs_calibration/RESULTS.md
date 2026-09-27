@@ -49,11 +49,19 @@ includes 0.
 
 ### Auxiliary: 0.5-threshold error signal (precision/recall)
 
+Baseline: 118/258 = **0.457** of the answers in this run are wrong. That is the precision a signal gets
+by flagging *every* answer, with no information at all — the "flag everything" baseline.
+
 | Variant | precision | recall | signal rate \| correct | signal rate \| incorrect |
 |---|---|---|---|---|
+| baseline (flag everything) | 0.457 | 1.000 | 1.000 | 1.000 |
 | 2a | 0.182 | 0.034 | 0.129 | 0.034 |
 | 2b | 0.283 | 0.331 | 0.707 | 0.331 |
 | 2c | 0.259 | 0.119 | 0.286 | 0.119 |
+
+All three variants' precision (0.182 / 0.283 / 0.259) is **below** the 0.457 baseline. Precision below the
+base rate of wrong answers means the flag lands on a *correct* answer more often than chance would, i.e.
+more often than it lands on a wrong one — the same inversion the frozen AUROC numbers show.
 
 ### Exploratory: breakdown by gold class
 
@@ -62,6 +70,23 @@ includes 0.
 | Contradiction | 138 (51/87) | 0.050 / 0.097 | 0.458 / 0.192 | 0.217 / 0.308 |
 | Entailment | 60 (55/5) | 0.047 / 0.811 | 0.500 / 0.531 | 0.327 / 0.651 |
 | NotMentioned | 60 (34/26) | 0.273 / 0.000 | 0.550 / 0.206 | 0.313 / 0.206 |
+
+### Exploratory: AUROC within each gold class, with 95% CI
+
+Bootstrap: 2000 resamples per class, grouped by (doc, hypothesis) pair (same procedure as the frozen
+metric above, applied separately within each class). Exploratory, not evaluated against the frozen
+thresholds.
+
+| Gold class | n wrong | 2a AUROC [CI] | 2b AUROC [CI] | 2c AUROC [CI] |
+|---|---|---|---|---|
+| Contradiction | 87 | 0.097 [0.033, 0.170] | 0.192 [0.107, 0.287] | 0.308 [0.193, 0.429] |
+| Entailment | 5 | 0.811 [0.636, 0.953] | 0.531 [0.346, 0.704] | 0.651 [0.458, 0.815] |
+| NotMentioned | 26 | 0.000 [0.000, 0.000] | 0.206 [0.067, 0.377] | 0.206 [0.062, 0.380] |
+
+Notable: 2a's NotMentioned-class AUROC is exactly 0 with a degenerate CI \[0, 0\] — every bootstrap
+resample of this class reproduces perfect *inverted* separation (every wrong answer scores at least as
+high a P(none fits) as every correct one). Entailment has only 5 wrong answers, so its CI is wide despite
+the highest point estimates in the table.
 
 ### Exploratory: breakdown by difficulty group
 
@@ -88,16 +113,25 @@ At the TypeSafe rate confirmed against the console on 2026-09-27 (~$0.034 / mill
 
 ### Reading these numbers
 
-2a and 2b ask the identical question against the identical world-brief text; both land at "calibration
-does not help" under the frozen thresholds, and the difference between them is not distinguishable from
-noise (CI spans 0). The aggregate AUROC for both is pulled down by the Contradiction class, which is both
-the largest class (138/258) and the hardest (87 wrong) — 2a's AUROC is much higher in isolation on
-Entailment (0.811, but only 5 wrong answers to rank against) and near 0 on NotMentioned, so the single
-aggregate number mixes very different per-class behavior. 2c (auxiliary, not part of the frozen 2b-vs-2a
-comparison) has a different probability profile from 2a/2b in every row above — lower mean P(none fits),
-higher AUROC wherever AUROC is defined — consistent with its multi-way option set diluting "none fits"
-probability mass differently than a binary question does; this is reported for completeness, not as a
-finding, since 2c was declared auxiliary before this run.
+**The main metric is significantly below 0.5 for both variants**: 2a's 95% CI [0.149, 0.302] and 2b's
+[0.198, 0.362] both sit entirely below 0.5 — not merely uninformative, the signal is **inverted** for
+both. **2a and 2b are statistically indistinguishable from each other**: the paired difference CI
+[−0.010, 0.122] includes 0, so the higher point estimate for 2b (0.278 vs 0.223) is not a distinguishable
+effect in this data. Both conclusions hold before looking at any class breakdown.
+
+*Why* the aggregate signal is inverted, from the per-class breakdown above: the aggregate mixes very
+different per-class behavior. On the Contradiction class — the largest (138/258) and hardest (87 wrong) —
+both variants are inverted with CIs excluding 0.5 (2a 0.097 [0.033, 0.170]; 2b 0.192 [0.107, 0.287]).
+On NotMentioned, 2a is inverted even more extremely (AUROC 0, degenerate CI), 2b less so (0.206 [0.067,
+0.377]). On Entailment, 2a looks strong in isolation (0.811 [0.636, 0.953]) but that class has only 5
+wrong answers to rank against, so it contributes little to the 258-row aggregate and its wide-looking
+point estimate rests on a small denominator. Since Contradiction alone is 138 of 258 rows and is inverted
+for both variants, it dominates the aggregate AUROC's sign for both 2a and 2b.
+
+2c (auxiliary, not part of the frozen 2b-vs-2a comparison) has a different probability profile from 2a/2b
+in every row above — lower mean P(none fits), higher AUROC wherever AUROC is defined — consistent with its
+multi-way option set diluting "none fits" probability mass differently than a binary question does; this
+is reported for completeness, not as a finding, since 2c was declared auxiliary before this run.
 
 This section supersedes round 1 for variant 2. Round 1's numbers remain below, unchanged, marked invalid.
 
@@ -302,3 +336,5 @@ not about whether the agent's specific answer to it was correct. This is the exp
 | Round 2: 2b−2a AUROC diff | 0.055 [−0.010, 0.122] | `analyze_round2.py`, paired bootstrap over `raw_results_round2.json` | printed programmatically, frozen metric |
 | Round 2: token/call/time totals | see cost table above | `run_summary_round2.json`, `full_run_v2.py` | printed programmatically |
 | Round 2: by-gold-class / by-group breakdown (2a/2b/2c) | see tables above | `analyze_round2.py`, printed to `metrics_summary_round2.json` | printed programmatically, exploratory (not frozen) |
+| Round 2: AUROC 95% CI within each gold class (2a/2b/2c) | see table above | `analyze_round2.py`, per-class `metrics.bootstrap_ci` over `raw_results_round2.json` | printed programmatically, exploratory (not frozen) |
+| Round 2: baseline wrong-answer rate | 0.457 (118/258) | `analyze_round2.py`, `n_wrong/n` over `raw_results_round2.json` | printed programmatically |

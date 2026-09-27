@@ -103,7 +103,8 @@ def main():
     # ------------------------------------------------------------------
     # Auxiliary: 0.5-threshold precision/recall for 2a, 2b, 2c.
     # ------------------------------------------------------------------
-    print("\n=== AUXILIARY: 0.5-threshold error signal, precision/recall ===")
+    baseline_wrong_rate = n_wrong / n
+    print(f"\n=== AUXILIARY: 0.5-threshold error signal, precision/recall (baseline wrong rate = {baseline_wrong_rate:.3f}) ===")
     aux = {}
     for key, p_attr, c_attr in [("2a", "p_none_2a", "choice_2a"), ("2b", "p_none_2b", "choice_2b"),
                                   ("2c", "p_none_2c", "choice_2c")]:
@@ -144,6 +145,30 @@ def main():
     by_gold = breakdown(lambda r: r.gold, "gold class")
     by_group = breakdown(lambda r: r.group, "difficulty group")
 
+    # ------------------------------------------------------------------
+    # Exploratory: bootstrap CI on AUROC within each gold class, for 2a/2b/2c.
+    # ------------------------------------------------------------------
+    print("\n=== EXPLORATORY: AUROC 95% CI within each gold class ===")
+    by_gold_ci = {}
+    for gname in sorted({r.gold for r in rows}):
+        class_rows = [r for r in rows if r.gold == gname]
+        n_wrong_class = sum(1 for r in class_rows if not r.correct)
+        entry = {"n": len(class_rows), "n_wrong": n_wrong_class}
+        for key, p_attr in [("2a", "p_none_2a"), ("2b", "p_none_2b"), ("2c", "p_none_2c")]:
+            def auc_fn(rs, p_attr=p_attr):
+                return auroc([1 - getattr(r, p_attr) for r in rs], [r.correct for r in rs])
+            if n_wrong_class == 0 or n_wrong_class == len(class_rows):
+                entry[key] = {"point": float("nan"), "ci": {"lo": float("nan"), "hi": float("nan"), "n": 0}}
+                continue
+            point = auc_fn(class_rows)
+            ci = bootstrap_ci(class_rows, auc_fn, n_resamples=2000, seed=42)
+            entry[key] = {"point": point, "ci": ci}
+        by_gold_ci[gname] = entry
+        print(f"  {gname} (n={entry['n']}, wrong={entry['n_wrong']}): "
+              f"2a={entry['2a']['point']:.3f} {[round(entry['2a']['ci']['lo'],3), round(entry['2a']['ci']['hi'],3)]} | "
+              f"2b={entry['2b']['point']:.3f} {[round(entry['2b']['ci']['lo'],3), round(entry['2b']['ci']['hi'],3)]} | "
+              f"2c={entry['2c']['point']:.3f} {[round(entry['2c']['ci']['lo'],3), round(entry['2c']['ci']['hi'],3)]}")
+
     results = {
         "n": n, "n_correct": n_correct, "n_wrong": n_wrong,
         "frozen_auroc": {
@@ -151,9 +176,10 @@ def main():
             "2b": {"point": point_2b, "ci": ci_2b, "verdict": v_2b},
             "diff_2b_minus_2a": {"point": point_diff, "ci": ci_diff},
         },
-        "auxiliary_threshold_0.5": aux,
+        "auxiliary_threshold_0.5": {**aux, "baseline_wrong_rate": n_wrong / n},
         "exploratory_by_gold_class": by_gold,
         "exploratory_by_group": by_group,
+        "exploratory_by_gold_class_auroc_ci": by_gold_ci,
     }
     with open(OUT_DIR / "metrics_summary_round2.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2, default=str)
