@@ -42,6 +42,19 @@ TRANSITION_RULE = ('Каждый процесс записывается как 
                    'переходит, "to" — процесс, в который он переходит (оба словами, не номерами), "statement" — '
                    'краткая формулировка перехода.')
 
+LANGUAGE_NAMES = {"en": "English", "ru": "Russian"}
+
+
+def language_note(ctx: "Context", default: str = "") -> str:
+    """Which language the block's answer must be in. `ctx.settings.output_language` set overrides each
+    block's own cue (answer in the language of the domain/root/processes) with an explicit instruction,
+    for domains whose description language does not itself pin the answer's language; unset, every block
+    behaves exactly as before (returns `default`, the block's original cue or "")."""
+    lang = ctx.settings.output_language
+    if not lang:
+        return default
+    return f"Answer in {LANGUAGE_NAMES.get(lang, lang)}."
+
 
 def extract_json(text: str) -> dict:
     match = re.search(r"\{.*\}", text or "", re.S)
@@ -164,7 +177,7 @@ async def find_p0(ctx: Context, world: World, rejected: list[dict]) -> tuple[Pro
 Область: {world.domain}{tried}
 
 Задание: назови простейший процесс P0 этой области. {TRANSITION_RULE} Укажи, разрешением какого противоречия
-(каким скачком) получен P0 (п. 3.1). Отвечай на языке описания области.
+(каким скачком) получен P0 (п. 3.1). {language_note(ctx, "Отвечай на языке описания области.")}
 Верни только JSON: {{"from": "...", "to": "...", "statement": "...", "from_leap": "...", {CARRY_FIELD}}}"""
 
     def parse(data):
@@ -204,7 +217,7 @@ async def next_developing(ctx: Context, world: World, bundle: str, root: Process
 Задание: назови следующий развивающий процесс — он вытекает из корня и уже полученных развивающих процессов
 (п. 4.2) и показывает переход, а не рядоположенность (п. 9). {TRANSITION_RULE} В "derived_from" — id, из
 которых он вытекает (из списка выше или id корня). "more" — нужен ли на этой итерации ещё один процесс после этого.
-Отвечай на языке корня.
+{language_note(ctx, "Отвечай на языке корня.")}
 Верни только JSON: {{"from": "...", "to": "...", "statement": "...", "derived_from": ["..."], "more": true, {CARRY_FIELD}}}"""
 
     def parse(data):
@@ -239,7 +252,7 @@ async def internals(ctx: Context, world: World, bundle: str, dev: Process, n: in
 
 Задание: найди его развивающие процессы без дальнейшей вложенности — от {s.internals_min} до {s.internals_max}.
 {TRANSITION_RULE} Для каждого в "links_prev" — id внутренних процессов прошлой итерации, с которыми он связан
-(п. 4.5; если прошлой итерации нет — пустой список). Отвечай на языке процесса.
+(п. 4.5; если прошлой итерации нет — пустой список). {language_note(ctx, "Отвечай на языке процесса.")}
 Верни только JSON: {{"internals": [{{"from": "...", "to": "...", "statement": "...", "links_prev": []}}]}}"""
 
     def parse(data):
@@ -286,6 +299,8 @@ async def compare(ctx: Context, world: World, bundle: str, root: Process, n: int
            '"retire" — id развивающих, которые убрать; "promote" — id внутренних, которые становятся развивающими; '
            '"redo_internals" — id развивающих, чьи внутренние процессы меняются; "next_changes" — словами.')
     extra = f"\nНовые данные от агента, которые мир должен учесть: {agent_data}" if agent_data else ""
+    lang = language_note(ctx)
+    extra += f"\n{lang}" if lang else ""
     prompt = f"""[БЛОК Compare] Ты выполняешь один шаг диалектического алгоритма: сравнение на итерации {n}.
 Пункты алгоритма:
 {clauses(*pts)}
@@ -365,7 +380,7 @@ async def contradiction(ctx: Context, world: World) -> tuple[Process, str]:
 
 Задание: сформулируй противоречие — простейший и противоположный процессы, взятые в единстве их развития
 (п. 6): что они дают, когда взяты вместе. {TRANSITION_RULE} В "unity" — единство их развития.
-Отвечай на языке процессов.
+{language_note(ctx, "Отвечай на языке процессов.")}
 Верни только JSON: {{"from": "...", "to": "...", "statement": "...", "unity": "...", {CARRY_FIELD}}}"""
 
     def parse(data):
@@ -397,7 +412,7 @@ async def resolve(ctx: Context, world: World) -> tuple[Process, str, str]:
 Задание: найди процесс, который разрешает это противоречие скачком, и объясни его как разрешение этого
 противоречия (п. 7). "kind": "replacement" — если он заменяет простейший и противоположный, вбирая их в своё
 развитие; "mediation" — если он делает возможным продолжение существования противоречия до его разрешения (п. 7.1).
-{TRANSITION_RULE} Отвечай на языке процессов.
+{TRANSITION_RULE} {language_note(ctx, "Отвечай на языке процессов.")}
 Верни только JSON: {{"from": "...", "to": "...", "statement": "...", "kind": "replacement", "explanation": "..."}}"""
 
     def parse(data):

@@ -15,3 +15,4 @@ class Settings:
     brief_max_chars: int = 4000
     revisions_per_session: int = 3
     builder_model: str = "openai:gpt-5"
+    output_language: str = ""       # e.g. "en"; empty keeps each block's own language cue (the domain's language)

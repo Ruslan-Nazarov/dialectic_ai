@@ -203,6 +203,27 @@ async def test_wrong_ids_in_the_iteration_plan_are_dropped_not_fatal():
     assert any(e["kind"] == "plan_ids_dropped" for e in c.trace.events)
 
 
+async def test_output_language_overrides_each_blocks_language_cue():
+    model = FakeModel()
+    await build_world(DOMAIN, ctx(model, output_language="en"))
+    for block in ("FindP0", "NextDeveloping", "Internals", "Compare", "Contradiction", "Resolve"):
+        for prompt in model.calls(block):
+            assert "Answer in English." in prompt
+    # the algorithm's clauses (quoted from method.py) are untouched -- still in Russian
+    assert "Пункты алгоритма" in model.calls("FindP0")[0]
+
+
+async def test_default_language_cue_is_unchanged_when_output_language_is_unset():
+    model = FakeModel()
+    await build_world(DOMAIN, ctx(model))
+    assert "Отвечай на языке описания области." in model.calls("FindP0")[0]
+    assert "Отвечай на языке корня." in model.calls("NextDeveloping")[0]
+    assert "Отвечай на языке процесса." in model.calls("Internals")[0]
+    assert "Answer in English." not in model.calls("Compare")[0]  # Compare had no language cue before
+    assert "Отвечай на языке процессов." in model.calls("Contradiction")[0]
+    assert "Отвечай на языке процессов." in model.calls("Resolve")[0]
+
+
 async def test_a_failed_build_leaves_the_partial_world_saved(tmp_path):
     model = FakeModel()
     model.overrides["Resolve"] = ["не json"] * 5
