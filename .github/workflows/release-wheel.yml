@@ -1,0 +1,41 @@
+name: Build and publish wheel
+
+# Consumers (e.g. conspect's requirements.in) install dialectic_world by a direct URL to the
+# wheel attached here, not as a git dependency: pip's --require-hashes cannot verify a hash
+# for a live VCS checkout, only for a downloadable file. See the release notes on v0.4.0 for
+# why. This workflow builds that file and attaches it to the GitHub Release for the tag, so
+# tagging a version is the only manual step a future release needs.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: python -m pip install --upgrade pip build
+
+      - run: python -m build --wheel --outdir dist
+
+      - name: Publish wheel to the release for this tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --title "dialectic_world ${TAG}" \
+              --notes "Automated build. Install with: pip install <wheel URL below> (see README for the requirements.txt line consumers should pin)."
+          fi
+          gh release upload "$TAG" dist/*.whl --repo "$GITHUB_REPOSITORY" --clobber
