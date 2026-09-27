@@ -1,0 +1,432 @@
+[
+  {
+    "i": 0,
+    "doc": 1,
+    "hypothesis": "nda-1",
+    "correct": false,
+    "gold": "Contradiction",
+    "verdict": "NotMentioned",
+    "2a_run1": {
+      "p_none": 0.07585819277148506,
+      "choice": "some process fits",
+      "confidence": 0.924141807228515,
+      "prompt_tokens": 2097,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.07585819132888791,
+      "choice": "some process fits",
+      "confidence": 0.9241418086711121,
+      "prompt_tokens": 2097,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.64,
+      "choice": "none fits",
+      "confidence": 0.27,
+      "prompt_tokens": 6250,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.56,
+      "choice": "none fits",
+      "confidence": 0.12,
+      "prompt_tokens": 6250,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.28,
+      "choice": "[Pf4bf1c] общая дефиниция конфиденциальной информации в договоре → очерчивание границ через оговоренные исключения (публичное, ранее известное, независимо разработанное, полученное правомерно): презумптивная секретность конкретизируется исключениями и превращается в определённый предел секрета",
+      "confidence": 0.63,
+      "prompt_tokens": 10326,
+      "completion_tokens": 156
+    }
+  },
+  {
+    "i": 1,
+    "doc": 1,
+    "hypothesis": "nda-1",
+    "correct": false,
+    "gold": "Contradiction",
+    "verdict": "NotMentioned",
+    "2a_run1": {
+      "p_none": 0.18242556564997744,
+      "choice": "some process fits",
+      "confidence": 0.8175744343500226,
+      "prompt_tokens": 2126,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.32082132130666513,
+      "choice": "some process fits",
+      "confidence": 0.6791786786933349,
+      "prompt_tokens": 2126,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.65,
+      "choice": "none fits",
+      "confidence": 0.31,
+      "prompt_tokens": 6280,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.62,
+      "choice": "none fits",
+      "confidence": 0.23,
+      "prompt_tokens": 6280,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.37,
+      "choice": "[Pf4bf1c] общая дефиниция конфиденциальной информации в договоре → очерчивание границ через оговоренные исключения (публичное, ранее известное, независимо разработанное, полученное правомерно): презумптивная секретность конкретизируется исключениями и превращается в определённый предел секрета",
+      "confidence": 0.51,
+      "prompt_tokens": 10356,
+      "completion_tokens": 156
+    }
+  },
+  {
+    "i": 2,
+    "doc": 4,
+    "hypothesis": "nda-1",
+    "correct": true,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "2a_run1": {
+      "p_none": 0.029312235264585564,
+      "choice": "some process fits",
+      "confidence": 0.9706877647354145,
+      "prompt_tokens": 2123,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.029312235264585564,
+      "choice": "some process fits",
+      "confidence": 0.9706877647354145,
+      "prompt_tokens": 2123,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.3,
+      "choice": "some process fits",
+      "confidence": 0.4,
+      "prompt_tokens": 6276,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.3,
+      "choice": "some process fits",
+      "confidence": 0.39,
+      "prompt_tokens": 6276,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.04,
+      "choice": "[Pf4bf1c] общая дефиниция конфиденциальной информации в договоре → очерчивание границ через оговоренные исключения (публичное, ранее известное, независимо разработанное, полученное правомерно): презумптивная секретность конкретизируется исключениями и превращается в определённый предел секрета",
+      "confidence": 0.79,
+      "prompt_tokens": 10352,
+      "completion_tokens": 156
+    }
+  },
+  {
+    "i": 3,
+    "doc": 2,
+    "hypothesis": "nda-7",
+    "correct": false,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "2a_run1": {
+      "p_none": 0.0007096703113742271,
+      "choice": "some process fits",
+      "confidence": 0.9992903296886257,
+      "prompt_tokens": 2135,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.0007096703148876755,
+      "choice": "some process fits",
+      "confidence": 0.9992903296851122,
+      "prompt_tokens": 2135,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.32,
+      "choice": "some process fits",
+      "confidence": 0.36,
+      "prompt_tokens": 6288,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.3,
+      "choice": "some process fits",
+      "confidence": 0.4,
+      "prompt_tokens": 6288,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.16,
+      "choice": "[Ped0e6b] установление состава и границ конфиденциальной информации для целей договора (квалификация и маркирование раскрытого как «Конфиденциальная информация») → целевое ограничение использования и режим допустимого обращения с конфиденциальной информацией получателем (ограничение целей и допуск по принципу «необходимо знать»): определенный объем секрета переходит в целевую регламентацию его использования и доступа",
+      "confidence": 0.28,
+      "prompt_tokens": 10364,
+      "completion_tokens": 156
+    }
+  },
+  {
+    "i": 4,
+    "doc": 4,
+    "hypothesis": "nda-1",
+    "correct": true,
+    "gold": "Contradiction",
+    "verdict": "Contradiction",
+    "2a_run1": {
+      "p_none": 0.029312237834104582,
+      "choice": "some process fits",
+      "confidence": 0.9706877621658954,
+      "prompt_tokens": 2166,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.029312234683199608,
+      "choice": "some process fits",
+      "confidence": 0.9706877653168003,
+      "prompt_tokens": 2166,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.28,
+      "choice": "some process fits",
+      "confidence": 0.45,
+      "prompt_tokens": 6322,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.26,
+      "choice": "some process fits",
+      "confidence": 0.47,
+      "prompt_tokens": 6322,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.04,
+      "choice": "[C325693] раскрытие конфиденциальной информации получателю → связывание получателя договорными обязанностями по использованию и неразглашению раскрытой информации → общая дефиниция конфиденциальной информации в договоре → очерчивание границ через оговоренные исключения (публичность, ранее известное, независимая разработка, правомерное получение): От связывания через акт раскрытия к пределу секрета, формируемому carve-out-ами и независимому от раскрытия",
+      "confidence": 0.59,
+      "prompt_tokens": 10398,
+      "completion_tokens": 158
+    }
+  },
+  {
+    "i": 5,
+    "doc": 2,
+    "hypothesis": "nda-7",
+    "correct": false,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "2a_run1": {
+      "p_none": 0.00012339462366814505,
+      "choice": "some process fits",
+      "confidence": 0.9998766053763318,
+      "prompt_tokens": 2149,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 4.539785485720262e-05,
+      "choice": "some process fits",
+      "confidence": 0.9999546021451428,
+      "prompt_tokens": 2149,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.14,
+      "choice": "some process fits",
+      "confidence": 0.72,
+      "prompt_tokens": 6305,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.13,
+      "choice": "some process fits",
+      "confidence": 0.74,
+      "prompt_tokens": 6305,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.08,
+      "choice": "[Ped0e6b] установление состава и границ конфиденциальной информации для целей договора (квалификация и маркирование раскрытого как «Конфиденциальная информация») → целевое ограничение использования и режим допустимого обращения с конфиденциальной информацией получателем (ограничение целей и допуск по принципу «необходимо знать»): определенный объем секрета переходит в целевую регламентацию его использования и доступа",
+      "confidence": 0.82,
+      "prompt_tokens": 10381,
+      "completion_tokens": 156
+    }
+  },
+  {
+    "i": 6,
+    "doc": 5,
+    "hypothesis": "nda-3",
+    "correct": false,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "2a_run1": {
+      "p_none": 0.004070138740588846,
+      "choice": "some process fits",
+      "confidence": 0.9959298612594113,
+      "prompt_tokens": 2129,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.005220126673118366,
+      "choice": "some process fits",
+      "confidence": 0.9947798733268816,
+      "prompt_tokens": 2129,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.4,
+      "choice": "some process fits",
+      "confidence": 0.2,
+      "prompt_tokens": 6279,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.36,
+      "choice": "some process fits",
+      "confidence": 0.28,
+      "prompt_tokens": 6279,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.18,
+      "choice": "[Pf4bf1c] общая дефиниция конфиденциальной информации в договоре → очерчивание границ через оговоренные исключения (публичное, ранее известное, независимо разработанное, полученное правомерно): презумптивная секретность конкретизируется исключениями и превращается в определённый предел секрета",
+      "confidence": 0.48,
+      "prompt_tokens": 10355,
+      "completion_tokens": 156
+    }
+  },
+  {
+    "i": 7,
+    "doc": 5,
+    "hypothesis": "nda-3",
+    "correct": false,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "2a_run1": {
+      "p_none": 0.003172683742569367,
+      "choice": "some process fits",
+      "confidence": 0.9968273162574306,
+      "prompt_tokens": 2125,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.0031726838119289147,
+      "choice": "some process fits",
+      "confidence": 0.9968273161880711,
+      "prompt_tokens": 2125,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.52,
+      "choice": "none fits",
+      "confidence": 0.03,
+      "prompt_tokens": 6278,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.49,
+      "choice": "some process fits",
+      "confidence": 0.03,
+      "prompt_tokens": 6278,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.2,
+      "choice": "[Pdabdf0] договорно ограниченное обращение с раскрытой информацией → установление состава и границ конфиденциальной информации для целей договора (квалификация и маркирование раскрытого как «Конфиденциальная информация»): нормированное раскрытие переходит в определение объема секрета",
+      "confidence": 0.41,
+      "prompt_tokens": 10354,
+      "completion_tokens": 155
+    }
+  },
+  {
+    "i": 8,
+    "doc": 8,
+    "hypothesis": "nda-1",
+    "correct": false,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "2a_run1": {
+      "p_none": 0.0011695104021246382,
+      "choice": "some process fits",
+      "confidence": 0.9988304895978753,
+      "prompt_tokens": 2067,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.0015011820875152069,
+      "choice": "some process fits",
+      "confidence": 0.9984988179124848,
+      "prompt_tokens": 2067,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.32,
+      "choice": "some process fits",
+      "confidence": 0.35,
+      "prompt_tokens": 6218,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.33,
+      "choice": "some process fits",
+      "confidence": 0.34,
+      "prompt_tokens": 6218,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.06,
+      "choice": "[P0] раскрытие конфиденциальной информации получателю → связывание получателя договорными обязанностями по использованию и неразглашению раскрытой информации: раскрытие становится договорно ограниченным обращением с информацией",
+      "confidence": 0.83,
+      "prompt_tokens": 10294,
+      "completion_tokens": 153
+    }
+  },
+  {
+    "i": 9,
+    "doc": 8,
+    "hypothesis": "nda-1",
+    "correct": false,
+    "gold": "Contradiction",
+    "verdict": "Entailment",
+    "2a_run1": {
+      "p_none": 0.0015011819456811693,
+      "choice": "some process fits",
+      "confidence": 0.9984988180543187,
+      "prompt_tokens": 2131,
+      "completion_tokens": 1
+    },
+    "2a_run2": {
+      "p_none": 0.001169510288112035,
+      "choice": "some process fits",
+      "confidence": 0.998830489711888,
+      "prompt_tokens": 2131,
+      "completion_tokens": 1
+    },
+    "2b_run1": {
+      "p_none": 0.21,
+      "choice": "some process fits",
+      "confidence": 0.59,
+      "prompt_tokens": 6284,
+      "completion_tokens": 31
+    },
+    "2b_run2": {
+      "p_none": 0.2,
+      "choice": "some process fits",
+      "confidence": 0.59,
+      "prompt_tokens": 6284,
+      "completion_tokens": 31
+    },
+    "2c": {
+      "p_none": 0.05,
+      "choice": "[P0] раскрытие конфиденциальной информации получателю → связывание получателя договорными обязанностями по использованию и неразглашению раскрытой информации: раскрытие становится договорно ограниченным обращением с информацией",
+      "confidence": 0.75,
+      "prompt_tokens": 10360,
+      "completion_tokens": 153
+    }
+  }
+]

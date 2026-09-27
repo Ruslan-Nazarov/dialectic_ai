@@ -1,0 +1,81 @@
+{
+  "n": 10,
+  "n_wrong": 8,
+  "n_correct": 2,
+  "caught": {
+    "2a_run1": 0,
+    "2a_run2": 0,
+    "2b_run1": 3,
+    "2b_run2": 2,
+    "2c": 0
+  },
+  "false_pos": {
+    "2a_run1": 0,
+    "2a_run2": 0,
+    "2b_run1": 0,
+    "2b_run2": 0,
+    "2c": 0
+  },
+  "stability_2a": {
+    "mean_abs_diff": 0.014028708836736297,
+    "max_abs_diff": 0.13839575565668769,
+    "binary_signal_flips": 0,
+    "per_answer_diffs": [
+      1.4425971528453374e-09,
+      0.13839575565668769,
+      0.0,
+      3.5134484297622004e-12,
+      3.1509049744360418e-09,
+      7.799676881094242e-05,
+      0.0011499879325295196,
+      6.935954761921881e-11,
+      0.0003316716853905687,
+      0.0003316716575691343
+    ]
+  },
+  "stability_2b": {
+    "mean_abs_diff": 0.025000000000000012,
+    "max_abs_diff": 0.07999999999999996,
+    "binary_signal_flips": 1,
+    "per_answer_diffs": [
+      0.07999999999999996,
+      0.030000000000000027,
+      0.0,
+      0.020000000000000018,
+      0.020000000000000018,
+      0.010000000000000009,
+      0.040000000000000036,
+      0.030000000000000027,
+      0.010000000000000009,
+      0.009999999999999981
+    ]
+  },
+  "cost": {
+    "2a_run1": {
+      "prompt_tokens": 21248,
+      "completion_tokens": 10
+    },
+    "2a_run2": {
+      "prompt_tokens": 21248,
+      "completion_tokens": 10
+    },
+    "2b_run1": {
+      "prompt_tokens": 62780,
+      "completion_tokens": 310
+    },
+    "2b_run2": {
+      "prompt_tokens": 62780,
+      "completion_tokens": 310
+    },
+    "2c": {
+      "prompt_tokens": 103540,
+      "completion_tokens": 1555
+    }
+  },
+  "elapsed_seconds": 34.5,
+  "projection_258_tokens": {
+    "2a_one_run": 548456.4,
+    "2b_one_run": 1627722.0,
+    "2c_one_run": 2711451.0
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "n_answers": 258,
+  "n_pairs": 129,
+  "elapsed_seconds": 29.45300000000134,
+  "v2a_prompt_tokens": 548103,
+  "v2a_completion_tokens": 258,
+  "v2b_prompt_tokens": 1619888,
+  "v2b_completion_tokens": 7998,
+  "v2c_prompt_tokens": 2671496,
+  "v2c_completion_tokens": 39900,
+  "v2a_calls": 258,
+  "v2b_calls": 258,
+  "v2c_calls": 258
+}

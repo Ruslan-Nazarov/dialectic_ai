@@ -1,8 +1,10 @@
 # Results — grounding vs calibration
 
-Preregistered in `PREREGISTRATION.md` (including two amendments made before/around this run, both dated
-and marked). Raw per-answer output: `raw_results.json`. Run metadata: `run_summary.json`,
-`metrics_summary.json`.
+Preregistered in `PREREGISTRATION.md` (including several amendments made before/around these runs, all
+dated and marked). Round 1 (variant 2 = surrogate only, bare-id list, now invalid): raw per-answer output
+`raw_results.json`, run metadata `run_summary.json`, `metrics_summary.json`. Round 2 (variant 2 = 2a/2b/2c
+on the world-brief question): `raw_results_round2.json`, `run_summary_round2.json`,
+`metrics_summary_round2.json`.
 
 ## Correction (2026-09-27): variant 2's result below is invalid
 
@@ -19,8 +21,85 @@ also turns out to exceed Jev's per-request token limit).
 
 **The numbers below are kept, not deleted, and marked invalid** wherever they concern variant 2. Variant 1
 and variant 3's numbers are unaffected (they never depended on the process list) and stand as reported.
-Variant 2 (now 2a) is rerun on the corrected question, alongside real Jev (2b) and an auxiliary variant 2c,
-before any of the sections below are trusted for variant 2.
+Variant 2 (now 2a) is rerun on the corrected question, alongside real Jev (2b) and an auxiliary variant 2c
+— see **"Round 2: variant 2 on the corrected world-brief question"** immediately below for the corrected
+numbers.
+
+## Round 2 (2026-09-27): variant 2 on the corrected world-brief question (2a, 2b, 2c)
+
+Full run, 258 answers (same set as round 1 and as the 10-answer pilot; pilot numbers are not included in
+any total below — this section reports the full run only). One call each for 2a, 2b, 2c, question asked
+against `data.world_brief()` (7,717 characters — verified byte-identical to the text the agent itself saw
+in its system prompt during the original `eval_v3.py` run; see PREREGISTRATION.md's round-2 amendment).
+Raw output: `raw_results_round2.json`. Run metadata: `run_summary_round2.json`,
+`metrics_summary_round2.json`.
+
+### Main metric (frozen): AUROC of P(none fits)
+
+| Variant | AUROC | 95% CI |
+|---|---|---|
+| 2a (surrogate, `gpt-4o-mini`) | 0.223 | [0.149, 0.302] |
+| 2b (Jev) | 0.278 | [0.198, 0.362] |
+| 2b − 2a (paired) | 0.055 | [−0.010, 0.122] |
+
+Bootstrap: 2000 resamples, grouped by (doc, hypothesis) pair (`metrics.bootstrap_ci`, seed 42). By the
+frozen thresholds (AUROC ≥ 0.65 and CI lower bound > 0.5 for "helps"; CI lower bound ≤ 0.5 for "does not
+help"): **2a → CALIBRATION DOES NOT HELP. 2b → CALIBRATION DOES NOT HELP.** The 2b − 2a difference CI
+includes 0.
+
+### Auxiliary: 0.5-threshold error signal (precision/recall)
+
+| Variant | precision | recall | signal rate \| correct | signal rate \| incorrect |
+|---|---|---|---|---|
+| 2a | 0.182 | 0.034 | 0.129 | 0.034 |
+| 2b | 0.283 | 0.331 | 0.707 | 0.331 |
+| 2c | 0.259 | 0.119 | 0.286 | 0.119 |
+
+### Exploratory: breakdown by gold class
+
+| Gold class | n (correct/wrong) | 2a mean P(none) / AUROC | 2b mean P(none) / AUROC | 2c mean P(none) / AUROC |
+|---|---|---|---|---|
+| Contradiction | 138 (51/87) | 0.050 / 0.097 | 0.458 / 0.192 | 0.217 / 0.308 |
+| Entailment | 60 (55/5) | 0.047 / 0.811 | 0.500 / 0.531 | 0.327 / 0.651 |
+| NotMentioned | 60 (34/26) | 0.273 / 0.000 | 0.550 / 0.206 | 0.313 / 0.206 |
+
+### Exploratory: breakdown by difficulty group
+
+| Group | n (correct/wrong) | 2a mean P(none) / AUROC | 2b mean P(none) / AUROC | 2c mean P(none) / AUROC |
+|---|---|---|---|---|
+| contradiction_easy | 40 (40/0) | 0.068 / n/a | 0.601 / n/a | 0.269 / n/a |
+| entailment | 60 (55/5) | 0.047 / 0.811 | 0.500 / 0.531 | 0.327 / 0.651 |
+| hard | 98 (11/87) | 0.043 / 0.115 | 0.400 / 0.351 | 0.196 / 0.439 |
+| not_mentioned | 60 (34/26) | 0.273 / 0.000 | 0.550 / 0.206 | 0.313 / 0.206 |
+
+`contradiction_easy` has 0 wrong answers in this group, so AUROC is undefined there (n/a) for every
+variant.
+
+### Cost and time (full run)
+
+| Variant | input tokens | output tokens | calls | wall clock (16 workers) |
+|---|---|---|---|---|
+| 2a | 548,103 | 258 | 258 | 13.8s |
+| 2b | 1,619,888 | 7,998 | 258 | 7.8s |
+| 2c | 2,671,496 | 39,900 | 258 | 7.9s |
+
+At the TypeSafe rate confirmed against the console on 2026-09-27 (~$0.034 / million tokens): 2b + 2c ≈
+4.34M tokens ≈ **$0.15**. 2a runs on a separate OpenAI account (`gpt-4o-mini`), cost negligible.
+
+### Reading these numbers
+
+2a and 2b ask the identical question against the identical world-brief text; both land at "calibration
+does not help" under the frozen thresholds, and the difference between them is not distinguishable from
+noise (CI spans 0). The aggregate AUROC for both is pulled down by the Contradiction class, which is both
+the largest class (138/258) and the hardest (87 wrong) — 2a's AUROC is much higher in isolation on
+Entailment (0.811, but only 5 wrong answers to rank against) and near 0 on NotMentioned, so the single
+aggregate number mixes very different per-class behavior. 2c (auxiliary, not part of the frozen 2b-vs-2a
+comparison) has a different probability profile from 2a/2b in every row above — lower mean P(none fits),
+higher AUROC wherever AUROC is defined — consistent with its multi-way option set diluting "none fits"
+probability mass differently than a binary question does; this is reported for completeness, not as a
+finding, since 2c was declared auxiliary before this run.
+
+This section supersedes round 1 for variant 2. Round 1's numbers remain below, unchanged, marked invalid.
 
 ## Sanity check
 
@@ -194,6 +273,16 @@ not about whether the agent's specific answer to it was correct. This is the exp
   uninformative."
 - **This tests the engine's evaluation methodology, not a product.** The NDA/business-card domain is only
   the available test bed; no product or "rating points" framing is implied by these numbers.
+- **Round 2 (Jev, variant 2b/2c) is one specialized domain, evaluated with Jev outside the domains it is
+  trained for.** Per TypeSafe's own stated limitations, Jev is not trained on specialized domains, and
+  ContractNLI (legal contracts) is one. Round 2's result is "Jev on a specialized domain it is not trained
+  for," not a general claim about Jev's capability elsewhere.
+- **Round 2 still uses one agent model** (`gpt-5-mini`, the model that produced the 258 answers being
+  scored) and one world (the NDA world, v1). Neither 2a/2b/2c's result generalizes beyond this agent model
+  or this world without a separate run.
+- **2c is not a validated design**, only an auxiliary/exploratory one declared before the round-2 run: its
+  option set (~11 processes actually mentioned in the brief) is a byproduct of the brief's own size limit,
+  not a deliberately chosen sample of the world's 152 processes.
 
 ## Source-of-numbers index
 
@@ -208,3 +297,8 @@ not about whether the agent's specific answer to it was correct. This is the exp
 | Token/call/time totals | see cost table above | `run_summary.json`, generated by `full_run.py` | printed programmatically, not hand-typed (variant 2 portion invalid alongside the AUROC above) |
 | Variant 3 confusion table (post-hoc) | see table above | `post_hoc.py:confusion()`, printed to `post_hoc_summary.json` | printed programmatically, exploratory (not frozen) |
 | Variant 2 by-gold-class / by-group breakdown (post-hoc) | see tables above | `post_hoc.py`, printed to `post_hoc_summary.json` | **INVALID (2026-09-27), see correction above** — printed programmatically, exploratory (not frozen) |
+| Round 2: 2a AUROC | 0.223 [0.149, 0.302] | `analyze_round2.py` over `raw_results_round2.json` | printed programmatically, frozen metric |
+| Round 2: 2b AUROC | 0.278 [0.198, 0.362] | `analyze_round2.py` over `raw_results_round2.json` | printed programmatically, frozen metric |
+| Round 2: 2b−2a AUROC diff | 0.055 [−0.010, 0.122] | `analyze_round2.py`, paired bootstrap over `raw_results_round2.json` | printed programmatically, frozen metric |
+| Round 2: token/call/time totals | see cost table above | `run_summary_round2.json`, `full_run_v2.py` | printed programmatically |
+| Round 2: by-gold-class / by-group breakdown (2a/2b/2c) | see tables above | `analyze_round2.py`, printed to `metrics_summary_round2.json` | printed programmatically, exploratory (not frozen) |
