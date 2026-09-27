@@ -1,6 +1,6 @@
 [project]
 name = "dialectic-world"
-version = "0.3.0"
+version = "0.4.0"
 description = "Engine version 3: the world of a domain built by a dialectical algorithm on a rigid block architecture"
 requires-python = ">=3.10"
 dependencies = ["pydantic>=2", "python-dotenv"]
@@ -11,6 +11,9 @@ dev = ["pytest", "pytest-asyncio"]
 
 [tool.setuptools.packages.find]
 include = ["dialectic_world*"]
+
+[tool.setuptools.package-data]
+dialectic_world = ["prompts/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

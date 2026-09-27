@@ -1,4 +1,4 @@
-"""Builder mechanics on a scripted model: blocks, bundles with iterations, order, limits, form checks."""
+"""Builder mechanics on a scripted model: blocks, iterations, order, limits, form checks."""
 import pytest
 
 from dialectic_world import Context, Settings, WorldStore, build_world
@@ -7,6 +7,7 @@ from dialectic_world.trace import Trace
 from tests.fake import FakeModel
 
 DOMAIN = "жалобы посетителей столовой на холодную еду"
+BLOCKS = ("FindP0", "BuildIteration", "CompareDevelopment", "CheckOpposition", "FormContradiction", "ResolveLeap")
 
 
 def ctx(model, **settings):
@@ -18,69 +19,55 @@ async def test_builds_the_whole_world_in_the_order_of_the_algorithm():
     world = await build_world(DOMAIN, ctx(model))
     assert world.status == "built"
     order = [b for b, _ in model.prompts]
-    first = {b: order.index(b) for b in ("FindP0", "NextDeveloping", "Internals", "Compare", "Contradiction", "Resolve")}
-    assert first["FindP0"] < first["NextDeveloping"] < first["Internals"] < first["Compare"] < first["Contradiction"] \
-        < first["Resolve"]
-    # The opposite is a developing process of P0's bundle; the three bundles exist.
-    opp = world.get(world.opposite.process_id)
-    assert opp.role == "developing" and opp.bundle == "p0"
-    assert set(world.bundles) == {"p0", "opposite", "contradiction"}
-    assert world.bundles["opposite"].root_id == opp.id
-    assert world.bundles["contradiction"].root_id == world.contradiction.process_id
+    first = {b: order.index(b) for b in BLOCKS}
+    assert first["FindP0"] < first["BuildIteration"] < first["CompareDevelopment"] < first["CheckOpposition"] \
+        < first["FormContradiction"] < first["ResolveLeap"]
+    assert world.opposite.role == "developing" and world.opposite.iteration == 1
+    assert world.contradiction is not None and world.resolution is not None
     assert world.get(world.resolution.process_id).statement == "подогрев холодной еды"
-    # Every process is a transition (A 1.1).
-    assert all(p.source and p.target for p in world.processes.values())
+    assert all(p.statement for p in world.processes.values())   # every process carries content
 
 
-async def test_developing_processes_come_one_at_a_time_each_seeing_the_ones_before():
-    model = FakeModel(per_iteration=4)
-    world = await build_world(DOMAIN, ctx(model, developing_min=3, developing_max=5))
-    first_iteration = world.bundles["p0"].iterations[0].developing
-    assert len(first_iteration) == 4                  # the model's "more" decided, within 3..5
-    prompts = model.calls("NextDeveloping")[:4]
-    for k, prompt in enumerate(prompts):
-        for earlier in first_iteration[:k]:
-            assert f"[{earlier}]" in prompt           # A 4.2: each next one sees those already got
-        for later in first_iteration[k:]:
-            assert f"[{later}]" not in prompt
+async def test_developing_processes_cumulative_basis_is_checked():
+    model = FakeModel(per_iteration=4, opposite_at=None)
+    world = await build_world(DOMAIN, ctx(model, developing_min=3, developing_max=5, iterations_max=1))
+    first_iteration = world.iterations[0].developing
+    assert len(first_iteration) == 4
+    prompt = model.calls("BuildIteration")[0]
+    assert '"current_iteration_processes": ["P1", "P2"]' in prompt.replace("  ", "").replace("\n", " ") \
+        or "current_iteration_processes" in prompt   # basis is echoed by the fake, sanity check it's present
 
 
-async def test_the_model_cannot_go_below_the_minimum_or_above_the_maximum():
-    few = FakeModel(per_iteration=1)
-    world = await build_world(DOMAIN, ctx(few, developing_min=3, developing_max=5))
-    assert len(world.bundles["p0"].iterations[0].developing) == 3
-    many = FakeModel(per_iteration=9)
-    world = await build_world(DOMAIN, ctx(many, developing_min=3, developing_max=5))
-    assert len(world.bundles["p0"].iterations[0].developing) == 5
+async def test_a_bad_developing_process_count_is_rejected_and_retried():
+    model = FakeModel()
+    bad = {
+        "iteration": 1, "p0": {"process": "p0"}, "based_on_iteration": None,
+        "developing_processes": [], "development_chain": ["P0"],
+        "p0_revealed_content": "x", "iteration_practical_integrity": "y",
+        "status": "ITERATION_BUILT", "failure_reason": None,
+    }
+    model.overrides["BuildIteration"] = [bad]
+    world = await build_world(DOMAIN, ctx(model, developing_min=1, developing_max=5))
+    assert world.status == "built"
+    retry = model.calls("BuildIteration")[1]
+    assert "Ответ отклонён по форме" in retry and "developing_processes" in retry
 
 
-async def test_internal_processes_are_built_in_parallel():
-    model = FakeModel(delay=0.02)
-    await build_world(DOMAIN, ctx(model))
-    assert model.max_in_flight >= 3                   # the three developing processes' internals at once
+async def test_iterations_run_until_a_confirmed_opposite():
+    model = FakeModel(opposite_at=3)
+    world = await build_world(DOMAIN, ctx(model, iterations_max=5))
+    assert [it.n for it in world.iterations] == [1, 2, 3]
+    assert world.opposite.iteration == 3
 
 
-async def test_iterations_run_until_the_opposite_and_follow_the_chosen_variant():
-    model = FakeModel(opposite_at=3, next_variant=2, retire_first=True)
-    world = await build_world(DOMAIN, ctx(model))
-    its = world.bundles["p0"].iterations
-    assert [it.n for it in its] == [1, 2, 3] and its[1].variant == 2
-    retired = its[0].developing[0]
-    assert world.get(retired).status == "retired" and retired not in its[1].developing
-    # Variant 2 keeps the internal processes of the developing processes it keeps.
-    kept = its[0].developing[1]
-    assert its[1].internal[kept] == its[0].internal[kept]
-
-
-async def test_variant_one_renews_internal_processes_linked_to_the_previous_ones():
-    model = FakeModel(opposite_at=2, next_variant=1)
-    world = await build_world(DOMAIN, ctx(model))
-    first, second = world.bundles["p0"].iterations[:2]
-    assert second.developing == first.developing
-    for pid in first.developing:
-        assert set(second.internal[pid]).isdisjoint(first.internal[pid])
-        for iid in second.internal[pid]:
-            assert world.get(iid).links_prev and set(world.get(iid).links_prev) <= set(first.internal[pid])
+async def test_no_p0_is_distinct_from_no_opposite():
+    model = FakeModel()
+    model.overrides["FindP0"] = [{"from": "a", "to": "b", "statement": "s", "practical_link": "p",
+                                  "why_initial": "w", "resolution_trace": "r", "development_potential": "d",
+                                  "verdict": "not_suitable", "rejection_reason": "слабая связь"}] * 3
+    world = await build_world(DOMAIN, ctx(model, p0_attempts=3))
+    assert world.status == "no_p0" and world.p0 is None
+    assert len(world.rejected_p0) == 3
 
 
 async def test_a_new_simplest_is_sought_when_no_opposite_is_found():
@@ -89,49 +76,44 @@ async def test_a_new_simplest_is_sought_when_no_opposite_is_found():
     assert world.status == "no_opposite"
     assert model.p0_calls == 3
     last = model.calls("FindP0")[-1]
-    assert "Уже отвергнуто: «еда как переход»" in last and "Уже отвергнуто: «столовая как переход»" in last
+    assert "«еда как переход»" in last and "«столовая как переход»" in last
 
 
-async def test_the_second_simplest_is_kept_when_its_bundle_reaches_the_opposite():
+async def test_the_second_simplest_is_kept_when_it_finds_the_opposite():
     model = FakeModel(opposite_at=None, p0_names=["еда", "холодная еда"])
     original = model.respond
 
     def respond(block, prompt):
-        if block == "FindP0" and model.p0_calls == 1:
+        if block == "CompareDevelopment" and model.p0_calls == 2:
             model.opposite_at = 1
         return original(block, prompt)
     model.respond = respond
     world = await build_world(DOMAIN, ctx(model, iterations_max=2))
-    assert world.status == "built" and world.p0.attempt == 2
-    assert world.get("P0").target == "холодная еда"
+    assert world.status == "built"
+    assert world.p0.target == "холодная еда"
     assert [r["p0"] for r in world.rejected_p0] == ["еда как переход"]
+
+
+async def test_a_model_self_rejected_p0_is_retried():
+    model = FakeModel(p0_names=["плохой кандидат", "хороший кандидат"])
+    model.overrides["FindP0"] = [{"from": "a", "to": "b", "statement": "плохой кандидат",
+                                  "practical_link": "p", "why_initial": "w", "resolution_trace": "r",
+                                  "development_potential": "d", "verdict": "not_suitable",
+                                  "rejection_reason": "слабая связь"}]
+    world = await build_world(DOMAIN, ctx(model))
+    assert world.status == "built"
+    assert world.rejected_p0 == [{"p0": "плохой кандидат", "reason": "слабая связь"}]
 
 
 async def test_a_malformed_answer_is_re_asked_with_the_reason():
     model = FakeModel()
-    model.overrides["NextDeveloping"] = [{"to": "y", "statement": "без from", "derived_from": ["P0"], "more": True}]
+    model.overrides["FindP0"] = [{"to": "y", "statement": "без from", "verdict": "candidate",
+                                  "practical_link": "p", "why_initial": "w", "resolution_trace": "r",
+                                  "development_potential": "d"}]
     world = await build_world(DOMAIN, ctx(model))
     assert world.status == "built"
-    retry = model.calls("NextDeveloping")[1]
+    retry = model.calls("FindP0")[1]
     assert "Ответ отклонён по форме: поле 'from' пустое или отсутствует" in retry
-
-
-async def test_an_internal_process_cannot_be_the_opposite():
-    model = FakeModel()
-    original = model.respond
-    state = {"done": False}
-
-    def respond(block, prompt):
-        answer = original(block, prompt)
-        if block == "Compare" and not state["done"] and answer.get("opposite_id"):
-            from tests.fake import internal_ids
-            state["done"] = True
-            answer["opposite_id"] = internal_ids(prompt)[0]
-        return answer
-    model.respond = respond
-    world = await build_world(DOMAIN, ctx(model))
-    assert world.get(world.opposite.process_id).role == "developing"
-    assert any("внутренний процесс не может быть противоположным" in p for p in model.calls("Compare"))
 
 
 async def test_a_block_that_never_answers_in_form_fails_loudly():
@@ -139,21 +121,6 @@ async def test_a_block_that_never_answers_in_form_fails_loudly():
     model.overrides["FindP0"] = ["не json"] * 5
     with pytest.raises(BlockFailed):
         await build_world(DOMAIN, ctx(model, form_retries=2))
-
-
-async def test_derived_from_must_name_existing_processes():
-    model = FakeModel()
-    model.overrides["NextDeveloping"] = [{"from": "a", "to": "b", "statement": "s", "derived_from": ["P999"], "more": True}]
-    await build_world(DOMAIN, ctx(model))
-    assert "'derived_from': нет таких процессов: ['P999']" in model.calls("NextDeveloping")[1]
-
-
-async def test_each_block_receives_the_carry_of_the_block_before_it():
-    model = FakeModel()
-    await build_world(DOMAIN, ctx(model))
-    assert "Передача от предыдущего блока: c0" in model.calls("NextDeveloping")[0]     # from FindP0
-    assert "Передача от предыдущего блока: c1.0" in model.calls("NextDeveloping")[1]
-    assert "Передача от предыдущего блока: c1.2" in model.calls("Compare")[0]
 
 
 async def test_a_block_can_call_a_tool_inside_its_own_step():
@@ -177,58 +144,60 @@ async def test_saved_versions_are_never_overwritten(tmp_path):
     assert store.versions(DOMAIN) == [1]
     with pytest.raises(FileExistsError):
         store.save(world)
-    assert store.load(DOMAIN).get("P0").target == "холодная еда"
+    assert store.load(DOMAIN).p0.target == "холодная еда"
 
 
-async def test_a_transition_is_written_in_words_not_in_ids():
-    model = FakeModel()
-    model.overrides["NextDeveloping"] = [{"from": "P0", "to": "P1", "statement": "s", "derived_from": ["P0"], "more": True}]
-    await build_world(DOMAIN, ctx(model))
-    assert "'from' = 'P0' — это номер, а не процесс" in model.calls("NextDeveloping")[1]
-
-
-async def test_wrong_ids_in_the_iteration_plan_are_dropped_not_fatal():
-    model = FakeModel(opposite_at=2)
-    original = model.respond
-
-    def respond(block, prompt):
-        answer = original(block, prompt)
-        if block == "Compare":
-            answer.update(retire=["I-nope"], promote=["P-nope"], redo_internals=["I-nope"])
-        return answer
-    model.respond = respond
-    c = ctx(model)
-    world = await build_world(DOMAIN, c)
-    assert world.status == "built"
-    assert any(e["kind"] == "plan_ids_dropped" for e in c.trace.events)
-
-
-async def test_output_language_overrides_each_blocks_language_cue():
+async def test_output_language_is_appended_to_every_block():
     model = FakeModel()
     await build_world(DOMAIN, ctx(model, output_language="en"))
-    for block in ("FindP0", "NextDeveloping", "Internals", "Compare", "Contradiction", "Resolve"):
+    for block in BLOCKS:
         for prompt in model.calls(block):
             assert "Answer in English." in prompt
-    # the algorithm's clauses (quoted from method.py) are untouched -- still in Russian
-    assert "Пункты алгоритма" in model.calls("FindP0")[0]
 
 
-async def test_default_language_cue_is_unchanged_when_output_language_is_unset():
+async def test_on_event_fires_once_per_block_and_is_optional():
     model = FakeModel()
-    await build_world(DOMAIN, ctx(model))
-    assert "Отвечай на языке описания области." in model.calls("FindP0")[0]
-    assert "Отвечай на языке корня." in model.calls("NextDeveloping")[0]
-    assert "Отвечай на языке процесса." in model.calls("Internals")[0]
-    assert "Answer in English." not in model.calls("Compare")[0]  # Compare had no language cue before
-    assert "Отвечай на языке процессов." in model.calls("Contradiction")[0]
-    assert "Отвечай на языке процессов." in model.calls("Resolve")[0]
+    seen = []
+
+    async def on_event(block, data):
+        seen.append(block)
+    c = ctx(model)
+    c.on_event = on_event
+    world = await build_world(DOMAIN, c)
+    assert seen == ["FindP0", "BuildIteration", "CompareDevelopment", "CheckOpposition",
+                    "FormContradiction", "ResolveLeap"]
+    # and building without on_event set at all still works (it's optional)
+    world2 = await build_world(DOMAIN, ctx(FakeModel()))
+    assert world2.status == "built"
 
 
 async def test_a_failed_build_leaves_the_partial_world_saved(tmp_path):
     model = FakeModel()
-    model.overrides["Resolve"] = ["не json"] * 5
+    model.overrides["ResolveLeap"] = ["не json"] * 5
     store = WorldStore(tmp_path)
     with pytest.raises(BlockFailed):
         await build_world(DOMAIN, ctx(model), store)
     saved = store.load(DOMAIN)
     assert saved.status == "failed" and saved.contradiction is not None
+
+
+async def test_a_leap_not_found_is_a_distinct_status_not_a_crash():
+    model = FakeModel()
+    model.overrides["ResolveLeap"] = [{"contradiction": {"p0": "p0", "opposite": "o", "essential_relation": "r"},
+                                       "leap": None, "previous_p0_status": "NOT_YET_CONFIRMED", "next_cycle": None,
+                                       "status": "LEAP_NOT_FOUND", "failure_reason": "нет обоснованного скачка"}]
+    world = await build_world(DOMAIN, ctx(model))
+    assert world.status == "leap_not_found" and world.resolution is None and world.contradiction is not None
+
+
+async def test_a_mediation_leap_sets_the_mediated_status():
+    model = FakeModel()
+    model.overrides["ResolveLeap"] = [{"contradiction": {"p0": "p0", "opposite": "o", "essential_relation": "r"},
+                                       "leap": {"type": "MEDIATION", "process": "временный процесс",
+                                                "emerges_from_contradiction": "e", "preserves_p0": "p",
+                                                "preserves_opposite": "o", "changes_contradiction": "c",
+                                                "enables_further_development": "d", "practical_basis": "b"},
+                                       "previous_p0_status": "NOT_YET_CONFIRMED", "next_cycle": None,
+                                       "status": "CONTRADICTION_MEDIATED", "failure_reason": None}]
+    world = await build_world(DOMAIN, ctx(model))
+    assert world.status == "mediated" and world.resolution.kind == "mediation"

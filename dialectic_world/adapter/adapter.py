@@ -26,36 +26,31 @@ class WorldAdapter:
         self.world, self.max_chars = world, max_chars
 
     def brief(self) -> str:
-        """The core first (P0, opposite, contradiction, resolution), then the bundles' developing
-        processes, their internal processes last -- so a size limit cuts the least important part."""
+        """The core first (P0, opposite, contradiction, resolution), then P0's developing processes,
+        last iteration first -- so a size limit cuts the least recent part."""
         w = self.world
         core = [f"Область: {w.domain} (мир, версия {w.version})"]
         if w.p0:
-            core.append(f"Простейший процесс P0: {w.get(w.p0.process_id).line()}")
+            core.append(f"Простейший процесс P0: {w.p0.line()}")
         if w.opposite:
-            core.append(f"Противоположный процесс: {w.get(w.opposite.process_id).line()}\n"
-                        f"  для его развития P0 не требуется: {w.opposite.why_not_required}")
+            excl = w.opposite_explanation.get("exclusion_of_p0", "")
+            core.append(f"Противоположный процесс: {w.opposite.line()}\n"
+                        f"  для его развития P0 не требуется: {excl}")
         if w.contradiction:
-            core.append(f"Противоречие: {w.get(w.contradiction.process_id).line()}\n  единство: {w.contradiction.unity}")
+            core.append(f"Противоречие: {w.get(w.contradiction.process_id).line()}\n"
+                        f"  единство: {w.contradiction.unity}")
         if w.resolution:
             core.append(f"Разрешение ({w.resolution.kind}): {w.get(w.resolution.process_id).line()}\n"
                         f"  {w.resolution.explanation}")
-        developing, internal = [], []
-        for name, title in (("p0", "Развитие P0"), ("opposite", "Развитие противоположного"),
-                            ("contradiction", "Развитие противоречия")):
-            it = w.last_iteration(name)
-            if not it:
-                continue
-            developing.append(f"{title}:")
+        developing = []
+        for it in reversed(w.iterations):
+            developing.append(f"Развитие P0, итерация {it.n}:")
             developing += [f"  {w.get(pid).line()}" for pid in it.developing]
-            for pid in it.developing:
-                internal += [f"  · (внутри {pid}) {w.get(i).line()}" for i in it.internal.get(pid, [])]
         text = "\n".join(core)
-        for block in (developing, internal):
-            for line in block:
-                if len(text) + len(line) + 1 > self.max_chars:
-                    return text
-                text += "\n" + line
+        for line in developing:
+            if len(text) + len(line) + 1 > self.max_chars:
+                return text
+            text += "\n" + line
         return text
 
     def system_prompt(self, role: str = "") -> str:

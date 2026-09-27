@@ -1,31 +1,11 @@
-"""Building the world of a domain, in the order of architecture 4.2."""
-from dialectic_world.builder.blocks import Context, contradiction, find_p0, resolve
-from dialectic_world.builder.bundle import run_bundle
-from dialectic_world.world.model import Contradiction, Opposite, P0Record, Resolution, World
+"""Building the world of a domain: find_p0 -> iterations of build_iteration+compare_development until
+check_opposition confirms an opposite (or iterations_max runs out) -> form_contradiction -> resolve_leap.
+Code, not a prompt, decides whether to call each block at all -- prompt_5/6 are only ever invoked once
+there is something real for them to work on (ENGINE_V3_ARCHITECTURE.md principle 5, "economy")."""
+from dialectic_world.builder.blocks import (Context, build_iteration, check_opposition, compare_development,
+                                            find_p0, form_contradiction, resolve_leap)
+from dialectic_world.world.model import Process, World
 from dialectic_world.world.store import WorldStore
-
-
-async def develop_from_opposite(ctx: Context, world: World) -> None:
-    """Steps 4-7: the opposite's bundle, the contradiction, its bundle, the resolution. Also used by a
-    revision that changed the opposite or what it rests on."""
-    for name in ("opposite", "contradiction"):
-        world.bundles.pop(name, None)
-    world.processes = {pid: p for pid, p in world.processes.items()
-                       if p.bundle not in ("opposite", "contradiction") and p.role not in ("contradiction", "resolution")}
-    await run_bundle(ctx, world, "opposite", world.get(world.opposite.process_id))
-    await develop_from_contradiction(ctx, world, new_contradiction=True)
-
-
-async def develop_from_contradiction(ctx: Context, world: World, new_contradiction: bool) -> None:
-    if new_contradiction:
-        c, unity = await contradiction(ctx, world)
-        world.add(c)
-        world.contradiction = Contradiction(process_id=c.id, unity=unity)
-        world.bundles.pop("contradiction", None)
-        await run_bundle(ctx, world, "contradiction", c)
-    r, kind, explanation = await resolve(ctx, world)
-    world.add(r)
-    world.resolution = Resolution(process_id=r.id, kind=kind, explanation=explanation)
 
 
 async def build_world(domain: str, ctx: Context, store: WorldStore | None = None) -> World:
@@ -48,28 +28,79 @@ async def _build(domain: str, ctx: Context, store: WorldStore | None, holder: di
     s = ctx.settings
     rejected: list[dict] = []
     world = None
+    confirmed = None
     for attempt in range(1, s.p0_attempts + 1):
         world = holder["world"] = World(domain=domain, rejected_p0=list(rejected))
-        ctx.carry = ""
         ctx.trace.event("p0_attempt", attempt=attempt)
-        p0, from_leap = await find_p0(ctx, world, rejected)
+        p0, explanation, verdict, reason = await find_p0(ctx, world, rejected)
+        if verdict == "not_suitable":
+            rejected.append({"p0": p0.statement, "reason": reason})
+            continue
+        world.p0, world.p0_explanation = p0, explanation
         world.add(p0)
-        world.p0 = P0Record(process_id=p0.id, from_leap=from_leap, attempt=attempt)
-        found = await run_bundle(ctx, world, "p0", p0)
-        if found.opposite_id:
-            world.opposite = Opposite(process_id=found.opposite_id, why_not_required=found.why_not_required)
+
+        for n in range(1, s.iterations_max + 1):
+            previous = world.iterations[-1] if world.iterations else None
+            iteration = await build_iteration(ctx, world, n, previous)
+            world.iterations.append(iteration)
+            comparison = await compare_development(ctx, world)
+            world.comparisons.append(comparison)
+            if comparison.opposition_candidates:
+                check = await check_opposition(ctx, world, comparison.opposition_candidates)
+                world.opposition_checks.append(check)
+                if check.confirmed_opposites:
+                    confirmed = check.confirmed_opposites[0]
+                    if len(check.confirmed_opposites) > 1:
+                        ctx.trace.event("extra_opposites_ignored",
+                                        kept=confirmed["process_ref"],
+                                        dropped=[c["process_ref"] for c in check.confirmed_opposites[1:]])
+                    break
+        if confirmed is not None:
             break
         rejected.append({"p0": p0.statement,
-                         "reason": f"за {s.iterations_max} итераций среди развивающих процессов не найден противоположный"})
-    else:
-        world.status = "no_opposite"
+                         "reason": f"за {s.iterations_max} итераций не найдена подтверждённая противоположность"})
+
+    if confirmed is None:
+        world.rejected_p0 = rejected   # the world's own snapshot predates this attempt's own rejection, if any
+        world.status = "no_p0" if world.p0 is None else "no_opposite"
         ctx.trace.event("world", status=world.status)
         if store:
             store.save(world)
         return world
-    await develop_from_opposite(ctx, world)
-    world.status = "built"
+
+    opposite = _find_by_ref(world, confirmed["process_ref"])
+    world.opposite, world.opposite_explanation = opposite, confirmed
+
+    contradiction = await form_contradiction(ctx, world, opposite, confirmed)
+    if contradiction is None:
+        world.status = "failed"
+        ctx.trace.event("world", status=world.status, reason="form_contradiction did not produce CONTRADICTIONS_FORMED")
+        if store:
+            store.save(world)
+        return world
+    world.contradiction = contradiction
+
+    resolution = await resolve_leap(ctx, world, opposite, confirmed)
+    world.resolution = resolution
+    if resolution is None:
+        world.status = "leap_not_found"
+    elif resolution.kind == "replacement":
+        world.status = "built"
+    else:
+        world.status = "mediated"
     ctx.trace.event("world", status=world.status, processes=len(world.processes))
     if store:
         store.save(world)
     return world
+
+
+def _find_by_ref(world: World, ref: str) -> Process:
+    """prompt_3/4 name processes 'I<iteration>.P<k>'; map that back to this world's generated id: the
+    k-th developing process added in iteration <iteration>."""
+    m = ref.split(".")
+    if len(m) == 2 and m[0].startswith("I") and m[1].startswith("P"):
+        it_n, k = int(m[0][1:]), int(m[1][1:])
+        it = next((i for i in world.iterations if i.n == it_n), None)
+        if it and 1 <= k <= len(it.developing):
+            return world.get(it.developing[k - 1])
+    raise KeyError(f"opposition_candidates referenced {ref!r}, which no iteration produced")

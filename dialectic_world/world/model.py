@@ -1,13 +1,15 @@
-"""The world of a domain (architecture section 3): processes as transitions, bundles with iterations,
-opposite, contradiction, resolution, and the revisions that produced this version."""
+"""The world of a domain, rebuilt on prompt_1..6 (see PROMPTS_SNAPSHOT_PRE_REWRITE.md for the scheme
+this replaced). Flatter than the previous version: only P0 gets its own multi-iteration development;
+the opposite and the contradiction are single processes, not developed through their own bundles.
+There is no "internal process" layer and no three-variant next-iteration mechanic -- prompt_1..6 do
+not describe either, so neither exists here."""
 import uuid
 from datetime import datetime, timezone
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
-Role = Literal["p0", "developing", "internal", "contradiction", "resolution"]
-BundleName = Literal["p0", "opposite", "contradiction"]
+Role = Literal["p0", "developing", "opposite", "contradiction", "resolution"]
 
 
 def new_id(prefix: str) -> str:
@@ -15,78 +17,67 @@ def new_id(prefix: str) -> str:
 
 
 class Process(BaseModel):
-    """Always a transition of one process into another (A 1.1)."""
+    """Always a transition of one process into another."""
     id: str
     source: str                           # "from" -- the process that passes over
     target: str                           # "to" -- the process it passes into
     statement: str
     role: Role
-    bundle: Optional[BundleName] = None
-    iteration: int = 0
-    derived_from: list[str] = Field(default_factory=list)   # A 4.2, 4.3
-    parent_id: Optional[str] = None                         # internal -> its developing process (A 4.5)
-    links_prev: list[str] = Field(default_factory=list)     # internal -> same P's internals on the last iteration
-    status: Literal["active", "retired"] = "active"
+    iteration: int = 0                    # >=1 for a developing process; 0 otherwise
+    derived_from: list[str] = Field(default_factory=list)   # P0 + this iteration's processes so far,
+    # + (if the process rests on the whole previous iteration) every process of that iteration
+    status: Literal["active"] = "active"
 
     def line(self) -> str:
-        return f"[{self.id}] {self.source} → {self.target}: {self.statement}"
+        if self.source or self.target:
+            return f"[{self.id}] {self.source} → {self.target}: {self.statement}"
+        return f"[{self.id}] {self.statement}"
 
 
-class Comparison(BaseModel):
-    """A 4.7, plus what the model decides from it: the opposite (A 4.8) and the next iteration (A 4.6)."""
-    vs_root: str = ""
-    among: str = ""
-    internals: str = ""
-    opposite_id: Optional[str] = None
-    why_not_required: str = ""
-    sufficient: bool = False
-    next_variant: Optional[Literal[1, 2, 3]] = None
-    next_changes: str = ""
-    retire: list[str] = Field(default_factory=list)
-    promote: list[str] = Field(default_factory=list)     # internal processes that become developing ones
-    redo_internals: list[str] = Field(default_factory=list)
-
-
-class Iteration(BaseModel):
+class IterationRecord(BaseModel):
+    """One prompt_2 call: a finite disclosure of P0 through developing processes (prompt_2 section 9)."""
     n: int
-    variant: Optional[int] = None
+    based_on_iteration: Optional[int] = None       # null for n=1; n-1 for n>1
     developing: list[str] = Field(default_factory=list)
-    internal: dict[str, list[str]] = Field(default_factory=dict)
-    comparison: Optional[Comparison] = None
+    p0_revealed_content: str = ""
+    iteration_practical_integrity: str = ""
+    raw: dict = Field(default_factory=dict)   # prompt_2's full JSON reply, re-fed as {{previous_iteration}}
 
 
-class Bundle(BaseModel):
-    root_id: str
-    iterations: list[Iteration] = Field(default_factory=list)
+class ComparisonRecord(BaseModel):
+    """One prompt_3 call: analysis of the accumulated development so far, cumulative over iterations."""
+    iterations_analyzed: list[int] = Field(default_factory=list)
+    opposition_candidates: list[dict] = Field(default_factory=list)   # prompt_3's own shape, kept as-is
+    overall_development_pattern: str = ""
+    raw: dict = Field(default_factory=dict)
 
 
-class P0Record(BaseModel):
-    process_id: str
-    from_leap: str = ""        # which contradiction's resolution P0 is (A 3.1(1)); the engine does not check it
-    attempt: int = 1
-
-
-class Opposite(BaseModel):
-    process_id: str
-    why_not_required: str       # A 5.1
+class OppositionCheck(BaseModel):
+    """One prompt_4 call: verification of the candidates prompt_3 flagged."""
+    candidate_checks: list[dict] = Field(default_factory=list)
+    confirmed_opposites: list[dict] = Field(default_factory=list)
+    raw: dict = Field(default_factory=dict)
 
 
 class Contradiction(BaseModel):
+    """prompt_5's result for the confirmed opposite the engine acted on."""
     process_id: str
     unity: str
+    raw: dict = Field(default_factory=dict)
 
 
 class Resolution(BaseModel):
+    """prompt_6's leap, when one was found."""
     process_id: str
     kind: Literal["replacement", "mediation"]
     explanation: str
+    raw: dict = Field(default_factory=dict)
 
 
 class Revision(BaseModel):
     at: str
     trigger: str
     affected: list[str]
-    bundle: BundleName
     summary: str = ""
 
 
@@ -97,14 +88,18 @@ class World(BaseModel):
     parent_version: Optional[int] = None
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     processes: dict[str, Process] = Field(default_factory=dict)
-    p0: Optional[P0Record] = None
+    p0: Optional[Process] = None
+    p0_explanation: dict = Field(default_factory=dict)   # practical_link/why_initial/resolution_trace/development_potential
     rejected_p0: list[dict] = Field(default_factory=list)
-    bundles: dict[str, Bundle] = Field(default_factory=dict)
-    opposite: Optional[Opposite] = None
+    iterations: list[IterationRecord] = Field(default_factory=list)
+    comparisons: list[ComparisonRecord] = Field(default_factory=list)
+    opposition_checks: list[OppositionCheck] = Field(default_factory=list)
+    opposite: Optional[Process] = None
+    opposite_explanation: dict = Field(default_factory=dict)   # the confirmed_opposites entry prompt_4 gave for it
     contradiction: Optional[Contradiction] = None
     resolution: Optional[Resolution] = None
     revisions: list[Revision] = Field(default_factory=list)
-    status: Literal["building", "built", "no_opposite", "failed"] = "building"
+    status: Literal["building", "built", "no_opposite", "no_p0", "mediated", "leap_not_found", "failed"] = "building"
 
     def add(self, process: Process) -> Process:
         self.processes[process.id] = process
@@ -113,15 +108,9 @@ class World(BaseModel):
     def get(self, pid: str) -> Process:
         return self.processes[pid]
 
-    def last_iteration(self, bundle: str) -> Optional[Iteration]:
-        b = self.bundles.get(bundle)
-        return b.iterations[-1] if b and b.iterations else None
+    def last_iteration(self) -> Optional[IterationRecord]:
+        return self.iterations[-1] if self.iterations else None
 
-    def active_developing(self, bundle: str) -> list[Process]:
-        it = self.last_iteration(bundle)
-        return [self.processes[pid] for pid in (it.developing if it else [])]
-
-    def all_developing(self, bundle: str) -> list[Process]:
-        """Every developing process of the bundle across iterations, in order (A 4.2: the next one flows
-        from these)."""
-        return [p for p in self.processes.values() if p.bundle == bundle and p.role == "developing"]
+    def all_developing(self) -> list[Process]:
+        """Every developing process of P0's development, across iterations, in order."""
+        return [p for p in self.processes.values() if p.role == "developing"]

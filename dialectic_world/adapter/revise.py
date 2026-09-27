@@ -1,36 +1,26 @@
-"""Local revision (architecture 5.2): data the agent met that does not fit the world changes only the part
-of the world it concerns -- one new iteration (A 4.6) of the bundle holding that part; what rests on that
-bundle is recomputed only when it is touched. The old version stays; the new one gets the next number."""
+"""Local revision: data the agent met that does not fit the world changes only the part of the world
+it concerns. Simpler than under the old bundle scheme, because only P0 has multi-iteration development
+here -- the opposite/contradiction/resolution are each a single process, recomputed directly rather
+than through their own bundle of iterations. The old version stays; the new one gets the next number."""
 from datetime import datetime, timezone
 from typing import Optional
 
 from dialectic_world.adapter.adapter import WorldFit
-from dialectic_world.builder.blocks import Context, compare
-from dialectic_world.builder.build import develop_from_contradiction, develop_from_opposite
-from dialectic_world.builder.bundle import run_bundle
-from dialectic_world.world.model import Opposite, Revision, World
+from dialectic_world.builder.blocks import Context, build_iteration, check_opposition, compare_development, \
+    form_contradiction, resolve_leap
+from dialectic_world.builder.build import _find_by_ref
+from dialectic_world.world.model import Revision, World
 from dialectic_world.world.store import WorldStore
-
-ORDER = ["p0", "opposite", "contradiction"]
-
-
-def _bundle_of(world: World, pid: str) -> str:
-    p = world.get(pid)
-    if p.role == "p0":
-        return "p0"
-    if p.role in ("contradiction", "resolution"):
-        return "contradiction"
-    return p.bundle or "p0"
 
 
 def affected_area(world: World, named: list[str]) -> list[str]:
-    """The named processes and everything that flows from them (derived_from, parent_id)."""
+    """The named processes and everything that flows from them (derived_from)."""
     area = set(named)
     grew = True
     while grew:
         grew = False
         for p in world.processes.values():
-            if p.id not in area and (area & set(p.derived_from) or p.parent_id in area):
+            if p.id not in area and area & set(p.derived_from):
                 area.add(p.id)
                 grew = True
     return sorted(area)
@@ -45,40 +35,54 @@ async def revise_world(ctx: Context, world: World, fit: WorldFit, agent_data: st
     new = world.model_copy(deep=True)
     new.version, new.parent_version = world.version + 1, world.version
     new.created_at = datetime.now(timezone.utc).isoformat()
-    bundle = min((_bundle_of(new, pid) for pid in named), key=ORDER.index)
     area = affected_area(new, named)
     data = f"{agent_data}\nЧто не укладывается: {fit.note}".strip()
-    ctx.carry = f"Мир области пересматривается: новые данные не укладываются в него. {fit.note}"
-    ctx.trace.event("revision", bundle=bundle, named=named, area=area, data=data[:1000])
+    ctx.trace.event("revision", named=named, area=area, data=data[:1000])
 
-    root = new.get(new.bundles[bundle].root_id)
-    it = new.last_iteration(bundle)
-    it.comparison = await compare(ctx, new, bundle, root, it.n, last=False, agent_data=data)   # the plan (A 4.6)
-    result = await run_bundle(ctx, new, bundle, root, agent_data=data, iterations=1)
+    touches_p0_development = any(new.get(pid).role in ("p0", "developing") for pid in area)
+    summary = ""
 
-    summary = f"новая итерация пучка {bundle}"
-    if bundle == "p0":
-        old = new.opposite.process_id if new.opposite else None
-        still = bool(old) and new.get(old).status == "active" and old in new.last_iteration("p0").developing
-        if not still and not result.opposite_id:
-            # The iteration removed the opposite: development goes on until one is found again (A 4.8),
-            # within the bundle's iteration limit.
-            result = await run_bundle(ctx, new, "p0", root, agent_data=data, iterations=ctx.settings.iterations_max)
-            summary += f"; противоположность убрана — ещё итерации пучка p0 ({len(new.bundles['p0'].iterations)} всего)"
-        if result.opposite_id and result.opposite_id != old:
-            new.opposite = Opposite(process_id=result.opposite_id, why_not_required=result.why_not_required)
-            await develop_from_opposite(ctx, new)
-            summary += "; противоположность изменилась — пересчитаны противоречие и разрешение"
-        elif not still:
+    if touches_p0_development:
+        n = new.iterations[-1].n + 1 if new.iterations else 1
+        previous = new.iterations[-1] if new.iterations else None
+        iteration = await build_iteration(ctx, new, n, previous, extra_context=data)
+        new.iterations.append(iteration)
+        comparison = await compare_development(ctx, new, extra_context=data)
+        new.comparisons.append(comparison)
+        confirmed = None
+        if comparison.opposition_candidates:
+            check = await check_opposition(ctx, new, comparison.opposition_candidates, extra_context=data)
+            new.opposition_checks.append(check)
+            confirmed = check.confirmed_opposites[0] if check.confirmed_opposites else None
+        summary = f"новая итерация {n} развития P0"
+        if confirmed is None:
+            new.opposite, new.opposite_explanation = None, {}
+            new.contradiction, new.resolution = None, None
             new.status = "no_opposite"
-            summary += "; прежняя противоположность убрана, новая не найдена"
-    elif bundle == "opposite":
-        await develop_from_contradiction(ctx, new, new_contradiction=True)
-        summary += "; пересчитаны противоречие и разрешение"
-    else:
-        await develop_from_contradiction(ctx, new, new_contradiction=False)
-        summary += "; пересчитано разрешение"
-    new.revisions.append(Revision(at=new.created_at, trigger=data[:2000], affected=area, bundle=bundle, summary=summary))
+            summary += "; противоположность не (пере)найдена"
+        else:
+            new.opposite = _find_by_ref(new, confirmed["process_ref"])
+            new.opposite_explanation = confirmed
+            summary += f"; противоположность: {new.opposite.id}"
+    elif area & {new.opposite.id if new.opposite else ""}:
+        summary = "противоположный процесс затронут напрямую, без новой итерации P0"
+
+    if new.opposite is not None and (touches_p0_development or
+                                     (new.contradiction and new.contradiction.process_id in area) or
+                                     (new.resolution and new.resolution.process_id in area)):
+        contradiction = await form_contradiction(ctx, new, new.opposite, new.opposite_explanation, extra_context=data)
+        if contradiction is None:
+            new.status, new.contradiction, new.resolution = "failed", None, None
+            summary += "; не удалось заново сформировать противоречие"
+        else:
+            new.contradiction = contradiction
+            resolution = await resolve_leap(ctx, new, new.opposite, new.opposite_explanation, extra_context=data)
+            new.resolution = resolution
+            new.status = "built" if resolution and resolution.kind == "replacement" else \
+                         "mediated" if resolution else "leap_not_found"
+            summary += "; пересчитаны противоречие и разрешение"
+
+    new.revisions.append(Revision(at=new.created_at, trigger=data[:2000], affected=area, summary=summary))
     ctx.trace.event("world", status=new.status, version=new.version, summary=summary)
     if store:
         store.save(new)
