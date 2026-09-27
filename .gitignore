@@ -60,6 +60,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Experiment datasets (downloaded locally, never committed)
+experiments/*/data/
+
 # DialecticAI local state and DBs
 *.db
 trace.jsonl
