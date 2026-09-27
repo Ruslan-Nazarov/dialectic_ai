@@ -192,3 +192,147 @@ process" for reliability; that specific-process identity was never part of any f
 for illustration, so nothing frozen is affected. The full run was redone with this fix before any metrics
 were computed; the raw first-run output was discarded (never analyzed for the report; only re-inspected
 to diagnose the bug).
+
+### Amendment — adding real Jev as variant 2b, before any Jev call on data (2026-09-27)
+
+TypeSafe (Jev) access was obtained after the run above (which used `SurrogateDecider` throughout, on
+`gpt-4o-mini`, as a stand-in for a real Choice-with-probabilities model). This amendment is written and
+committed before Jev is called on any of the 258 answers or the pilot's 10 answers — only 3 pilot answers
+have been used so far, for a smoke test of the API adapter itself (response shape, request contents,
+authenticity of the calls), never analyzed as data.
+
+1. **Jev is added as variant 2b; variant 2 (surrogate, `gpt-4o-mini`) is renamed 2a and is not touched** —
+   its code, thresholds, and already-reported results (RESULTS.md, `raw_results.json`,
+   `metrics_summary.json`) stand as they are. No file belonging to 2a's frozen run is edited by this
+   amendment.
+2. **The primary 2b question is identical to 2a's, not the 153-way Choice the API's option limit would
+   technically allow.** `JevDecider.choice_binary_none()` asks Jev the same binary question
+   `SurrogateDecider.choice_binary_none()` asks — same process-id listing, same wording ("Does this
+   answer's reasoning engage ANY of the processes listed above, or NONE of them?") — via Jev's real
+   `choice` primitive with two options (`some` / `none`), instead of a single-token logprob hack. This was
+   corrected from an earlier draft of this amendment, which planned a full 152-process-plus-none Choice
+   call for the primary comparison; that would have changed what question is being asked, not just which
+   model answers it, confounding the 2a-vs-2b comparison. The 153-way version is preserved as **variant
+   2c**, declared auxiliary/exploratory below (point 3), decided and written down before any Jev call on
+   pilot or full-run data.
+3. **Main signal, main metric, and thresholds for 2b are unchanged from 2a**: `P(none fits)` read off
+   2b's returned probability distribution, evaluated by AUROC against the same frozen thresholds in
+   "Decision thresholds (frozen before results)" above. Auxiliary signals (Jev's own `confidence` field,
+   normalized entropy where applicable) are computed and reported the same way as for 2a, not evaluated
+   against the frozen thresholds.
+   - **Variant 2c (auxiliary, exploratory)**: `JevDecider.choice_full()`, a genuine multi-way Choice over
+     all 152 active processes plus "none fits" (153 options total — inside Jev's documented 255-option
+     limit, confirmed against the live API docs before writing this adapter). `P(none fits)` from 2c's
+     distribution is reported alongside 2b's for comparison, plus 2c's own top-choice identity (which
+     specific process, when not "none fits") since 2c, unlike 2a/2b, can actually name one. 2c is never
+     evaluated against the frozen AUROC thresholds and never substituted for 2b in the primary comparison.
+4. **The primary comparison is 2b vs. 2a on the same 258 answers**, both asking the identical binary
+   question, with 95% bootstrap CIs (2000 resamples, grouped by (doc, hypothesis) pair, per the frozen
+   metrics section above) on `P(none fits)`-based AUROC for each, and on their difference.
+5. **Breakdown by ContractNLI gold class and by the same difficulty grouping already used for 2a**
+   (`post_hoc.py`) is computed for 2b (and reported for 2c) the same way, labeled exploratory — same
+   status it already has for 2a, not upgraded to a frozen comparison.
+6. **Stability check (auxiliary)**: the same 10-answer pilot set is run twice for each of 2a and 2b;
+   distributions of `P(none fits)` between the two runs are compared per variant. This checks each
+   variant's own run-to-run stability, not 2a-vs-2b agreement.
+7. **Scope caveat, to be repeated in RESULTS.md's limitations section**: per TypeSafe's own stated
+   limitations, Jev is not trained on specialized domains, and ContractNLI is a legal/specialized domain.
+   2b's result is therefore reported as *"Jev on a specialized domain it is not trained for"*, not as a
+   general claim about Jev's capability.
+8. **Nothing above is changed after results are seen.** Any post-hoc adjustment goes in a new, separately
+   dated "after seeing results" subsection below this one, exactly as the existing amendments in this file
+   already do — never edited into this section in place.
+
+### Correction — variant 2 list-content correction, round 2 (2026-09-27, same day, before any data run)
+
+Two problems were found in the amendment above, both before any Jev call on pilot or full-run data, and
+both invalidate the **already-reported 2a result** (RESULTS.md's variant 2 AUROC 0.243 and its gold-class/
+difficulty breakdown — see the dated correction now at the top of RESULTS.md).
+
+**Problem 1 — the process list carried no meaning.** `active_process_ids()` returns bare ids (e.g.
+`Ib13b23`), never a process's actual formulation (`source`, `target`, `statement` — the fields that make a
+process a transition, per the engine's own model). Every variant of variant 2 run so far (the original 2a,
+and this amendment's planned 2b/2c) asked the model whether an answer's reasoning "engages" one of 152
+opaque codes — a question that is not meaningfully answerable, because the codes carry no content. This
+is a defect in the question's construction, not a finding about calibration; **RESULTS.md's variant 2
+numbers are marked invalid for this reason**, not deleted.
+
+The first fix attempted — listing each process as `id: source -> target (statement)` (`data.process_description()`)
+— surfaced **problem 2: it doesn't fit.** The full 152-process list with real formulations is ~48.9k
+characters (~21k tokens by an OpenAI-tokenizer proxy). `SurrogateDecider` (`gpt-4o-mini`) accepted it
+(13,178 input tokens, real call, confirmed). **Jev rejected it**: HTTP 400, `{"detail":
+{"error_type":"max_tokens_exceeded"}}` — a real, live-confirmed limit, not assumed from docs (TypeSafe's
+Models page: `jev-latest` allows 64k tokens per request total, 32k for `state` plus the longest question;
+Jev's own tokenizer is evidently far less token-efficient than OpenAI's for this Cyrillic-heavy text).
+Splitting the list across multiple calls was considered and rejected — it changes the methodology
+(probabilities would need combining across calls, a different measurement than a single Choice
+distribution) and would need its own preregistration, not a quick patch.
+
+**Fix: variant 2 (2a, 2b, 2c) asks about the world-brief text the agent itself saw, not an exhaustive
+process list.** `dialectic_world`'s `WorldAdapter.brief()` — the same class and the same `max_chars=8000`
+`eval_v3.py` used to build the "world" arm's system prompt (confirmed against `ENGINE_V3_RESULTS.md`:
+"изложение мира (до 8000 знаков)") — produces a size-limited excerpt (core process chain first, then
+top developing/internal processes, cut to fit) that is exactly what the agent had access to when it
+produced the answers being scored. This is not a new construction invented for variant 2: it is the
+existing engine's own adapter, read (never modified) from `experiments/grounding_vs_calibration/data.py`.
+For the NDA world (`v1.json`), the brief is **7,717 characters, ~3,247 tokens** (OpenAI-tokenizer proxy —
+comfortably inside Jev's 32k state+question limit) and mentions **11 unique processes** (of 152 active).
+
+**Verified against the actual eval_v3.py run, not assumed**: `eval_v3.md`'s own header records
+`world 'Договоры о неразглашении (NDA)...' v1 (built)` — confirming **v1**, not the `v2.json` that exists
+alongside it in `live_runs/v3_worlds/.../` (a later, unrelated revision). `--brief`'s default is 8000
+(`eval_v3.py:155`), and `ENGINE_V3_RESULTS.md` independently states the world arm's system prompt used
+"изложение мира (до 8000 знаков)" — no override is recorded anywhere. Reproduced the exact call
+(`World.model_validate_json` + `WorldAdapter(world, max_chars=8000).brief()`) directly against the real
+`live_runs/v3_worlds/договоры_о_неразглашении_nda_одна_сторона_раскрывает_другой_/v1.json` (outside this
+experiment's own `data/` copy) and compared byte-for-byte against `data.world_brief()`'s output: **identical**
+(same SHA-256, `aed80d0b...`). The `data/world_nda_v1.json` copy this experiment uses is also byte-identical
+to that source file (separately verified, same SHA-256, `4e208c8c...`). No discrepancy found.
+
+1. **2a and 2b ask the identical binary question against the brief, not a process list.** "World
+   description (as given to the agent): {brief}\n\nDoes this answer's reasoning engage ANY of the
+   processes described above, or NONE of them?" — `SurrogateDecider.choice_world_brief()` (2a, single-token
+   M/N logprob answer) and `JevDecider.choice_world_brief()` (2b, real two-option Choice). Same text, same
+   wording, same length, for both. This also brings variant 2 into the same condition as **variant 1**
+   (self-report, `fits`): both now judge the answer against the same world-brief the agent itself worked
+   from, not a superset the agent never saw.
+2. **Variant 2c (auxiliary, exploratory) uses only the processes the brief itself mentions.**
+   `data.brief_process_descriptions()` extracts each process actually named in the brief (by its `[id]`
+   marker) together with its own formulation (`Process.line()`) — 11 processes for this world, not 152.
+   `JevDecider.choice_brief_processes()` runs a real multi-way Choice over these 11 plus "none fits". Since
+   the option set is small, no token-limit issue arises. 2c remains auxiliary/exploratory, never part of
+   the primary 2b-vs-2a comparison, per the amendment above (unchanged).
+3. **Variant 2 (2a, 2b, 2c) is rerun in full** on the corrected question before any metric is computed or
+   reported. The already-reported 2a run (bare-id question) is superseded, not reused or partially
+   combined with the corrected run. Main signal, main metric (`P(none fits)`, AUROC), thresholds, bootstrap
+   procedure, class/difficulty breakdown, and stability check are all unchanged from the amendment above —
+   only the question's content (brief instead of bare-id list, or instead of full-formulation list) changes.
+4. **Code affected**: `data.py` (`world_brief()`, `brief_process_ids()`, `brief_process_descriptions()` —
+   new, read `dialectic_world`'s `WorldAdapter`/`World` read-only, no engine file edited);
+   `decider.py` (`SurrogateDecider.choice_world_brief()`, `JevDecider.choice_world_brief()`,
+   `JevDecider.choice_brief_processes()` replace the bare-id/full-list methods of the amendment above);
+   `pilot.py` and `full_run.py` updated to call the brief-based methods. `variant2_scores()` /
+   `variant2_error_signal()` in `variants.py` are unchanged — they only ever read `probabilities["none
+   fits"]`, which every version of variant 2 has always returned.
+5. Smoke-tested before any pilot/full-run data call: one real 2a call (13,178 input tokens, `gpt-4o-mini`,
+   confirming the full-list version worked structurally) and one real 2b call attempt (confirming the
+   `max_tokens_exceeded` rejection) on the first pilot answer, under the now-superseded full-formulation
+   design. Both calls' purpose was diagnosing the list content and the token limit, not measuring anything;
+   neither is treated as data.
+6. **Brief-based design smoke-tested, before this amendment was committed, form-check only**: 3 real calls
+   each for 2a and 2b (6 calls total) on the same first 3 pilot answers, confirming the request/response
+   shape and that no `max_tokens_exceeded` or similar error occurs (2b: 6,250–6,280 input tokens per call,
+   comfortably under the 32k limit). Outputs were inspected for shape and plausibility only (e.g. that
+   `P(none fits)` moves sensibly and isn't stuck), never treated as pilot or full-run data, and are not
+   included in any metric. The 10-answer pilot proper (stability check, point 6 of the amendment above)
+   runs after this amendment is committed. Console usage reconciled against this session's own per-call
+   token accounting on 2026-09-27 (both the earlier full-list smoke test and this one): 14 requests, 49,791
+   tokens, $0.0017 total — the console's earlier "2 requests / 775 tokens" reading was a stats-display
+   delay, not a real discrepancy.
+
+Smoke-test note: before this amendment was written, 3 of the pilot's 10 answers were sent to real Jev
+(`api.typesafe.ai`, confirmed via per-call `x-typesafe-request-id` response headers, sub-second real
+round-trip times, and the actual key's last four characters) for both 2b and 2c, solely to check the
+adapter's request/response shape and that `P(none fits)` does not structurally stick at zero the way 2a's
+first attempt did. Those 3 answers' Jev outputs were inspected for shape only, never treated as a result
+and never included in any metric — the 10-answer pilot proper (point 6 above) has not run yet.

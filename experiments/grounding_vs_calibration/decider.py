@@ -2,8 +2,9 @@
 
 Two implementations:
 - SurrogateDecider: a real logprob-supporting non-reasoning chat model. Swap the model via config.
-- JevDecider: written from TypeSafe AI's public docs for POST /v1/systemone. UNTESTED: NO ACCESS KEY.
-  Never call this in this experiment; it exists only so the swap is a one-line config change later.
+- JevDecider: calls TypeSafe's real Jev model via POST /v1/systemone with a `choice` question,
+  per https://docs.typesafe.ai/api.md and https://docs.typesafe.ai/primitives/choice.md.
+  Requires TYPESAFE_API_KEY (loaded from .env by the calling script).
 """
 from __future__ import annotations
 
@@ -123,19 +124,22 @@ class SurrogateDecider:
             completion_tokens=completion_tokens,
         )
 
-    def choice_binary_none(self, state: str, process_options: list[str]) -> ChoiceResult:
-        """For option sets too large for single-letter labeling (>26): list all process ids as
-        context, but force a single-token binary answer -- 'M' (matches some listed process) or
-        'N' (none fits) -- so the token the model actually produces stays inside a valid,
-        always-representable label space. probabilities/confidence report P(some) vs P(none fits);
-        `choice` is 'none fits' or 'some process fits' (not a specific process id -- this method
-        trades "which process" for a reliable P(none fits), which is the only score this
-        experiment's frozen metric needs).
+    def choice_world_brief(self, state: str, brief_text: str) -> ChoiceResult:
+        """Binary Choice against the world description the agent itself saw, not an exhaustive
+        list of all 152 processes. See PREREGISTRATION.md amendment dated 2026-09-27 ("variant 2
+        list-content correction, round 2"): the world has 152 active processes, but the agent
+        that produced the answers being scored only ever saw `WorldAdapter.brief()` (max_chars
+        =8000, `data.world_brief()`) -- the same size-limited excerpt used to build eval_v3.py's
+        system prompt. Asking about all 152 processes asks about processes the agent never had
+        access to; asking about the brief keeps variant 2 in the same condition as variant 1
+        (self-report) and as the agent's own run. Forces a single-token binary answer -- 'M'
+        (matches something in the brief) or 'N' (none fits) -- so the model's one-token output
+        stays inside a valid, always-representable label space (SurrogateDecider's logprob
+        scheme cannot use free-form multi-way Choice the way JevDecider can).
         """
-        listed = "\n".join(f"- {p}" for p in process_options)
         prompt = (
-            f"{state}\n\nWorld processes:\n{listed}\n\n"
-            "Does this answer's reasoning engage ANY of the processes listed above (M), "
+            f"{state}\n\nWorld description (as given to the agent):\n{brief_text}\n\n"
+            "Does this answer's reasoning engage ANY of the processes described above (M), "
             "or NONE of them (N)? Answer with a single letter only: M or N."
         )
         body = json.dumps(
@@ -189,9 +193,8 @@ def build_decider(
     """One switch for which Decider implementation runs: the `DECIDER_IMPL` env var.
 
     DECIDER_IMPL=surrogate (default) -> SurrogateDecider on a real logprob-capable model.
-    DECIDER_IMPL=jev                 -> JevDecider. UNTESTED: NO ACCESS KEY. Raises immediately;
-                                         set TYPESAFE_API_KEY once TypeSafe access exists, and this
-                                         switch is the only change needed to actually use it.
+    DECIDER_IMPL=jev                 -> JevDecider, calling TypeSafe's Jev model directly.
+                                         Requires TYPESAFE_API_KEY.
     """
     impl = os.environ.get("DECIDER_IMPL", "surrogate").strip().lower()
     if impl == "jev":
@@ -202,21 +205,138 @@ def build_decider(
 
 
 class JevDecider:
-    """UNTESTED: NO ACCESS KEY. Written from TypeSafe AI's public docs for POST /v1/systemone.
+    """Calls TypeSafe's real Jev model (POST /v1/systemone) with a single `choice` question,
+    per https://docs.typesafe.ai/api.md and https://docs.typesafe.ai/primitives/choice.md.
 
-    Do not call in this experiment. Kept only so swapping the Decider implementation is one config line.
+    Request: {"state": ..., "model": "jev-latest", "questions": {"<qid>": {"type": "choice",
+    "instructions": ..., "criteria": {<key>: <description-or-null>, ...}}}}.
+    Response: {"answers": {"<qid>": {"type": "choice", "choice": <key>,
+    "probabilities": {<key>: p, ...}, "confidence": p}}, "usage": {"input_tokens": n,
+    "output_tokens": n}}.
+
+    The Choice primitive supports up to 255 options per question (confirmed against the live
+    docs) -- no 26-option single-token ceiling the way SurrogateDecider's logprob scheme has.
+    But a *content* limit was found empirically: 64k tokens per request, 32k for `state` plus
+    the longest question (TypeSafe's Models page) -- a full 152-process list with real
+    formulations (not bare ids) exceeds that (`max_tokens_exceeded`, confirmed live). So variant
+    2 (2a/2b/2c) asks about the world-brief text the agent itself saw
+    (`data.world_brief()`, ~3.2k tokens), not an exhaustive process list: `choice_world_brief()`
+    for the primary 2b-vs-2a binary comparison, `choice_brief_processes()` for the auxiliary,
+    exploratory 2c (multi-way Choice among the brief's own ~11 mentioned processes). See
+    PREREGISTRATION.md amendment dated 2026-09-27, round 2.
     """
 
-    def __init__(self, api_key_env: str = "TYPESAFE_API_KEY", base_url: str = "https://api.typesafe.ai"):
+    def __init__(
+        self,
+        api_key_env: str = "TYPESAFE_API_KEY",
+        base_url: str = "https://api.typesafe.ai",
+        model: str = "jev-latest",
+    ):
         self.api_key = os.environ.get(api_key_env, "")
         self.base_url = base_url
+        self.model = model
+
+    def _ask_choice(self, state: str, criteria: dict[str, str | None], instructions: str) -> tuple[dict, dict]:
+        body = json.dumps(
+            {
+                "state": state,
+                "model": self.model,
+                "questions": {
+                    "q": {
+                        "type": "choice",
+                        "instructions": instructions,
+                        "criteria": criteria,
+                    }
+                },
+            }
+        ).encode()
+        req = urllib.request.Request(
+            f"{self.base_url}/v1/systemone",
+            data=body,
+            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read())
+        return data["answers"]["q"], data.get("usage", {})
 
     def choice(self, state: str, options: list[str]) -> ChoiceResult:
-        raise NotImplementedError(
-            "JevDecider is untested (no TypeSafe access key) and must not be called in this experiment."
+        if len(options) > 255:
+            raise ValueError(f"{len(options)} options exceed Jev's 255-option Choice limit")
+        keys = [f"opt_{i}" for i in range(len(options))]
+        criteria = dict(zip(keys, options))
+        answer, usage = self._ask_choice(
+            state, criteria, instructions="Which option applies given the state?"
+        )
+        key_to_opt = dict(zip(keys, options))
+        probs = {key_to_opt[k]: p for k, p in answer["probabilities"].items()}
+        return ChoiceResult(
+            choice=key_to_opt[answer["choice"]],
+            probabilities=probs,
+            confidence=answer["confidence"],
+            prompt_tokens=usage.get("input_tokens", 0),
+            completion_tokens=usage.get("output_tokens", 0),
         )
 
-    def choice_binary_none(self, state: str, process_options: list[str]) -> ChoiceResult:
-        raise NotImplementedError(
-            "JevDecider is untested (no TypeSafe access key) and must not be called in this experiment."
+    def choice_world_brief(self, state: str, brief_text: str) -> ChoiceResult:
+        """Primary variant 2b question: identical binary question to
+        SurrogateDecider.choice_world_brief() (same wording, same world-brief text -- the
+        excerpt the agent itself saw, not an exhaustive 152-process list; see
+        PREREGISTRATION.md amendment dated 2026-09-27, round 2), asked via Jev's real `choice`
+        primitive with two options ("some" / "none") instead of a single-token logprob hack.
+        This keeps 2a and 2b comparable on the same question -- only the model differs.
+        probabilities/confidence report P(some) vs P(none fits); `choice` is 'none fits' or
+        'some process fits' (not a specific process id), matching SurrogateDecider's contract.
+
+        Also fixes a real API constraint found while building this: a full-152-process listing
+        (with each process's actual formulation, not just its bare id) exceeds Jev's documented
+        per-request limit (64k tokens total / 32k for `state` plus the longest question) --
+        confirmed empirically via a `max_tokens_exceeded` 400 response, not assumed from docs.
+        The brief (max_chars=8000, ~3.2k tokens) is well inside that limit.
+        """
+        instructions = (
+            f"World description (as given to the agent):\n{brief_text}\n\n"
+            "Does this answer's reasoning engage ANY of the processes described above, "
+            "or NONE of them?"
+        )
+        criteria = {
+            "some": "The answer's reasoning engages some of the processes described above.",
+            "none": "The answer's reasoning engages none of the processes described above.",
+        }
+        answer, usage = self._ask_choice(state, criteria, instructions=instructions)
+        label_to_opt = {"some": "some process fits", "none": "none fits"}
+        probs = {label_to_opt[k]: p for k, p in answer["probabilities"].items()}
+        return ChoiceResult(
+            choice=label_to_opt[answer["choice"]],
+            probabilities=probs,
+            confidence=answer["confidence"],
+            prompt_tokens=usage.get("input_tokens", 0),
+            completion_tokens=usage.get("output_tokens", 0),
+        )
+
+    def choice_brief_processes(self, state: str, brief_text: str, id_to_line: dict[str, str]) -> ChoiceResult:
+        """Auxiliary, exploratory variant 2c: real multi-way Choice among the processes actually
+        mentioned in the world brief (`data.brief_process_descriptions()`, each already carrying
+        its own id + formulation), plus "none fits". Unlike the old, abandoned 2c design (all 152
+        processes), this option set is small (~11 processes for the NDA world) since the brief
+        itself is size-limited -- so no token-limit issue, and the options are exactly what the
+        agent could have been referring to. Not part of the primary 2b-vs-2a comparison.
+        """
+        keys = list(id_to_line.keys()) + ["none"]
+        criteria: dict[str, str | None] = dict(id_to_line)
+        criteria["none"] = "None of the processes described in the brief are engaged by this answer's reasoning."
+        instructions = (
+            f"World description (as given to the agent):\n{brief_text}\n\n"
+            "Which of the processes described above (identified by id) does this answer's "
+            "reasoning engage, if any?"
+        )
+        answer, usage = self._ask_choice(state, criteria, instructions=instructions)
+        opt_to_label = {**id_to_line, "none": "none fits"}
+        probs = {opt_to_label[k]: p for k, p in answer["probabilities"].items()}
+        return ChoiceResult(
+            choice=opt_to_label[answer["choice"]],
+            probabilities=probs,
+            confidence=answer["confidence"],
+            prompt_tokens=usage.get("input_tokens", 0),
+            completion_tokens=usage.get("output_tokens", 0),
         )

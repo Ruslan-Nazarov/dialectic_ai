@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
-from data import GOLD_FILE, active_process_ids, load_world, load_world_answers
+from data import GOLD_FILE, load_world_answers, world_brief
 from decider import ChoiceResult, build_decider
 from llm_call import chat_call
 from retrieval import QuoteReverdictSignal, keyword_search, quote_found_verbatim
@@ -70,9 +70,9 @@ def reverdict_from_quote(quote: str, hypothesis_text: str) -> tuple[str, int, in
     return label, result.prompt_tokens, result.completion_tokens
 
 
-def run_variant2_for_answer(decider, a, process_ids) -> ChoiceResult:
+def run_variant2_for_answer(decider, a, brief_text) -> ChoiceResult:
     state = build_state(a)
-    return decider.choice_binary_none(state, process_ids)
+    return decider.choice_world_brief(state, brief_text)
 
 
 def run_variant3_for_answer(a, contract_texts, hyp_texts) -> dict:
@@ -95,8 +95,12 @@ def run_variant3_for_answer(a, contract_texts, hyp_texts) -> dict:
 
 def main():
     answers = load_world_answers()
-    world = load_world()
-    process_ids = active_process_ids(world)
+    # Variant 2 asks about the world-brief text the agent itself saw (WorldAdapter.brief(),
+    # max_chars=8000 -- same as eval_v3.py used for the system prompt), not an exhaustive list
+    # of all 152 processes: the agent never had access to the full list, and a full-formulation
+    # list exceeds Jev's per-request token limit besides. See PREREGISTRATION.md amendment dated
+    # 2026-09-27, round 2.
+    brief_text = world_brief()
     contract_texts = load_contract_texts()
     hyp_texts = load_hypothesis_texts()
     decider = build_decider(SURROGATE_MODEL, BASE_URL, API_KEY_ENV)
@@ -106,7 +110,7 @@ def main():
     v2_results: list[ChoiceResult] = [None] * len(answers)
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         futs = {
-            ex.submit(run_variant2_for_answer, decider, a, process_ids): i
+            ex.submit(run_variant2_for_answer, decider, a, brief_text): i
             for i, a in enumerate(answers)
         }
         for fut in as_completed(futs):

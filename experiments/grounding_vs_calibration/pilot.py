@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
-from data import GOLD_FILE, active_process_ids, load_world, load_world_answers
+from data import GOLD_FILE, load_world_answers, world_brief
 from decider import build_decider
 from llm_call import chat_call
 from retrieval import QuoteReverdictSignal, keyword_search, quote_found_verbatim
@@ -63,9 +63,8 @@ def reverdict_from_quote_tracked(quote: str, hypothesis_text: str, holder: dict)
 
 def main():
     answers = load_world_answers()[:10]
-    world = load_world()
-    process_ids = active_process_ids(world)
-    print(f"active_process_ids={len(process_ids)} (of {len(world['processes'])} total)")
+    brief_text = world_brief()
+    print(f"world_brief chars={len(brief_text)}")
     contract_texts = load_contract_texts()
     hyp_texts = load_hypothesis_texts()
 
@@ -83,7 +82,7 @@ def main():
     v2_results = []
     for a in answers:
         state = build_state(a)
-        r = decider.choice_binary_none(state, process_ids)
+        r = decider.choice_world_brief(state, brief_text)
         v2_results.append(r)
         total_calls += 1
         total_prompt_tok += r.prompt_tokens

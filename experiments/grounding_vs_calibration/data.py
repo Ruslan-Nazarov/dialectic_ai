@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,6 +12,9 @@ EXP_DIR = Path(__file__).resolve().parent
 EVAL_V3 = ROOT / "contract_nli_runs" / "eval_v3.json"
 GOLD_FILE = EXP_DIR / "data" / "contract-nli" / "test.json"
 WORLD_FILE = EXP_DIR / "data" / "world_nda_v1.json"
+
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 
 @dataclass
@@ -56,6 +61,66 @@ def load_world(world_file: Path = WORLD_FILE) -> dict:
 def active_process_ids(world: dict) -> list[str]:
     """Process ids with status == 'active' only (excludes 'retired'). 152 active / 3 retired of 155 total."""
     return [pid for pid, p in world["processes"].items() if p.get("status") == "active"]
+
+
+def process_description(pid: str, world: dict) -> str:
+    """Id plus its actual formulation (source -> target, statement), for variant 2's process list.
+
+    Bare ids (e.g. "Ib13b23") carry no meaning to a model with no other access to the world; listing
+    only ids means the model is being asked whether an answer's reasoning "engages" 152 opaque codes,
+    which it cannot meaningfully judge. This is the text that must be shown instead, for every variant
+    (2a/2b/2c) and every id-listing use of the process set.
+    """
+    p = world["processes"][pid]
+    return f"{pid}: {p['source']} -> {p['target']} ({p['statement']})"
+
+
+def process_descriptions(process_ids: list[str], world: dict) -> list[str]:
+    return [process_description(pid, world) for pid in process_ids]
+
+
+BRIEF_MAX_CHARS = 8000  # eval_v3.py's --brief default; ENGINE_V3_RESULTS.md confirms this was
+                        # the size actually used to build the NDA world's system prompt.
+
+
+def load_world_model(world_file: Path = WORLD_FILE):
+    """The same pydantic World the engine's WorldAdapter expects, loaded read-only from the
+    already-exported world_nda_v1.json (no engine files touched)."""
+    from dialectic_world.world.model import World
+
+    return World.model_validate_json(world_file.read_text(encoding="utf-8"))
+
+
+def world_brief(world_file: Path = WORLD_FILE, max_chars: int = BRIEF_MAX_CHARS) -> str:
+    """The exact text the agent itself saw as its world description: dialectic_world's
+    WorldAdapter.brief() (same class, same max_chars=8000 as eval_v3.py used to build the system
+    prompt for the "world" arm -- see ENGINE_V3_RESULTS.md, "изложение мира (до 8000 знаков)").
+    Variant 2 (2a/2b) asks about this text, not an exhaustive list of all 152 processes, so the
+    question matches what the agent actually had access to when it produced its answer -- the
+    same condition variant 1 (self-report, `fits`) is already judged against.
+    """
+    from dialectic_world.adapter.adapter import WorldAdapter
+
+    return WorldAdapter(load_world_model(world_file), max_chars=max_chars).brief()
+
+
+def brief_process_ids(world_file: Path = WORLD_FILE, max_chars: int = BRIEF_MAX_CHARS) -> list[str]:
+    """Unique process ids actually mentioned in the brief (`[id]` markers from Process.line()),
+    in order of first appearance. Typically far fewer than all 152 active processes -- the brief
+    is a size-limited excerpt (core process chain + top developing/internal processes)."""
+    text = world_brief(world_file, max_chars)
+    seen: list[str] = []
+    for pid in re.findall(r"\[([A-Za-z0-9]+)\]", text):
+        if pid not in seen:
+            seen.append(pid)
+    return seen
+
+
+def brief_process_descriptions(world_file: Path = WORLD_FILE, max_chars: int = BRIEF_MAX_CHARS) -> dict[str, str]:
+    """id -> that process's own formulation (Process.line(): "[id] source -> target: statement"),
+    for every process mentioned in the brief. Used to build variant 2c's option set."""
+    w = load_world_model(world_file)
+    return {pid: w.get(pid).line() for pid in brief_process_ids(world_file, max_chars)}
 
 
 def load_world_answers(
