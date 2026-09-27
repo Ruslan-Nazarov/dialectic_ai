@@ -141,6 +141,28 @@ def fast_auroc(scores: list[float], labels: list[bool]) -> float:
     return (sum_ranks_pos - pos * (pos + 1) / 2) / (pos * neg)
 
 
+def precision_at_recall(scores: list[float], corrects: list[bool], target_recall: float) -> dict:
+    """Lowest-score-first threshold on `scores` (lower = more likely wrong) that achieves at
+    least `target_recall` for detecting wrong items (corrects == False), and the precision at
+    that point. Used to compare a continuous signal (Jev's `noul`) against a fixed-operating-
+    -point binary signal (gpt-5-mini's variant 3 re-verdict) on equal footing -- comparing
+    precision at each signal's own natural threshold conflates "how good is the signal" with
+    "how aggressive is its threshold", which is not the same question.
+    """
+    n_wrong = sum(1 for c in corrects if not c)
+    if n_wrong == 0:
+        return {"k": 0, "recall": float("nan"), "precision": float("nan"), "threshold": None}
+    order = sorted(range(len(scores)), key=lambda i: scores[i])
+    cum_wrong = 0
+    for k, i in enumerate(order, start=1):
+        if not corrects[i]:
+            cum_wrong += 1
+        recall = cum_wrong / n_wrong
+        if recall >= target_recall:
+            return {"k": k, "recall": recall, "precision": cum_wrong / k, "threshold": scores[i]}
+    return {"k": len(order), "recall": cum_wrong / n_wrong, "precision": cum_wrong / len(order), "threshold": None}
+
+
 def per_class_accuracy(preds: list[str], golds: list[str], classes: list[str]) -> dict[str, float]:
     out = {}
     for cls in classes:

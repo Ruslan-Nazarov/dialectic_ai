@@ -19,7 +19,7 @@ sys.path.insert(0, str(SIBLING))
 sys.path.insert(0, str(ROOT))
 
 from metrics import auroc, bootstrap_ci, precision_recall  # noqa: E402
-from metrics_ext import ece, brier_binary, reliability_diagram_data  # noqa: E402
+from metrics_ext import ece, brier_binary, precision_at_recall, reliability_diagram_data  # noqa: E402
 
 RAW_RESULTS_V1 = SIBLING / "raw_results.json"  # variant 3 (quote-anchored re-verdict), "world" arm, 258 rows
 
@@ -98,9 +98,16 @@ def main():
     v3_pr = precision_recall(v3_error_signal, matched_correct)
     jev_pr_matched = precision_recall(jev_error_signal, matched_correct)
     jev_auroc_matched = auroc([r.noul for r in matched], matched_correct)
-    print(f"\n258 'world'-arm subset (n matched to raw_results.json = {len(matched)}):")
+    matched_baseline_wrong_rate = 1 - sum(matched_correct) / len(matched_correct)
+    # fair comparison: Jev's precision at a threshold matched to variant 3's own recall,
+    # not each signal's own natural threshold (0.5 for Jev is not comparable to variant 3's
+    # single fixed operating point)
+    jev_at_v3_recall = precision_at_recall([r.noul for r in matched], matched_correct, v3_pr["recall"])
+    print(f"\n258 'world'-arm subset (n matched to raw_results.json = {len(matched)}), "
+          f"baseline wrong rate={matched_baseline_wrong_rate:.4f}:")
     print(f"  Jev: AUROC={jev_auroc_matched:.4f}, precision/recall@0.5={jev_pr_matched}")
     print(f"  gpt-5-mini variant 3 (quote-anchored re-verdict): precision/recall={v3_pr}")
+    print(f"  Jev @ matched recall ({v3_pr['recall']:.4f}): {jev_at_v3_recall}")
 
     out = {
         "n_answers": len(rows),
@@ -108,9 +115,10 @@ def main():
         "ece": e, "brier": b, "reliability_diagram": rel,
         "threshold_0.5": {**pr, "baseline_wrong_rate": baseline_wrong_rate},
         "comparison_258_world_arm": {
-            "n_matched": len(matched),
+            "n_matched": len(matched), "baseline_wrong_rate": matched_baseline_wrong_rate,
             "jev_auroc": jev_auroc_matched, "jev_precision_recall_at_0.5": jev_pr_matched,
             "gpt5mini_variant3_precision_recall": v3_pr,
+            "jev_precision_at_variant3_matched_recall": jev_at_v3_recall,
         },
     }
     with open(HERE / "analysis_exp2.json", "w", encoding="utf-8") as f:

@@ -88,6 +88,7 @@
   },
   "comparison_258_world_arm": {
     "n_matched": 258,
+    "baseline_wrong_rate": 0.45736434108527135,
     "jev_auroc": 0.6612893462469733,
     "jev_precision_recall_at_0.5": {
       "precision": 0.6956521739130435,
@@ -96,6 +97,12 @@
     "gpt5mini_variant3_precision_recall": {
       "precision": 0.5310734463276836,
       "recall": 0.7966101694915254
+    },
+    "jev_precision_at_variant3_matched_recall": {
+      "k": 166,
+      "recall": 0.7966101694915254,
+      "precision": 0.5662650602409639,
+      "threshold": 0.93
     }
   }
 }
