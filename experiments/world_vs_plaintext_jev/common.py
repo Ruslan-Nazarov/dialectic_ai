@@ -43,12 +43,12 @@ def load_items() -> list[dict]:
     return items
 
 
-def jev_noul(question: str, candidate: str, background: str | None = None) -> dict:
+def jev_noul(question: str, candidate: str, background: str | None = None, background_key: str = "background") -> dict:
     """One Jev call = one question about one candidate answer. Same request in every condition; only the
-    optional `background` key of the state differs."""
+    optional context key of the state differs (`background`, or `consistency_check` for the verdict probe)."""
     state = {"question": question}
     if background is not None:
-        state["background"] = background
+        state[background_key] = background
     q = noul_question(
         {"candidate_answer": candidate,
          "question": "Is the candidate answer a correct answer to the question in the shared state?"},
