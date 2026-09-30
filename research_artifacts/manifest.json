@@ -1,0 +1,175 @@
+{
+  "exported_on": "2026-09-30",
+  "audited_public_commit": "0db0b11d4529e6800b48cb99eba9c6e89cad8680",
+  "local_baseline_commit": "fed8235",
+  "note": "Historical artifacts copied byte-for-byte. Code SHAs identify architecture, not a proved exact runtime checkout. Control-world identity with the earliest eval_v3 run is inferred from text, not recorded run metadata. Baseline per-call traces were not saved; compare.json and .log contain baseline summaries.",
+  "files": [
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_auto/compare.json",
+      "source": "live_runs/ablation/deceive_persistent_auto/compare.json",
+      "sha256": "ccfde8e1364b6eef6fc648439ef79cf46bffd2918e7270a9cafb861f265bf162"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_auto/compare.md",
+      "source": "live_runs/ablation/deceive_persistent_auto/compare.md",
+      "sha256": "5ae7f86e5837c1c484477ed45d9d2dfc8e208642fb479d697df3f15702538254"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_auto/deceive_persistent_auto_planning_1.jsonl",
+      "source": "live_runs/ablation/deceive_persistent_auto/deceive_persistent_auto_planning_1.jsonl",
+      "sha256": "560fc40184bb5031bfd2aecf079d115cac4057aae38035b06222963f8c53ec48"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_auto/deceive_persistent_auto_planning_2.jsonl",
+      "source": "live_runs/ablation/deceive_persistent_auto/deceive_persistent_auto_planning_2.jsonl",
+      "sha256": "53dadd898d128c73ac89637b08d5f7a6e1bf6547c092f661fde11b7ea4bf5b70"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_auto/deceive_persistent_auto_planning_3.jsonl",
+      "source": "live_runs/ablation/deceive_persistent_auto/deceive_persistent_auto_planning_3.jsonl",
+      "sha256": "006fd34d741a370de11461eeff1f7ad39566e231f7bd8c34cca3ec5e16db631f"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_auto.log",
+      "source": "live_runs/ablation/deceive_persistent_auto.log",
+      "sha256": "a9b1d134c937ded3c4cabddbf5f6ba0272eb2651423e92062e3424b0b1938613"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_full/compare.json",
+      "source": "live_runs/ablation/deceive_persistent_full/compare.json",
+      "sha256": "90354ee98c5ecf81ad86e6069130f1427a2bd9d38a57ad41c3262353af9e6557"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_full/compare.md",
+      "source": "live_runs/ablation/deceive_persistent_full/compare.md",
+      "sha256": "242b4feb60b96bf8dadbbbf7c903ea3f4ce5358a265761864a7de530e7eb306a"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_full/deceive_persistent_engine_1.jsonl",
+      "source": "live_runs/ablation/deceive_persistent_full/deceive_persistent_engine_1.jsonl",
+      "sha256": "693176139e04b33edd27a8a1de30aa740b8b7e4fc6820a3bb093bd42e094cce8"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_full/deceive_persistent_engine_2.jsonl",
+      "source": "live_runs/ablation/deceive_persistent_full/deceive_persistent_engine_2.jsonl",
+      "sha256": "220d4bd9b9ee6adfd19d97d4167a6996674acbbd5f09798bb160c3ec8a965e45"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_full/deceive_persistent_engine_3.jsonl",
+      "source": "live_runs/ablation/deceive_persistent_full/deceive_persistent_engine_3.jsonl",
+      "sha256": "7add0b8b373a9bdafc49f996957a44e2948c71fd134f447fcd843694f66547a0"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_persistent_full.log",
+      "source": "live_runs/ablation/deceive_persistent_full.log",
+      "sha256": "b229ae44b51166b075afc493af20920e332e2ae43a83ad9992589d3235e3fb52"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_auto/compare.json",
+      "source": "live_runs/ablation/deceive_unknowable_auto/compare.json",
+      "sha256": "45b906587e007ccdd7f14a3403fe5e6a1eae84598f6f8950e298db6947a946a0"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_auto/compare.md",
+      "source": "live_runs/ablation/deceive_unknowable_auto/compare.md",
+      "sha256": "005b33b00e3b0fb0185b2d76903cbad2fedd619ccebc7b2cdf97ed446f697aec"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_auto/deceive_unknowable_auto_planning_1.jsonl",
+      "source": "live_runs/ablation/deceive_unknowable_auto/deceive_unknowable_auto_planning_1.jsonl",
+      "sha256": "398552783b41a54c60236f5adfb96ece905f2c9b3ac885f27101a41b44da19db"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_auto/deceive_unknowable_auto_planning_2.jsonl",
+      "source": "live_runs/ablation/deceive_unknowable_auto/deceive_unknowable_auto_planning_2.jsonl",
+      "sha256": "765e373149034e5e38edfbb4550ada140e581d65c4e13eb9f04b612368cd0070"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_auto/deceive_unknowable_auto_planning_3.jsonl",
+      "source": "live_runs/ablation/deceive_unknowable_auto/deceive_unknowable_auto_planning_3.jsonl",
+      "sha256": "14afc505c01b810d151e9f652a7ffbd446a3192425e3f2cdac111c5df9942770"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_auto.log",
+      "source": "live_runs/ablation/deceive_unknowable_auto.log",
+      "sha256": "188b593ef5097a9f1b6bb3d5354aae66c1e5c46d7357468e0061ab9ae70b60b5"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_full/compare.json",
+      "source": "live_runs/ablation/deceive_unknowable_full/compare.json",
+      "sha256": "5d15c6d43cf047238f3493c660b6cd71a69c0a67735b3b918bd8de49dda37b6d"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_full/compare.md",
+      "source": "live_runs/ablation/deceive_unknowable_full/compare.md",
+      "sha256": "c57a19679cd1797558fd4153e4d9d3a181699cc5a1eac6b47dd917dfa8afc8c5"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_full/deceive_unknowable_engine_1.jsonl",
+      "source": "live_runs/ablation/deceive_unknowable_full/deceive_unknowable_engine_1.jsonl",
+      "sha256": "4e7b0611ea375350bddbdc29188194a397d4a9f439eedfcde938d30a82a86682"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_full/deceive_unknowable_engine_2.jsonl",
+      "source": "live_runs/ablation/deceive_unknowable_full/deceive_unknowable_engine_2.jsonl",
+      "sha256": "757594f2363055c1e3ae0500c0a81d1924d7150588643ee739de6dab5d2d5111"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_full/deceive_unknowable_engine_3.jsonl",
+      "source": "live_runs/ablation/deceive_unknowable_full/deceive_unknowable_engine_3.jsonl",
+      "sha256": "a01aab48ca28f8693db37880ef4ef7e4c18cd7895be5a810feb151d979ba480b"
+    },
+    {
+      "path": "research_artifacts/v2_ablation/deceive_unknowable_full.log",
+      "source": "live_runs/ablation/deceive_unknowable_full.log",
+      "sha256": "fd5967a06d8867249d34f556b59d6dc61994fe04cd38600bec8c2db21d647161"
+    },
+    {
+      "path": "research_artifacts/legacy_v3/control_world_v1.json",
+      "source": "live_runs/v3_worlds_placebo/столовая_посетители_получают_холодную_еду_сотрудники_могут_е/v1.json",
+      "sha256": "db3514d774cf1ce67b26b2f91eee925beb828b3d6e4c4e241b97c9f60360d1f8"
+    },
+    {
+      "path": "research_artifacts/legacy_v3/build.jsonl",
+      "source": "live_runs/v3_worlds/build.jsonl",
+      "sha256": "ea348ddd0447d331e782d3ab184d9168f9111b8de93e4da0aff6662f401bbada"
+    },
+    {
+      "path": "research_artifacts/legacy_v3/revise.jsonl",
+      "source": "live_runs/v3_worlds/revise.jsonl",
+      "sha256": "759b759093fb089be9baaf87f9149ac5d845cac85834677a2d4fa00f4c948bd0"
+    },
+    {
+      "path": "research_artifacts/legacy_v3/revise_demo1.jsonl",
+      "source": "live_runs/v3_worlds/revise_demo1.jsonl",
+      "sha256": "445913b73db2a3ed6711394f9dfd1755e16e41dd294e7c733a5fa0e7bbbe770c"
+    },
+    {
+      "path": "research_artifacts/legacy_v3/mini/build.jsonl",
+      "source": "live_runs/v3_worlds_mini/build.jsonl",
+      "sha256": "a2feeca4f6f87f63d76550fbbc59fbc4d4f8fc5d8598eaf0ee2aaff67b4935ac"
+    },
+    {
+      "path": "research_artifacts/early_framework/bfcl_stats_v3.json",
+      "source": "git:47fd03c:bfcl_stats_v3.json",
+      "sha256": "948b097397b96086ce24a183b8848a0f2e0b654696e744038561ac5a8d30f11e"
+    },
+    {
+      "path": "research_artifacts/early_framework/ablation_stats.json",
+      "source": "git:47fd03c:ablation_stats.json",
+      "sha256": "9116fde750c760fe21c7035ba6ac4d3eefca69a37212dca490683a60e880751a"
+    },
+    {
+      "path": "research_artifacts/legacy_v3/nda_brief.txt",
+      "source": "rendered from experiments/grounding_vs_calibration/data/world_nda_v1.json using 14d9114 ordering",
+      "sha256": "aed80d0bf0aa29fb2c9e0639c78ef2b367175aa1a37c5f6911c0098f5dd8b22a",
+      "characters": 7717
+    },
+    {
+      "path": "research_artifacts/legacy_v3/control_brief.txt",
+      "source": "rendered from research_artifacts/legacy_v3/control_world_v1.json using 14d9114 ordering",
+      "sha256": "052d363e595bdeb5e09cd60a1eac81f63fb2bf3258ca263583ed02e434598938",
+      "characters": 7960
+    }
+  ]
+}

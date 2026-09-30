@@ -84,24 +84,15 @@ BRIEF_MAX_CHARS = 8000  # eval_v3.py's --brief default; ENGINE_V3_RESULTS.md con
 
 
 def load_world_model(world_file: Path = WORLD_FILE):
-    """The same pydantic World the engine's WorldAdapter expects, loaded read-only from the
-    already-exported world_nda_v1.json (no engine files touched)."""
-    from dialectic_world.world.model import World
-
-    return World.model_validate_json(world_file.read_text(encoding="utf-8"))
+    """Read the historical world without importing the current engine schema."""
+    from experiments.legacy_world import load_world
+    return load_world(world_file)
 
 
 def world_brief(world_file: Path = WORLD_FILE, max_chars: int = BRIEF_MAX_CHARS) -> str:
-    """The exact text the agent itself saw as its world description: dialectic_world's
-    WorldAdapter.brief() (same class, same max_chars=8000 as eval_v3.py used to build the system
-    prompt for the "world" arm -- see ENGINE_V3_RESULTS.md, "изложение мира (до 8000 знаков)").
-    Variant 2 (2a/2b) asks about this text, not an exhaustive list of all 152 processes, so the
-    question matches what the agent actually had access to when it produced its answer -- the
-    same condition variant 1 (self-report, `fits`) is already judged against.
-    """
-    from dialectic_world.adapter.adapter import WorldAdapter
-
-    return WorldAdapter(load_world_model(world_file), max_chars=max_chars).brief()
+    """Render the historical treatment with the pre-rewrite adapter ordering."""
+    from experiments.legacy_world import brief
+    return brief(load_world_model(world_file), max_chars)
 
 
 def brief_process_ids(world_file: Path = WORLD_FILE, max_chars: int = BRIEF_MAX_CHARS) -> list[str]:
@@ -120,7 +111,8 @@ def brief_process_descriptions(world_file: Path = WORLD_FILE, max_chars: int = B
     """id -> that process's own formulation (Process.line(): "[id] source -> target: statement"),
     for every process mentioned in the brief. Used to build variant 2c's option set."""
     w = load_world_model(world_file)
-    return {pid: w.get(pid).line() for pid in brief_process_ids(world_file, max_chars)}
+    from experiments.legacy_world import process_line
+    return {pid: process_line(w, pid) for pid in brief_process_ids(world_file, max_chars)}
 
 
 def load_world_answers(

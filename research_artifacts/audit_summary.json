@@ -1,0 +1,195 @@
+{
+  "artifact_hashes_verified": 33,
+  "original_contract_nli": {
+    "plain": {
+      "n": 258,
+      "correct": 148,
+      "fits": {
+        "None": 258
+      }
+    },
+    "world": {
+      "n": 258,
+      "correct": 140,
+      "fits": {
+        "True": 258
+      }
+    },
+    "placebo": {
+      "n": 258,
+      "correct": 145,
+      "fits": {
+        "False": 251,
+        "None": 3,
+        "True": 4
+      }
+    }
+  },
+  "round2_error_auroc": {
+    "2a": 0.22315375302663437,
+    "2b": 0.27790556900726393
+  },
+  "jev_solver_accuracy": {
+    "no_world": 0.7293161166905787,
+    "nda_world": 0.7240554758488761,
+    "control_world": 0.7235772357723578
+  },
+  "jev_solver_confidence_auroc": {
+    "no_world": 0.7761107571105833,
+    "nda_world": 0.7847604907632747,
+    "control_world": 0.7753403604745035
+  },
+  "verifier": {
+    "n_answers": 773,
+    "n_pairs": 129,
+    "n_docs": 83,
+    "auroc": 0.6358409183534846,
+    "pair_ci": {
+      "point": 0.6358409183534846,
+      "lo": 0.5492505425706694,
+      "hi": 0.715409294581094,
+      "n": 2000
+    },
+    "doc_ci_sensitivity": {
+      "point": 0.6358409183534846,
+      "lo": 0.5508803310886644,
+      "hi": 0.7246092353454316,
+      "n": 2000
+    }
+  },
+  "stage14": {
+    "stage14c_binary": {
+      "decisions": 60,
+      "cases": 2,
+      "groups": 12,
+      "varying_groups": 1,
+      "repeat_counts": {
+        "5": 12
+      }
+    },
+    "stage14c_ternary": {
+      "decisions": 128,
+      "cases": 4,
+      "groups": 32,
+      "varying_groups": 2,
+      "repeat_counts": {
+        "5": 16,
+        "3": 16
+      }
+    },
+    "stage14c2_binary": {
+      "decisions": 144,
+      "cases": 8,
+      "groups": 48,
+      "varying_groups": 0,
+      "repeat_counts": {
+        "3": 48
+      }
+    },
+    "stage14c2_ternary": {
+      "decisions": 144,
+      "cases": 8,
+      "groups": 48,
+      "varying_groups": 0,
+      "repeat_counts": {
+        "3": 48
+      }
+    },
+    "stage14c2_calibration_binary": {
+      "decisions": 340,
+      "cases": 19,
+      "groups": 114,
+      "varying_groups": 5,
+      "repeat_counts": {
+        "3": 112,
+        "2": 2
+      }
+    }
+  },
+  "deception": {
+    "deceive_unknowable": {
+      "summary": {
+        "baseline": {
+          "n": 3,
+          "completed": 3,
+          "unresolved": 0,
+          "correct": 0,
+          "fooled": 3,
+          "grounded": 0
+        },
+        "engine": {
+          "n": 3,
+          "completed": 3,
+          "unresolved": 0,
+          "correct": 3,
+          "fooled": 0,
+          "grounded": 3
+        }
+      },
+      "engine_lie_exposed": [
+        true,
+        true,
+        false
+      ]
+    },
+    "deceive_persistent": {
+      "summary": {
+        "baseline": {
+          "n": 3,
+          "completed": 3,
+          "unresolved": 0,
+          "correct": 3,
+          "fooled": 0,
+          "grounded": 0
+        },
+        "engine": {
+          "n": 3,
+          "completed": 0,
+          "unresolved": 3,
+          "correct": 2,
+          "fooled": 0,
+          "grounded": 0
+        }
+      },
+      "engine_lie_exposed": [
+        true,
+        true,
+        true
+      ]
+    }
+  },
+  "bfcl": {
+    "n_cases": 125,
+    "raw_accuracy": 0.832,
+    "framework_accuracy": 0.8053333333333333,
+    "wilcoxon_p": 0.5822249948978424
+  },
+  "round2_ci": {
+    "2a": {
+      "point": 0.22315375302663437,
+      "lo": 0.14851871882699358,
+      "hi": 0.3019224900823924,
+      "n": 2000
+    },
+    "2b": {
+      "point": 0.27790556900726393,
+      "lo": 0.19829296147141912,
+      "hi": 0.3620897320084312,
+      "n": 2000
+    }
+  },
+  "jev_world_difference_ci": {
+    "no_world": {
+      "point": -0.0052606408417025345,
+      "lo": -0.016260162601626018,
+      "hi": 0.0052606408417025345,
+      "n": 2000
+    },
+    "control_world": {
+      "point": 0.00047824007651841227,
+      "lo": -0.008130081300813009,
+      "hi": 0.008130081300813009,
+      "n": 2000
+    }
+  }
+}

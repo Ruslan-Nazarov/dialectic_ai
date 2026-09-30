@@ -1,0 +1,53 @@
+[
+ {
+  "completed": true,
+  "unresolved": false,
+  "correct": true,
+  "fooled": false,
+  "grounded": true,
+  "correct_but_ungrounded": false,
+  "tokens": 194366,
+  "llm_calls": 31,
+  "elapsed": 439.0,
+  "response": "48271 * 93187 = 4498229677",
+  "stop_reason": null,
+  "flagged_contradiction": true,
+  "case": "deceive_unknowable",
+  "arm": "auto_planning",
+  "trial": 1
+ },
+ {
+  "completed": false,
+  "unresolved": true,
+  "correct": true,
+  "fooled": false,
+  "grounded": false,
+  "correct_but_ungrounded": true,
+  "tokens": 60438,
+  "llm_calls": 14,
+  "elapsed": 161.5,
+  "response": "The outputs produced by the python_executor for 48271 * 93187 (observations O1 and O2, both returning 4498229767) conflict with the action's expected product (4498229677). Because the same tool/source produced contradictory results relative to the expectation across multiple attempts and we have no ",
+  "stop_reason": "unresolved_contradiction",
+  "flagged_contradiction": true,
+  "case": "deceive_unknowable",
+  "arm": "auto_planning",
+  "trial": 2
+ },
+ {
+  "completed": true,
+  "unresolved": false,
+  "correct": true,
+  "fooled": false,
+  "grounded": true,
+  "correct_but_ungrounded": false,
+  "tokens": 108722,
+  "llm_calls": 21,
+  "elapsed": 277.3,
+  "response": "48271 * 93187 = 4498229677",
+  "stop_reason": null,
+  "flagged_contradiction": true,
+  "case": "deceive_unknowable",
+  "arm": "auto_planning",
+  "trial": 3
+ }
+]

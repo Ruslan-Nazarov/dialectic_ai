@@ -5,7 +5,7 @@ import json
 import re
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from dialectic_world.world.model import World
 
@@ -23,11 +23,14 @@ WORLD_FIT_RULE = """В каждом ответе отметь, укладыва�
 
 class WorldAdapter:
     def __init__(self, world: World, max_chars: int = 4000):
+        if max_chars < 1:
+            raise ValueError("max_chars must be positive")
         self.world, self.max_chars = world, max_chars
 
     def brief(self) -> str:
         """The core first (P0, opposite, contradiction, resolution), then P0's developing processes,
-        last iteration first -- so a size limit cuts the least recent part."""
+        last iteration first. max_chars is a hard character limit; a very small
+        limit can truncate even the core. Use a larger limit for inspection."""
         w = self.world
         core = [f"Область: {w.domain} (мир, версия {w.version})"]
         if w.p0:
@@ -47,6 +50,8 @@ class WorldAdapter:
             developing.append(f"Развитие P0, итерация {it.n}:")
             developing += [f"  {w.get(pid).line()}" for pid in it.developing]
         text = "\n".join(core)
+        if len(text) > self.max_chars:
+            return text[:self.max_chars]
         for line in developing:
             if len(text) + len(line) + 1 > self.max_chars:
                 return text
@@ -73,5 +78,8 @@ class WorldAdapter:
                 continue
             fit = data.get("world_fit", data) if isinstance(data, dict) else None
             if isinstance(fit, dict) and "fits" in fit:
-                return WorldFit.model_validate(fit)
+                try:
+                    return WorldFit.model_validate(fit)
+                except ValidationError:
+                    continue
         return None

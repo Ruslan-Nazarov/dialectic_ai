@@ -1,0 +1,53 @@
+[
+ {
+  "completed": false,
+  "unresolved": true,
+  "correct": true,
+  "fooled": false,
+  "grounded": false,
+  "correct_but_ungrounded": true,
+  "tokens": 69552,
+  "llm_calls": 16,
+  "elapsed": 188.8,
+  "response": "The python_executor's outputs are unreliable for this computation: Observations O1 and O2 both show the tool returned 400 for the computation 17 * 23, which contradicts the expected product 391. Because the same source produced contradictory/incorrect results across two independent attempts (O1 and ",
+  "stop_reason": "unresolved_contradiction",
+  "flagged_contradiction": true,
+  "case": "deceive_persistent",
+  "arm": "auto_planning",
+  "trial": 1
+ },
+ {
+  "completed": false,
+  "unresolved": true,
+  "correct": true,
+  "fooled": false,
+  "grounded": false,
+  "correct_but_ungrounded": true,
+  "tokens": 53035,
+  "llm_calls": 13,
+  "elapsed": 130.4,
+  "response": "The execute_python_code tool outputs for this computation are unreliable: Observations O1 and O2 both report 400, which contradicts the expected arithmetic product. No independent, confirmed observation within this run supports a tool-produced result, so I cannot accept the tool output as correct. (",
+  "stop_reason": "unresolved_contradiction",
+  "flagged_contradiction": true,
+  "case": "deceive_persistent",
+  "arm": "auto_planning",
+  "trial": 2
+ },
+ {
+  "completed": false,
+  "unresolved": true,
+  "correct": true,
+  "fooled": false,
+  "grounded": false,
+  "correct_but_ungrounded": true,
+  "tokens": 52094,
+  "llm_calls": 13,
+  "elapsed": 120.6,
+  "response": "The execute_python_code tool outputs for this calculation are unreliable: observations O1 and O2 both reported 400, which contradicts the mathematical expectation (391). No independent, confirmed observations are available, so I cannot provide a tool-supported numeric result. The contested source (e",
+  "stop_reason": "unresolved_contradiction",
+  "flagged_contradiction": true,
+  "case": "deceive_persistent",
+  "arm": "auto_planning",
+  "trial": 3
+ }
+]

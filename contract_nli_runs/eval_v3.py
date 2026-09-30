@@ -1,6 +1,6 @@
 """Engine v3 on ContractNLI: an agent acting in the NDA world vs the same model without it.
 
-    python live_runs/contract_nli/eval_v3.py --world <world.json> [--agent openai:gpt-5-mini] [--repeats 2]
+    python contract_nli_runs/eval_v3.py --world <world.json> [--agent openai:gpt-5-mini] [--repeats 2]
 
 Pairs: the 49 gold-Contradiction pairs the plain model got wrong in plain_scan.json, 20 gold-Contradiction pairs
 it got right, 30 Entailment and 30 NotMentioned pairs (random, seed 7) -- so that answering "Contradiction"
@@ -20,13 +20,14 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
 load_dotenv(ROOT / ".env")
 
 from dialectic_world import WorldAdapter  # noqa: E402
 from dialectic_world.llm import build_llm  # noqa: E402
-from dialectic_world.world.model import World  # noqa: E402
+from experiments.legacy_world import load_world, LegacyWorldAdapter  # noqa: E402
+from types import SimpleNamespace
 
 TASK = """Here is a non-disclosure agreement:
 <<<
@@ -63,14 +64,17 @@ def select_pairs(data, seed=7):
 
 
 async def main(args):
-    data = json.loads((HERE / "contract-nli" / "test.json").read_text(encoding="utf-8"))
+    out = Path(args.out)
+    if out.exists():
+        raise FileExistsError(f"Refusing to overwrite saved evidence: {out}; choose --out")
+    data = json.loads(Path(args.dataset).read_text(encoding="utf-8"))
     docs = {d["id"]: d for d in data["documents"]}
-    world = World.model_validate_json(Path(args.world).read_text(encoding="utf-8"))
+    world = load_world(args.world)
     role = "You review non-disclosure agreements."
-    systems = {"world": WorldAdapter(world, max_chars=args.brief).system_prompt(role)}
+    systems = {"world": LegacyWorldAdapter(world, max_chars=args.brief).system_prompt(role)}
     if args.placebo:
-        placebo = World.model_validate_json(Path(args.placebo).read_text(encoding="utf-8"))
-        systems["placebo"] = WorldAdapter(placebo, max_chars=args.brief).system_prompt(role)
+        placebo = load_world(args.placebo)
+        systems["placebo"] = LegacyWorldAdapter(placebo, max_chars=args.brief).system_prompt(role)
     arms = ["plain"] + list(systems)
     pairs = select_pairs(data)
     if args.limit:
@@ -104,9 +108,9 @@ async def main(args):
                      "answer": str(answer)[:800]})
 
     await asyncio.gather(*(one(d, k, g, arm, rep) for d, k, g in pairs for arm in arms for rep in range(args.repeats)))
-    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
-    report(rows, llms, arms, out.with_suffix(".md"), args, world)
+    report(rows, llms, arms, out.with_suffix(".md"), args, SimpleNamespace(**world))
 
 
 GROUPS = ["hard", "contradiction_easy", "entailment", "not_mentioned"]
@@ -146,12 +150,13 @@ def report(rows, llms, arms, path, args, world):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
+    p.add_argument("--dataset", default=str(ROOT / "experiments/grounding_vs_calibration/data/contract-nli/test.json"))
     p.add_argument("--world", required=True)
     p.add_argument("--placebo", help="a world of the same shape but empty of meaning: controls for the prompt itself")
     p.add_argument("--agent", default="openai:gpt-5-mini")
     p.add_argument("--repeats", type=int, default=2)
     p.add_argument("--concurrency", type=int, default=8)
-    p.add_argument("--out", default=str(HERE / "eval_v3.json"))
+    p.add_argument("--out", default=str(ROOT / "scratch" / "eval_v3.json"))
     p.add_argument("--brief", type=int, default=8000, help="max chars of the world given to the agent")
     p.add_argument("--limit", type=int, default=0, help="pairs per group, for a dry run")
     asyncio.run(main(p.parse_args()))

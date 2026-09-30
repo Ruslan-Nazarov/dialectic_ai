@@ -26,6 +26,12 @@ jobs:
 
       - run: python -m pip install --upgrade pip build
 
+      - run: python -m pip install -e ".[dev,research]" -c requirements-audit.txt
+
+      - run: python -m pytest tests/ experiments/grounding_vs_calibration/tests/ -q
+
+      - run: python tools/audit_evidence.py --check --bootstrap
+
       - run: python -m build --wheel --outdir dist
 
       - name: Publish wheel to the release for this tag
@@ -36,6 +42,6 @@ jobs:
           if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
               --title "dialectic_world ${TAG}" \
-              --notes "Automated build. Install with: pip install <wheel URL below> (see README for the requirements.txt line consumers should pin)."
+              --notes "Automated build after offline tests and evidence checks. Download the wheel below and install it with pip; research results and limitations are documented in README."
           fi
           gh release upload "$TAG" dist/*.whl --repo "$GITHUB_REPOSITORY" --clobber

@@ -6,12 +6,14 @@ from dialectic_world.builder.blocks import (Context, build_iteration, check_oppo
                                             find_p0, form_contradiction, resolve_leap)
 from dialectic_world.world.model import Process, World
 from dialectic_world.world.store import WorldStore
+from dialectic_world.provenance import run_metadata
 
 
 async def build_world(domain: str, ctx: Context, store: WorldStore | None = None) -> World:
     """Builds and saves the world. A block that fails for good leaves the partial world saved with
     status "failed" (for inspection) and re-raises."""
-    holder: dict = {}
+    holder: dict = {"version": max(store.versions(domain), default=0) + 1 if store else 1}
+    ctx.trace.event("run_metadata", domain=domain, version=holder["version"], **run_metadata(ctx))
     try:
         return await _build(domain, ctx, store, holder)
     except Exception as exc:
@@ -19,7 +21,7 @@ async def build_world(domain: str, ctx: Context, store: WorldStore | None = None
         if world is not None:
             world.status = "failed"
             ctx.trace.event("world", status="failed", error=f"{type(exc).__name__}: {exc}"[:500])
-            if store:
+            if store and not store.path(world).exists():
                 store.save(world)
         raise
 
@@ -30,7 +32,7 @@ async def _build(domain: str, ctx: Context, store: WorldStore | None, holder: di
     world = None
     confirmed = None
     for attempt in range(1, s.p0_attempts + 1):
-        world = holder["world"] = World(domain=domain, rejected_p0=list(rejected))
+        world = holder["world"] = World(domain=domain, version=holder["version"], rejected_p0=list(rejected))
         ctx.trace.event("p0_attempt", attempt=attempt)
         p0, explanation, verdict, reason = await find_p0(ctx, world, rejected)
         if verdict == "not_suitable":

@@ -1,0 +1,6 @@
+# Preserve exported evidence bytes and their SHA-256 hashes on every platform.
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+requirements-audit.txt text eol=lf
+research_artifacts/** -text -whitespace

@@ -1,7 +1,8 @@
 """One ContractNLI case through the full engine (blocks + practice) and, for reference, a plain model answer.
 
-    python live_runs/contract_nli/run_one.py [doc_id] [hypothesis_key]
+    python contract_nli_runs/run_one.py --help
 """
+import argparse
 import asyncio
 import json
 import re
@@ -11,17 +12,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "engine_v2"))
 load_dotenv(ROOT / ".env")
-
-from dialectic_ai.agent import DialecticalAgent  # noqa: E402
-from dialectic_ai.core.logger import DevelopmentLogger  # noqa: E402
-from dialectic_ai.core.schema import AgentInput  # noqa: E402
-from dialectic_ai.core.semantic_validator import LLMSemanticValidator  # noqa: E402
-from dialectic_ai.engine import DialecticalEngine  # noqa: E402
-from dialectic_ai.reality import PythonExecutor  # noqa: E402
-from tests.live.cases import OPEN_ROLE, UsageMeter, build_actor, build_judge  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 TASK = """Here is a non-disclosure agreement:
@@ -38,8 +31,20 @@ def verdict(text):
     return found[-1].replace(" ", "") if found else "?"
 
 
-async def main(doc_id, key):
-    data = json.loads((HERE / "contract-nli" / "test.json").read_text(encoding="utf-8"))
+async def main(doc_id, key, dataset, output_dir):
+    trace = output_dir / f"doc{doc_id}_{key}.jsonl"
+    result_path = output_dir / f"doc{doc_id}_{key}.result.json"
+    if trace.exists() or result_path.exists():
+        raise FileExistsError("Refusing to overwrite a trace or result; choose a new --out-dir")
+    data = json.loads(dataset.read_text(encoding="utf-8"))
+    from dialectic_ai.agent import DialecticalAgent
+    from dialectic_ai.core.logger import DevelopmentLogger
+    from dialectic_ai.core.schema import AgentInput
+    from dialectic_ai.core.semantic_validator import LLMSemanticValidator
+    from dialectic_ai.engine import DialecticalEngine
+    from dialectic_ai.reality import PythonExecutor
+    from tests.live.cases import OPEN_ROLE, UsageMeter, build_actor, build_judge
+    output_dir.mkdir(parents=True, exist_ok=True)
     doc = next(d for d in data["documents"] if d["id"] == doc_id)
     gold = doc["annotation_sets"][0]["annotations"][key]
     hypothesis = data["labels"][key]["hypothesis"]
@@ -55,7 +60,6 @@ async def main(doc_id, key):
     judge_llm = build_judge(actor)
     meter.attach(actor, "actor")
     meter.attach(judge_llm, "judge")
-    trace = HERE / f"doc{doc_id}_{key}.jsonl"
     engine = DialecticalEngine(DialecticalAgent(OPEN_ROLE, llm=actor, tools=[PythonExecutor()]),
                                semantic_validator=LLMSemanticValidator(judge_llm), block_planning=True,
                                max_iterations=25, run_timeout=1200, logger=DevelopmentLogger(trace_path=str(trace)))
@@ -69,11 +73,17 @@ async def main(doc_id, key):
         "plain": {"verdict": verdict(plain_answer), "response": plain_answer},
         "trace": str(trace),
     }
-    (HERE / f"doc{doc_id}_{key}.result.json").write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
+    result_path.write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps({k: report[k] for k in ("gold",)} | {"engine": report["engine"]["verdict"],
                      "engine_status": result.status, "plain": report["plain"]["verdict"],
                      "elapsed_s": report["engine"]["elapsed_s"], "tokens": report["engine"]["tokens"]}, ensure_ascii=False))
 
 
 if __name__ == "__main__":
-    asyncio.run(main(int(sys.argv[1]) if len(sys.argv) > 1 else 446, sys.argv[2] if len(sys.argv) > 2 else "nda-7"))
+    parser = argparse.ArgumentParser(description="Historical v2 case; requires archived v2 dependencies and a live provider")
+    parser.add_argument("doc_id", nargs="?", type=int, default=446)
+    parser.add_argument("hypothesis_key", nargs="?", default="nda-7")
+    parser.add_argument("--dataset", type=Path, default=ROOT / "experiments/grounding_vs_calibration/data/contract-nli/test.json")
+    parser.add_argument("--out-dir", type=Path, default=ROOT / "scratch/contract_nli_v2")
+    args = parser.parse_args()
+    asyncio.run(main(args.doc_id, args.hypothesis_key, args.dataset, args.out_dir))

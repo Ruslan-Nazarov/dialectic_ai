@@ -11,6 +11,7 @@ from dialectic_world.builder.blocks import Context, build_iteration, check_oppos
 from dialectic_world.builder.build import _find_by_ref
 from dialectic_world.world.model import Revision, World
 from dialectic_world.world.store import WorldStore
+from dialectic_world.provenance import run_metadata
 
 
 def affected_area(world: World, named: list[str]) -> list[str]:
@@ -28,16 +29,24 @@ def affected_area(world: World, named: list[str]) -> list[str]:
 
 async def revise_world(ctx: Context, world: World, fit: WorldFit, agent_data: str,
                        store: Optional[WorldStore] = None) -> Optional[World]:
-    named = [pid for pid in fit.process_ids if pid in world.processes]
+    named = [pid for pid in fit.process_ids if pid in world.processes and world.get(pid).status == "active"]
     if not named:
         ctx.trace.event("revision_skipped", reason="the agent named no process of the world", note=fit.note)
         return None
     new = world.model_copy(deep=True)
-    new.version, new.parent_version = world.version + 1, world.version
+    versions = store.versions(world.domain) if store else []
+    new.version = max([world.version, *versions]) + 1
+    new.parent_version = world.version
     new.created_at = datetime.now(timezone.utc).isoformat()
-    area = affected_area(new, named)
+    ctx.trace.event("run_metadata", domain=new.domain, version=new.version, **run_metadata(ctx))
+    area = set(affected_area(new, named))
     data = f"{agent_data}\nЧто не укладывается: {fit.note}".strip()
-    ctx.trace.event("revision", named=named, area=area, data=data[:1000])
+    ctx.trace.event("revision", named=named, area=sorted(area), data=data[:1000])
+
+    # Keep replaced nodes as history, but do not expose them as current processes.
+    for record in (new.contradiction, new.resolution):
+        if record:
+            new.get(record.process_id).status = "superseded"
 
     touches_p0_development = any(new.get(pid).role in ("p0", "developing") for pid in area)
     summary = ""
@@ -82,7 +91,7 @@ async def revise_world(ctx: Context, world: World, fit: WorldFit, agent_data: st
                          "mediated" if resolution else "leap_not_found"
             summary += "; пересчитаны противоречие и разрешение"
 
-    new.revisions.append(Revision(at=new.created_at, trigger=data[:2000], affected=area, summary=summary))
+    new.revisions.append(Revision(at=new.created_at, trigger=data[:2000], affected=sorted(area), summary=summary))
     ctx.trace.event("world", status=new.status, version=new.version, summary=summary)
     if store:
         store.save(new)

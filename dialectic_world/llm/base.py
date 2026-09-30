@@ -1,5 +1,6 @@
 """The one thing the engine needs from a model: text in, text out, tokens counted."""
 from dataclasses import dataclass, field
+from contextvars import ContextVar
 
 
 @dataclass
@@ -23,10 +24,18 @@ class LLM:
     """Base class. Subclasses implement `_complete`; `generate` counts usage."""
     model: str = ""
     usage: Usage = field(default_factory=Usage)
+    _call_usage: ContextVar = field(default_factory=lambda: ContextVar("llm_call_usage", default=(0, 0)),
+                                    repr=False)
+
+    @property
+    def last_call_usage(self) -> tuple[int, int]:
+        """Usage of this task's latest call; unaffected by concurrent calls."""
+        return self._call_usage.get()
 
     async def generate(self, messages: list[dict]) -> str:
         text, prompt_tokens, completion_tokens = await self._complete(messages)
         self.usage.add(prompt_tokens, completion_tokens)
+        self._call_usage.set((prompt_tokens, completion_tokens))
         return text or ""
 
     async def _complete(self, messages: list[dict]) -> tuple[str, int, int]:
@@ -42,11 +51,15 @@ class FallbackLLM(LLM):
 
     async def generate(self, messages: list[dict]) -> str:
         errors = []
+        tokens = [0, 0]
         for llm in self.chain:
-            before = (llm.usage.prompt_tokens, llm.usage.completion_tokens)
             try:
                 text = await llm.generate(messages)
-                self.usage.add(llm.usage.prompt_tokens - before[0], llm.usage.completion_tokens - before[1])
+                prompt, completion = llm.last_call_usage
+                self.usage.add(prompt, completion)
+                tokens[0] += prompt
+                tokens[1] += completion
+                self._call_usage.set(tuple(tokens))
                 if text.strip():
                     return text
                 errors.append(f"{llm.model}: empty reply")
