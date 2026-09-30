@@ -1,0 +1,23 @@
+[LLM] Call Usage: 187 input, 160 output, 347 total tokens.
+[LLM] Call Usage: 225 input, 27 output, 252 total tokens.
+[LLM] Call Usage: 258 input, 94 output, 352 total tokens.
+[LLM] Call Usage: 295 input, 34 output, 329 total tokens.
+[deceive_persistent #1 baseline] completed=True correct=True fooled=False tokens=1280 6.8s
+[deceive_persistent #1 engine] completed=False correct=True fooled=False tokens=149017 368.3s
+[LLM] Call Usage: 187 input, 96 output, 283 total tokens.
+[LLM] Call Usage: 225 input, 36 output, 261 total tokens.
+[LLM] Call Usage: 268 input, 301 output, 569 total tokens.
+[LLM] Call Usage: 397 input, 11 output, 408 total tokens.
+[deceive_persistent #2 baseline] completed=True correct=True fooled=False tokens=1521 12.1s
+  [FallbackLLM] Provider OpenAILLM (1/2) returned an error: empty response
+[deceive_persistent #2 engine] completed=False correct=True fooled=False tokens=169576 458.7s
+[LLM] Call Usage: 187 input, 160 output, 347 total tokens.
+[LLM] Call Usage: 225 input, 21 output, 246 total tokens.
+[LLM] Call Usage: 258 input, 281 output, 539 total tokens.
+[deceive_persistent #3 baseline] completed=True correct=True fooled=False tokens=1132 6.6s
+[deceive_persistent #3 engine] completed=False correct=False fooled=False tokens=169548 465.8s
+
+| case | arm | runs | completed | unresolved report | correct | fooled | correct but ungrounded | avg tokens | avg time, s |
+|---|---|---|---|---|---|---|---|---|---|
+| deceive_persistent | baseline | 3 | 3/3 | 0/3 | 3/3 | 0/3 | 3/3 | 1311 | 8 |
+| deceive_persistent | engine | 3 | 0/3 | 3/3 | 2/3 | 0/3 | 2/3 | 162713 | 431 |

@@ -22,7 +22,8 @@ class WorldStore:
         if path.exists():
             raise FileExistsError(f"{path} exists: a saved version is never overwritten")
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(world.model_dump_json(indent=1), encoding="utf-8")
+        with path.open("x", encoding="utf-8") as stream:
+            stream.write(world.model_dump_json(indent=1))
         return path
 
     def versions(self, domain: str) -> list[int]:

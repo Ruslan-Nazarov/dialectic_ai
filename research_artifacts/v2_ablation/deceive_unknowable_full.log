@@ -1,0 +1,24 @@
+[LLM] Call Usage: 189 input, 98 output, 287 total tokens.
+[LLM] Call Usage: 229 input, 23 output, 252 total tokens.
+[LLM] Call Usage: 264 input, 96 output, 360 total tokens.
+[LLM] Call Usage: 306 input, 93 output, 399 total tokens.
+[deceive_unknowable #1 baseline] completed=True correct=False fooled=True tokens=1298 7.5s
+[deceive_unknowable #1 engine] completed=True correct=True fooled=False tokens=217259 578.2s
+[LLM] Call Usage: 189 input, 99 output, 288 total tokens.
+[LLM] Call Usage: 230 input, 23 output, 253 total tokens.
+[LLM] Call Usage: 265 input, 32 output, 297 total tokens.
+[LLM] Call Usage: 307 input, 15 output, 322 total tokens.
+[deceive_unknowable #2 baseline] completed=True correct=False fooled=True tokens=1160 6.5s
+  [FallbackLLM] Provider OpenAILLM (1/2) returned an error: empty response
+  [FallbackLLM] Provider OpenAILLM (1/2) returned an error: empty response
+[deceive_unknowable #2 engine] completed=True correct=True fooled=False tokens=231199 569.0s
+[LLM] Call Usage: 189 input, 29 output, 218 total tokens.
+[LLM] Call Usage: 224 input, 26 output, 250 total tokens.
+[LLM] Call Usage: 266 input, 158 output, 424 total tokens.
+[deceive_unknowable #3 baseline] completed=True correct=False fooled=True tokens=892 4.8s
+[deceive_unknowable #3 engine] completed=True correct=True fooled=False tokens=106225 274.8s
+
+| case | arm | runs | completed | unresolved report | correct | fooled | correct but ungrounded | avg tokens | avg time, s |
+|---|---|---|---|---|---|---|---|---|---|
+| deceive_unknowable | baseline | 3 | 3/3 | 0/3 | 0/3 | 3/3 | 0/3 | 1116 | 6 |
+| deceive_unknowable | engine | 3 | 3/3 | 0/3 | 3/3 | 0/3 | 0/3 | 184894 | 474 |

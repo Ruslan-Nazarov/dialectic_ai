@@ -29,17 +29,13 @@ from dotenv import load_dotenv  # noqa: E402
 load_dotenv(ROOT / ".env")
 
 from data import world_brief  # noqa: E402
-from dialectic_world.adapter.adapter import WorldAdapter  # noqa: E402
-from dialectic_world.world.model import World  # noqa: E402
 
 from jev_batch import call_systemone, choice_question, noul_question  # noqa: E402
 
 TEST_JSON = SIBLING / "data" / "contract-nli" / "test.json"
 EVAL_V3 = ROOT / "contract_nli_runs" / "eval_v3.json"
-PLACEBO_WORLD = (
-    ROOT / "live_runs" / "v3_worlds_placebo"
-    / "столовая_посетители_получают_холодную_еду_сотрудники_могут_е" / "v1.json"
-)
+PLACEBO_WORLD = ROOT / "research_artifacts" / "legacy_v3" / "control_world_v1.json"
+
 OUT_DIR = HERE
 
 RATE_PER_TOKEN = 0.042 / 1_000_000  # docs.typesafe.ai/models.md, verified live 2026-09-27; input only
@@ -56,8 +52,8 @@ NOUL_CRITERIA = {
 
 
 def placebo_brief() -> str:
-    w = World.model_validate_json(PLACEBO_WORLD.read_text(encoding="utf-8"))
-    return WorldAdapter(w, max_chars=8000).brief()
+    from experiments.legacy_world import load_world, brief
+    return brief(load_world(PLACEBO_WORLD), max_chars=8000)
 
 
 def choice_q(hyp_text: str) -> dict:

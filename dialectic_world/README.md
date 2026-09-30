@@ -1,42 +1,17 @@
-# dialectic_world — Runtime V3
+# dialectic_world — current six-stage engine
 
-**Status: рабочее, эксперимент.** Написан с нуля 25 сентября по алгоритму владельца
-(см. `../ENGINE_V3_ARCHITECTURE.md`), после архивации v2 (`../engine_v2/`). Весь опубликованный
-на сегодня эмпирический материал v3 — один прогон в одном окне ~1 часа
-(`../RESEARCH_HISTORY_AND_PROGRAM.md`, эра E) — воспринимать соответствующе: не как
-статистически проверенный результат.
+The builder follows standalone `prompt_1`…`prompt_6`. The replacement architecture was introduced at `f905f30`; audit repairs add revision regressions, schema versioning, active/superseded nodes, task-local usage and provenance.
 
-## Чем отличается от v2
+See [current architecture](../docs/ARCHITECTURE.md), [evidence](../docs/RESULTS.md), and [setup](../docs/REPRODUCIBILITY.md). The pre-rewrite specification is an explicitly preserved historical record. Existing ContractNLI outcomes do not evaluate the current builder.
 
-- **Судьи нет.** v2 проверял каждый ход отдельной моделью-судьёй; в v3 код проверяет только
-  форму ответа (JSON, переход «откуда → куда», существующие id, пределы). Причина — не
-  результат абляции внутри v3, а вывод из опыта v2: интегрированный судья на полном графе
-  понимает метод по-своему и стоит дороже самой работы (`../ENGINE_V2_LESSONS.md`, разд. 3;
-  `../RESEARCH_HISTORY_AND_PROGRAM.md`, §2.1).
-- **Мир строится один раз на область**, а не заново на каждую задачу. Построитель мира
-  (`builder/`) проходит по алгоритму владельца (простейшее → развитие → противоположность →
-  противоречие → разрешение) и сохраняет результат (`world/store.py`); адаптер (`adapter/`)
-  подмешивает уже построенный мир в работу агента, вместо того чтобы движок сам решал задачу.
-- **Локальный, а не полный пересмотр.** Если практика агента не укладывается в мир, меняется
-  только связанная с ошибкой часть мира новой итерацией — не весь граф целиком.
-- Инструменты — внутри блоков, а не отдельным слоем поверх диалектики, как в v2.
+`builder/` controls block order and structural checks; `world/` stores generated representations; `adapter/` provides a bounded brief and revisions; `llm/` implements providers and scripted test models; `prompts/` contains packaged prompts. No standalone judge certifies semantic correctness.
 
-Подробная спецификация — `../ENGINE_V3_ARCHITECTURE.md`; первые результаты и их ограничения —
-`../ENGINE_V3_RESULTS.md`. Философия и почему выбран именно этот алгоритм — в статьях Medium
-(см. корневой README), не здесь.
+From the repository root:
 
-## Структура
-
-- `builder/` — построитель мира по алгоритму владельца (блоки, пучки, итерации).
-- `adapter/` — подмешивание построенного мира в работу агента; локальный пересмотр.
-- `world/` — модель мира и его хранение (версии).
-- `llm/` — провайдеры моделей (включая скриптованную заглушку для тестов).
-- `method.py`, `config.py`, `trace.py` — метод верхнего уровня, конфигурация лимитов, трассировка.
-
-## Тесты
-
-```powershell
+```sh
+python -m pip install -e ".[dev]"
 python -m pytest tests/ -q
+python -m dialectic_world --help
 ```
 
-Тесты используют скриптованную LLM-заглушку (`tests/fake.py`), не живые вызовы моделей.
+Worlds can terminate with replacement, mediation, no opposite or no leap. These statuses do not certify truth. A `world_fit` mark is a compatibility judgment, not an answer-correctness score.

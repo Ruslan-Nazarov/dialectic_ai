@@ -17,7 +17,7 @@ def new_id(prefix: str) -> str:
 
 
 class Process(BaseModel):
-    """Always a transition of one process into another."""
+    """A process statement; prompt_2 development nodes do not have explicit endpoints."""
     id: str
     source: str                           # "from" -- the process that passes over
     target: str                           # "to" -- the process it passes into
@@ -26,7 +26,7 @@ class Process(BaseModel):
     iteration: int = 0                    # >=1 for a developing process; 0 otherwise
     derived_from: list[str] = Field(default_factory=list)   # P0 + this iteration's processes so far,
     # + (if the process rests on the whole previous iteration) every process of that iteration
-    status: Literal["active"] = "active"
+    status: Literal["active", "superseded"] = "active"
 
     def line(self) -> str:
         if self.source or self.target:
@@ -82,6 +82,7 @@ class Revision(BaseModel):
 
 
 class World(BaseModel):
+    schema_version: Literal[2] = 2
     id: str = Field(default_factory=lambda: new_id("w"))
     domain: str
     version: int = 1

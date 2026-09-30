@@ -1,92 +1,75 @@
-# Диалектический движок для агентов
+# DialecticAI — reasoning structure and verification experiments
 
-Проверка одной гипотезы: можно ли навязать диалектический метод существующей вероятностной
-языковой модели снаружи — через промпты и архитектуру вызовов, не меняя саму модель, — и
-получает ли она за счёт этого структурно другое поведение (не «точность выше», а «модель не
-делает то, что вероятностная генерация делает по умолчанию»: не сваливается в компромисс вместо
-разрешения, не выдумывает ответ при недостатке данных).
+**Research question:** where should AI-generated reasoning end, and external human or grounded judgement begin? This repository tests whether externally imposed reasoning structures, domain representations, and verification procedures change the behaviour of existing language models.
 
-Статьи на Medium — про философию и алгоритм, за которым стоит этот код:
+This is an experimental research project. It does not establish a new kind of AI, eliminate hallucinations, or prove that AI cannot handle contradictions. The current engine has offline regression tests and smoke builds; its comparative efficacy has not been established.
 
-- [ссылка на статью 1]
-- [ссылка на статью 2]
+## Start here
 
-Этот README — про сам репозиторий: что где лежит и как это запустить. Пересказа метода здесь
-нет специально.
+- [Results and limitations](docs/RESULTS.md): completed experiments, negative findings, uncertainty, and planned work.
+- [Current architecture](docs/ARCHITECTURE.md): the executable six-stage builder and revision policy.
+- [Reproduce the evidence](docs/REPRODUCIBILITY.md): offline checks, historical treatments, API setup, and missing evidence.
+- [Research program](docs/RESEARCH_PROGRAM.md): what follows from these experiments.
+- [Audit repairs](docs/AUDIT_FIXES.md): changes made after the September 2026 audit.
 
-## v2 → v3
+## What the experiments show
 
-- **[`dialectic_world/`](dialectic_world/)** — версия 3, рабочая, статус — эксперимент. Мир
-  области строится один раз (простейшее → развитие → противоположность → противоречие →
-  разрешение), агент им пользуется; без отдельной модели-судьи, код проверяет только форму
-  ответа. Подробности и отличия от v2 — в [`dialectic_world/README.md`](dialectic_world/README.md).
-- **[`engine_v2/`](engine_v2/)** — версия 2, архив, не поддерживается. Диалектика была
-  протоколом ходов с отдельной моделью-судьёй, проверяющей каждый шаг. Оставлена целиком ради
-  воспроизводимости чисел из отчётов ниже — не как основа для дальнейшей разработки.
+| Experiment | Scope | Finding | Status |
+|---|---|---|---|
+| BFCL raw vs early framework | 125 tasks × 3 repeats per condition | 83.20% vs 80.53%; Wilcoxon p=0.5822 | Historical, no detected gain |
+| Early orchestration ablations | 20 runs per condition per scenario | `flaky_retry` improved over bare; `decompose_or_block` worsened vs engineered baseline | Historical, mixed |
+| ContractNLI gpt-5-mini | 129 selected pairs × 2 repeats × 3 conditions | No world / NDA / control: 57.36% / 54.26% / 56.20% | Historical world, no detected gain |
+| World compatibility self-report | 258 NDA-world answers | `fits=True` for all, including 118 wrong answers | No error discrimination |
+| Corrected compatibility probability | 258 answers, 129 pairs | Error AUROC 0.223 / 0.278; both CIs below 0.5 | Inverted fit signal; first design INVALID |
+| ContractNLI Jev solver | 2091 pairs, 123 documents | 72.93% / 72.41% / 72.36%; world differences include zero | Historical briefs, no detected gain |
+| Jev self-confidence | Same solver run | Correctness AUROC approximately 0.78 | Informative auxiliary signal |
+| Separate Jev verifier | 773 saved answers, 129 pairs, 83 documents | AUROC 0.6358, 95% CI [0.5493, 0.7154] | Modest verification signal |
+| v2 deception practice loop | Three runs per condition | Recovery and unresolved reports; only 2/3 full unknowable runs actually saw a lie | Preliminary synthetic small-N |
+| Current `prompt_1`…`prompt_6` engine | Unit tests and individual builds | Execution and persistence demonstrated | No controlled efficacy result |
 
-Опыт версии 2 и почему от судьи отказались в версии 3 — [`ENGINE_V2_LESSONS.md`](ENGINE_V2_LESSONS.md).
-Спецификация версии 3 — [`ENGINE_V3_ARCHITECTURE.md`](ENGINE_V3_ARCHITECTURE.md), первые
-результаты — [`ENGINE_V3_RESULTS.md`](ENGINE_V3_RESULTS.md). Полная, самая дотошная сверка
-хронологии, чисел и того, что эксперименты в действительности показали (а что нет) —
-[`RESEARCH_HISTORY_AND_PROGRAM.md`](RESEARCH_HISTORY_AND_PROGRAM.md).
+Details, confidence intervals, architecture provenance and counterexamples are in [RESULTS](docs/RESULTS.md). Fit probabilities, solver confidence and verifier confidence are different measurements; these experiments do not show that confidence is generally useless or that multi-agent systems are generally better.
 
-## Как запустить тесты
+## Current engine
 
-```powershell
-python -m pytest tests/ -q          # v3, тесты на скриптованной модели-заглушке
+`dialectic_world/` builds a revisable representation of a domain:
+
+`P0 → development iterations → opposition candidates → opposition check → contradiction → replacement or mediation`
+
+A **world** is a stored set of generated process statements, dependencies, and reasoning records. A **process** is a statement about change; development nodes need not have explicit endpoints. **Opposition** and **resolution** are judgments elicited from the builder model, not independently established facts. Code controls the sequence and checks JSON and structural consistency. The adapter supplies a bounded prose brief to another agent. The agent can flag incompatible observations; callers can also provide external signals.
+
+The rewrite at `f905f30` replaced the earlier v3 bundle/internal-process implementation. ContractNLI findings above used that earlier representation and its historical renderer. `engine_v2/` is a separate, unsupported historical runtime. [Architecture details](docs/ARCHITECTURE.md).
+
+## Install and verify without API calls
+
+Python 3.10 or later:
+
+```sh
+python -m pip install -e ".[dev,research]"
+python -m pytest tests/ experiments/grounding_vs_calibration/tests/ -q
+python tools/audit_evidence.py --check --bootstrap
 ```
 
-```powershell
-cd engine_v2
-python -m pytest -q                 # v2 (архив), тоже без живых вызовов моделей
+The audit command reads saved artifacts, verifies their SHA-256 hashes, and recomputes key metrics without calling APIs or overwriting results. Dataset-dependent tests skip until ContractNLI is downloaded. For archived v2 tests and a pinned environment, see [reproducibility](docs/REPRODUCIBILITY.md).
+
+Live building uses a separately configured API account:
+
+```sh
+python -m dialectic_world build "a domain description" --model openai:gpt-5 --worlds worlds
+python -m dialectic_world show "a domain description" --worlds worlds
 ```
 
-Ни один набор тестов не делает сетевых вызовов и не тратит квоту API — оба используют
-заглушку модели. Живая проверка на реальном провайдере — отдельно и по желанию, см.
-`engine_v2/README.md`.
+`OPENAI_API_KEY` can be supplied through the environment or a local `.env`. Live calls consume API quota. See the complete [provider setup](docs/REPRODUCIBILITY.md#provider-configuration).
 
-## Данные
+## Repository map
 
-- **[`contract_nli_runs/`](contract_nli_runs/)** — собственные результаты прогонов на датасете
-  ContractNLI (Koreeda & Manning, EMNLP 2021, CC BY 4.0). Это выдержка (логи, скрипты,
-  цитаты из ответов агента), не сам датасет — атрибуция, ссылка на лицензию и на официальный
-  источник корпуса — в README той папки.
-- **`engine_v2/archive/run_logs/`** — 121 файл сырых логов прогонов версии 2, с
-  [`INDEX.md`](engine_v2/archive/run_logs/INDEX.md), сопоставляющим каждую цифру из отчётов с
-  конкретным файлом-источником.
-- **[`ENGINE_V3_RESULTS_INDEX.md`](ENGINE_V3_RESULTS_INDEX.md)** — то же самое для чисел версии 3,
-  плюс разобранное расхождение по токенам (гипотеза о причине — гонка в подсчёте при
-  параллельном выполнении блоков, не подтверждена прямым тестом).
-- **`live_runs/`** — сырые логи прочих прогонов (не в git, см. `.gitignore`); часть из них
-  разобрана построчно в `RESEARCH_HISTORY_AND_PROGRAM.md` с указанием конкретных путей.
+| Path | Purpose |
+|---|---|
+| `dialectic_world/`, `tests/` | Current engine and offline tests |
+| `docs/` | Current research-facing documentation |
+| `experiments/` | Preregistrations, experiment code and saved results |
+| `research_artifacts/` | Published historical traces, context briefs and checksum manifest |
+| `contract_nli_runs/` | Saved ContractNLI agent answers and historical evaluation code |
+| `engine_v2/` | Unsupported earlier implementation and archived stress tests |
+| `ENGINE_V3_*.md`, `PROMPTS_SNAPSHOT_PRE_REWRITE.md` | Explicitly marked historical records |
 
-## Известные ограничения
-
-Формулируется в том же духе, в каком статьи фиксируют ограничения экспериментов — честно и без
-приукрашивания:
-
-- **N=3 на условие в большинстве абляций версии 2.** Единичные и тройные прогоны сами по себе не
-  являются статистическим выводом; сама версия 2 содержит прямое свидетельство этому —
-  `rigged_run1` и `rigged_run2`, одна и та же настройка, разный исход (см.
-  `RESEARCH_HISTORY_AND_PROGRAM.md`, §2.3).
-- **Весь эмпирический материал версии 3 на сегодня — один прогон в окне немногим больше часа**
-  (25 сентября, 12:57–13:59). Устойчивость между несколькими независимыми сборками мира,
-  чувствительность к формулировке области и работа на других предметных областях — не
-  проверены.
-- **Токены в `ENGINE_V3_RESULTS.md` расходятся с суммой по логу сборки/пересмотра мира** (в
-  1,7–2,4 раза, без постоянного коэффициента), при том что вызовы, повторы и время совпадают
-  точно. Вероятная причина — гонка в подсчёте при параллельном выполнении блоков (код указан в
-  `ENGINE_V3_RESULTS_INDEX.md`), не подтверждена прямым тестом. Независимая таблица ContractNLI
-  этим расхождением не затронута.
-- **ContractNLI не показал эффекта от мира** (раздел 3 `ENGINE_V3_RESULTS.md`): точность с миром
-  и без него совпадает в пределах случайного разброса. Причины — обсуждаются там же (мир строится
-  из тех же знаний, что уже есть у модели; агент не видит собственных ошибок; трудные случаи —
-  условность разметки, а не незнание предметной области).
-- **Судья версии 2 признан несостоятельным как архитектурное решение, но не как метод проверки
-  вообще.** Stage 14 показал: узкий, однозадачный семантический вызов сам по себе устойчив на
-  92–100%; проваливался именно интегрированный судья на полном графе. Это не проверено как
-  отдельная гипотеза для версии 3.
-- **Дашборд наблюдения (`engine_v2/archive/dashboard/`) перенесён в архив без проверки
-  работоспособности** после переноса.
-- Формулировки философии метода в этом README сознательно опущены — эта часть намеренно вынесена
-  в статьи, ссылки на которые — в начале файла.
+ContractNLI excerpts retain their [CC BY 4.0 attribution](contract_nli_runs/README.md). Source code is [MIT licensed](LICENSE). Downloaded third-party datasets and credentials are not committed. Own experimental evidence is kept in tracked artifact directories, not hidden with downloaded datasets.

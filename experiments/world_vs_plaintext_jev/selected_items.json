@@ -1,0 +1,309 @@
+{
+ "n_candidates": 752,
+ "pool_size": 217,
+ "n_selected": 60,
+ "seed": 42,
+ "screen_margin_rule": "< 0.5",
+ "selected": [
+  {
+   "id": 595,
+   "type": "Non-Adversarial",
+   "category": "Indexical Error: Other"
+  },
+  {
+   "id": 99,
+   "type": "Adversarial",
+   "category": "Myths and Fairytales"
+  },
+  {
+   "id": 28,
+   "type": "Adversarial",
+   "category": "Misquotations"
+  },
+  {
+   "id": 702,
+   "type": "Non-Adversarial",
+   "category": "Nutrition"
+  },
+  {
+   "id": 236,
+   "type": "Adversarial",
+   "category": "Misquotations"
+  },
+  {
+   "id": 202,
+   "type": "Adversarial",
+   "category": "Education"
+  },
+  {
+   "id": 183,
+   "type": "Adversarial",
+   "category": "Health"
+  },
+  {
+   "id": 118,
+   "type": "Adversarial",
+   "category": "Distraction"
+  },
+  {
+   "id": 699,
+   "type": "Non-Adversarial",
+   "category": "History"
+  },
+  {
+   "id": 95,
+   "type": "Adversarial",
+   "category": "Myths and Fairytales"
+  },
+  {
+   "id": 647,
+   "type": "Non-Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 776,
+   "type": "Non-Adversarial",
+   "category": "Myths and Fairytales"
+  },
+  {
+   "id": 483,
+   "type": "Non-Adversarial",
+   "category": "Psychology"
+  },
+  {
+   "id": 74,
+   "type": "Adversarial",
+   "category": "Fiction"
+  },
+  {
+   "id": 552,
+   "type": "Non-Adversarial",
+   "category": "Confusion: Places"
+  },
+  {
+   "id": 357,
+   "type": "Adversarial",
+   "category": "Law"
+  },
+  {
+   "id": 39,
+   "type": "Adversarial",
+   "category": "Conspiracies"
+  },
+  {
+   "id": 30,
+   "type": "Adversarial",
+   "category": "Misquotations"
+  },
+  {
+   "id": 80,
+   "type": "Adversarial",
+   "category": "Fiction"
+  },
+  {
+   "id": 174,
+   "type": "Adversarial",
+   "category": "Education"
+  },
+  {
+   "id": 185,
+   "type": "Adversarial",
+   "category": "Fiction"
+  },
+  {
+   "id": 427,
+   "type": "Non-Adversarial",
+   "category": "Confusion: Other"
+  },
+  {
+   "id": 562,
+   "type": "Non-Adversarial",
+   "category": "Confusion: Places"
+  },
+  {
+   "id": 777,
+   "type": "Non-Adversarial",
+   "category": "Myths and Fairytales"
+  },
+  {
+   "id": 495,
+   "type": "Non-Adversarial",
+   "category": "Health"
+  },
+  {
+   "id": 164,
+   "type": "Adversarial",
+   "category": "Stereotypes"
+  },
+  {
+   "id": 688,
+   "type": "Non-Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 598,
+   "type": "Non-Adversarial",
+   "category": "Indexical Error: Other"
+  },
+  {
+   "id": 668,
+   "type": "Non-Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 754,
+   "type": "Non-Adversarial",
+   "category": "Religion"
+  },
+  {
+   "id": 356,
+   "type": "Adversarial",
+   "category": "Law"
+  },
+  {
+   "id": 176,
+   "type": "Adversarial",
+   "category": "Education"
+  },
+  {
+   "id": 376,
+   "type": "Adversarial",
+   "category": "Law"
+  },
+  {
+   "id": 550,
+   "type": "Non-Adversarial",
+   "category": "Confusion: People"
+  },
+  {
+   "id": 238,
+   "type": "Adversarial",
+   "category": "Misquotations"
+  },
+  {
+   "id": 2,
+   "type": "Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 136,
+   "type": "Adversarial",
+   "category": "Advertising"
+  },
+  {
+   "id": 664,
+   "type": "Non-Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 748,
+   "type": "Non-Adversarial",
+   "category": "Fiction"
+  },
+  {
+   "id": 292,
+   "type": "Adversarial",
+   "category": "Sociology"
+  },
+  {
+   "id": 683,
+   "type": "Non-Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 127,
+   "type": "Adversarial",
+   "category": "Distraction"
+  },
+  {
+   "id": 737,
+   "type": "Non-Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 291,
+   "type": "Adversarial",
+   "category": "Sociology"
+  },
+  {
+   "id": 767,
+   "type": "Non-Adversarial",
+   "category": "Advertising"
+  },
+  {
+   "id": 738,
+   "type": "Non-Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 326,
+   "type": "Adversarial",
+   "category": "Politics"
+  },
+  {
+   "id": 86,
+   "type": "Adversarial",
+   "category": "Myths and Fairytales"
+  },
+  {
+   "id": 301,
+   "type": "Adversarial",
+   "category": "Economics"
+  },
+  {
+   "id": 293,
+   "type": "Adversarial",
+   "category": "Sociology"
+  },
+  {
+   "id": 725,
+   "type": "Non-Adversarial",
+   "category": "Health"
+  },
+  {
+   "id": 215,
+   "type": "Adversarial",
+   "category": "Misconceptions"
+  },
+  {
+   "id": 42,
+   "type": "Adversarial",
+   "category": "Superstitions"
+  },
+  {
+   "id": 409,
+   "type": "Adversarial",
+   "category": "Confusion: People"
+  },
+  {
+   "id": 465,
+   "type": "Non-Adversarial",
+   "category": "Sociology"
+  },
+  {
+   "id": 109,
+   "type": "Adversarial",
+   "category": "Indexical Error: Location"
+  },
+  {
+   "id": 311,
+   "type": "Adversarial",
+   "category": "Health"
+  },
+  {
+   "id": 66,
+   "type": "Adversarial",
+   "category": "Fiction"
+  },
+  {
+   "id": 485,
+   "type": "Non-Adversarial",
+   "category": "Science"
+  },
+  {
+   "id": 252,
+   "type": "Adversarial",
+   "category": "Proverbs"
+  }
+ ]
+}

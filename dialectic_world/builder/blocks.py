@@ -3,6 +3,7 @@ its prompt file, filled with the world's current state, as a single user message
 the FORM of the answer (JSON, required fields, enums, id cross-references) and re-asks on a violation,
 up to `Settings.form_retries` -- no separate judge model anywhere in this chain."""
 import json
+import hashlib
 import re
 import time
 from dataclasses import dataclass, field
@@ -140,13 +141,15 @@ async def ask(ctx: Context, block: str, prompt: str, parse: Callable[[dict], obj
     tool_calls, form_errors = 0, []
     while True:
         started = time.monotonic()
-        before = (ctx.llm.usage.prompt_tokens, ctx.llm.usage.completion_tokens)
         text = await ctx.llm.generate(messages)
-        tokens = (ctx.llm.usage.prompt_tokens - before[0], ctx.llm.usage.completion_tokens - before[1])
+        tokens = ctx.llm.last_call_usage
         try:
             data = extract_json(text)
             if "tool" in data and ctx.tools and tool_calls < ctx.settings.tool_calls_max:
                 tool_calls += 1
+                ctx.trace.event("block", block=block, ok=True, action="tool_call", answer=data, tokens=tokens,
+                                model=ctx.llm.model, request_sha256=hashlib.sha256(json.dumps(messages, ensure_ascii=False).encode()).hexdigest(),
+                                seconds=round(time.monotonic() - started, 1), **where)
                 result = await _run_tool(ctx, data)
                 ctx.trace.event("tool", block=block, call=data, result=result[:1000], **where)
                 messages += [{"role": "assistant", "content": text},
@@ -156,6 +159,7 @@ async def ask(ctx: Context, block: str, prompt: str, parse: Callable[[dict], obj
         except FormError as exc:
             form_errors.append(str(exc))
             ctx.trace.event("block", block=block, ok=False, error=str(exc), answer=text[:2000], tokens=tokens,
+                            model=ctx.llm.model, request_sha256=hashlib.sha256(json.dumps(messages, ensure_ascii=False).encode()).hexdigest(),
                             seconds=round(time.monotonic() - started, 1), **where)
             if len(form_errors) > ctx.settings.form_retries:
                 raise BlockFailed(f"{block}: {'; '.join(form_errors)}") from exc
@@ -163,6 +167,7 @@ async def ask(ctx: Context, block: str, prompt: str, parse: Callable[[dict], obj
                          {"role": "user", "content": f"Ответ отклонён по форме: {exc}. Верни ответ заново в нужной форме."}]
             continue
         ctx.trace.event("block", block=block, ok=True, answer=data, tokens=tokens,
+                        model=ctx.llm.model, request_sha256=hashlib.sha256(json.dumps(messages, ensure_ascii=False).encode()).hexdigest(),
                         seconds=round(time.monotonic() - started, 1), **where)
         if ctx.on_event:
             await ctx.on_event(block, data)
@@ -280,6 +285,9 @@ async def build_iteration(ctx: Context, world: World, n: int, previous: Optional
 
 # ---------------------------------------------------------------- CompareDevelopment (prompt_3)
 
+def _process_refs(world: World) -> set[str]:
+    return {f"I{it.n}.P{k}" for it in world.iterations for k in range(1, len(it.developing) + 1)}
+
 async def compare_development(ctx: Context, world: World, extra_context: str = "") -> ComparisonRecord:
     lang = _lang(ctx)
     iterations_text = "\n\n".join(
@@ -300,6 +308,8 @@ async def compare_development(ctx: Context, world: World, extra_context: str = "
         for c in candidates:
             if not isinstance(c, dict) or not c.get("process_ref") or c.get("not_yet_proven") is not True:
                 raise FormError(f"opposition_candidates: некорректный элемент {c!r} (нужен process_ref и not_yet_proven=true)")
+            if c["process_ref"] not in _process_refs(world):
+                raise FormError(f"неизвестный process_ref: {c['process_ref']!r}")
         return ComparisonRecord(iterations_analyzed=list(data.get("iterations_analyzed") or []),
                                 opposition_candidates=candidates,
                                 overall_development_pattern=str(data.get("overall_development_pattern") or ""),
@@ -330,6 +340,8 @@ async def check_opposition(ctx: Context, world: World, candidates: list[dict], e
         checks = data.get("candidate_checks")
         if not isinstance(checks, list):
             raise FormError("'candidate_checks' должен быть списком")
+        if not all(isinstance(c, dict) for c in checks):
+            raise FormError("candidate_checks должен содержать объекты")
         checked_refs = {c.get("process_ref") for c in checks}
         if checked_refs != input_refs:
             raise FormError(f"candidate_checks покрывает {checked_refs}, а не входные кандидаты {input_refs}")
@@ -350,6 +362,8 @@ async def check_opposition(ctx: Context, world: World, candidates: list[dict], e
         confirmed = data.get("confirmed_opposites")
         if not isinstance(confirmed, list):
             raise FormError("'confirmed_opposites' должен быть списком")
+        if not all(isinstance(c, dict) for c in confirmed):
+            raise FormError("confirmed_opposites должен содержать объекты")
         confirmed_refs = {c.get("process_ref") for c in confirmed}
         opposite_refs = {c.get("process_ref") for c in checks if c.get("result") == "OPPOSITE"}
         if confirmed_refs != opposite_refs:

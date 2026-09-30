@@ -21,6 +21,7 @@ class WorldSession:
     def __init__(self, world: World, builder: Context, store: Optional[WorldStore] = None):
         self.world, self.builder, self.store = world, builder, store
         self.revisions = 0
+        self._last_attempt_version = world.version
 
     @property
     def adapter(self) -> WorldAdapter:
@@ -32,10 +33,17 @@ class WorldSession:
         if self.revisions >= self.builder.settings.revisions_per_session:
             self.builder.trace.event("revision_skipped", reason="revisions_per_session reached", note=fit.note)
             return False
-        new = await revise_world(self.builder, self.world, fit, agent_data, self.store)
+        base = self.world.model_copy(deep=True)
+        # An unsuccessful in-memory attempt also consumes a version number. Parentage
+        # still names the adopted hypothesis, not the rejected attempt.
+        if self.store is None:
+            base.version = self._last_attempt_version
+        new = await revise_world(self.builder, base, fit, agent_data, self.store)
         if new is None:
             return False
-        if new.status != "built":
+        new.parent_version = self.world.version
+        self._last_attempt_version = new.version
+        if new.status not in {"built", "mediated"}:
             # A revision that broke the world (e.g. no opposite any more) is kept on disk for inspection;
             # the agent goes on in the last whole version.
             self.builder.trace.event("revision_not_adopted", version=new.version, status=new.status)
@@ -54,7 +62,9 @@ class AgentResult:
 
 
 AGENT_FORMAT = """Отвечай JSON. Чтобы вызвать инструмент: {"tool": "<имя>", "args": {...}}.
-Чтобы ответить: {"answer": "...", "world_fit": {"fits": true, "process_ids": [], "note": ""}}."""
+Чтобы ответить, верни объект с answer и world_fit (fits — JSON boolean true или false,
+process_ids — список id, note — объяснение). Выбери fits по данным, а не по примеру формата.
+Соответствие данных миру не означает, что твой ответ верен."""
 
 
 async def run_agent(llm: LLM, session: WorldSession, task: str, role: str = "",

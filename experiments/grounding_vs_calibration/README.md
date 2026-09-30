@@ -1,82 +1,37 @@
-# Grounding vs calibration — experiment stand
+# Compatibility, self-report and quote-based re-verdict
 
-Tests whether a calibrated confidence signal alone can tell a wrong agent answer from a right one, or
-whether that needs an external (grounding) signal. Full design in [PREREGISTRATION.md](PREREGISTRATION.md),
-full results in [RESULTS.md](RESULTS.md). This README is only about running the stand yourself.
+See [RESULTS.md](RESULTS.md) and [PREREGISTRATION.md](PREREGISTRATION.md). Variant 2 round 1 is INVALID: only opaque process IDs were shown. Corrected round 2 uses the historical world brief and is the operative result. Variants 1 and 3 were not invalidated.
 
-## Setup
+## Check existing evidence without API calls
 
-1. An `OPENAI_API_KEY` in a `.env` file two directories up (repo root), or in your environment. `gpt-5-mini`
-   (variant 3's re-verdict call) and `gpt-4o-mini` (variant 2's surrogate Decider) both go through the
-   OpenAI API.
-2. Download ContractNLI (CC BY 4.0, Koreeda & Manning, EMNLP Findings 2021) from its official source —
-   not committed to this repo:
+From the repository root:
 
-```bash
-python download_contract_nli.py
+```sh
+python -m pip install -e ".[dev,research]"
+python tools/audit_evidence.py --check --bootstrap
+python -m pytest tests/ experiments/grounding_vs_calibration/tests/ -q
 ```
 
-This fetches `https://stanfordnlp.github.io/contract-nli/resources/contract-nli.zip` into
-`data/contract-nli/` (gitignored). Safe to re-run — skips the download if `test.json` is already there.
+The audit reads `raw_results_round2.json` and recomputes AUROC/CI without overwriting evidence. Dataset-dependent tests skip if ContractNLI has not been downloaded.
 
-The NDA world file used by variant 2 (`data/world_nda_v1.json`) is already checked into this repo, since
-it's this experiment's own artifact, not a third-party dataset.
+## Rerun corrected scoring
 
-## Run
+Use a disposable clone to preserve historical outcomes. `full_run_v2.py` makes live calls and writes round-2 outputs; `analyze_round2.py` writes its metric summary. The old `full_run.py` / `analyze.py` are retained only to inspect the INVALID round-1 design.
 
-Needs an `OPENAI_API_KEY` (env or repo-root `.env`) for `pilot.py`/`full_run.py` — `data.py` and
-`pytest tests/` need no API key at all, only the downloaded dataset.
-
-```bash
-python data.py            # sanity check: recomputes 54.3% accuracy against ContractNLI gold
-python -m pytest tests/    # unit tests -- data-dependent ones skip with a clear message until step 2 above
-python pilot.py            # 10 real answers, all 3 variants, cost estimate
-python full_run.py         # all 258 answers, all 3 variants, parallel -- writes raw_results.json
-python analyze.py          # frozen metrics from PREREGISTRATION.md -- writes metrics_summary.json
-python post_hoc.py         # exploratory breakdown only, does not touch frozen metrics
+```sh
+python experiments/grounding_vs_calibration/download_contract_nli.py
+python experiments/grounding_vs_calibration/full_run_v2.py
+python experiments/grounding_vs_calibration/analyze_round2.py
 ```
 
-One command for the whole pipeline (assumes the dataset is already downloaded):
+Required environment: `OPENAI_API_KEY` for surrogate gpt-4o-mini and quote re-verdict gpt-5-mini; `TYPESAFE_API_KEY` for implemented Jev Choice calls. `JevDecider` is implemented and was used in round 2; the former unimplemented-client description was obsolete. Root `.env` is supported and remains ignored.
 
-```bash
-python -m pytest tests/ -q && python full_run.py && python analyze.py && python post_hoc.py
-```
+`data/world_nda_v1.json` is committed own evidence. The pre-rewrite schema is deliberately loaded using `experiments/legacy_world.py`, not the current engine's World model. The renderer is tested against the 7717-character frozen brief. Full dataset, models and credentials are external dependencies; API aliases can change results.
 
-**Cost of a full run** (258 answers, all 3 variants; actual numbers from the run behind RESULTS.md):
-~301k prompt + ~260 completion tokens on `gpt-4o-mini` (variant 2) and ~34k prompt + ~62k completion
-tokens on `gpt-5-mini` (variant 3's re-verdict) — roughly 335k prompt / 63k completion tokens total,
-~516 API calls, ~70s wall-clock with the default 16 parallel workers. Variant 1 makes no calls.
+## What is measured
 
-## Switching variant 2's Decider to Jev
+1. Original `world_fit` self-report: no new calls.
+2. `P(none fits)` in a historical brief as an error proxy: surrogate and real Jev; not a general test of solver confidence.
+3. Quote-anchored re-verdict: mechanical retrieval and a second model verdict. All retrieved quotes passed the existence check, so this is not a demonstrated advantage of independent grounding.
 
-Variant 2 talks to a `Decider` (`decider.py`), matched to Jev's `Choice` primitive:
-`choice(state, options) -> {choice, probabilities, confidence}`. Which implementation runs is one
-environment variable:
-
-```bash
-export DECIDER_IMPL=surrogate   # default: a real logprob-capable OpenAI model (gpt-4o-mini)
-export DECIDER_IMPL=jev         # TypeSafe AI's Choice primitive, via POST /v1/systemone
-export TYPESAFE_API_KEY=...     # only needed for DECIDER_IMPL=jev
-```
-
-**`JevDecider` is written from TypeSafe's public docs only and is untested: no access key was available
-while building this stand.** It raises `NotImplementedError` immediately on any call — setting
-`DECIDER_IMPL=jev` without also fixing that will fail loudly, on purpose, rather than silently running the
-surrogate. Once real TypeSafe access exists, implement the actual request in `JevDecider.choice()` /
-`choice_binary_none()` in `decider.py` and remove the `raise`; nothing else in `pilot.py`/`full_run.py`
-needs to change.
-
-## What each variant actually is
-
-1. **Self-report** — the agent's own `world_fit` mark from the original run. No calls, no cost.
-2. **Choice-with-probabilities** (calibration) — a Decider call per answer, main signal = `P(none fits)`.
-3. **Quote-anchored re-verdict** (renamed from "practice / external signal" after the post-hoc analysis
-   found the mechanical "quote not found" check never fires on this data by construction — see
-   PREREGISTRATION.md's 2026-09-27 correction). Retrieval is code-only; the re-verdict step is a second
-   model call, so this variant is only partially external, not a pure grounding check.
-
-## Verified clean-clone run
-
-This stand was cloned fresh into a temp directory and run end to end (`pytest` → `download_contract_nli.py`
-→ `full_run.py` → `analyze.py` → `post_hoc.py`) with no repo-relative assumptions beyond this folder, to
-confirm someone outside this environment can reproduce it from a bare `git clone`.
+The corrected score was inverted. Jev's confidence on its own answers was informative in another experiment. See [scientific limitations](../../docs/RESULTS.md) and [full reproduction guide](../../docs/REPRODUCIBILITY.md).

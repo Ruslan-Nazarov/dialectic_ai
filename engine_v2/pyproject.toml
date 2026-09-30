@@ -47,7 +47,7 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/your-username/DialecticAI"
+Repository = "https://github.com/Ruslan-Nazarov/dialectic_ai"
 
 [project.scripts]
 dialectic = "dialectic_ai.cli.main:main"

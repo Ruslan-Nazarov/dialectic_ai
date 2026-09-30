@@ -1,7 +1,8 @@
 """Plain model (one call, no engine) on every test pair whose gold label is Contradiction; lists where it fails.
 
-    python live_runs/contract_nli/plain_scan.py
+    python contract_nli_runs/plain_scan.py --help
 """
+import argparse
 import asyncio
 import json
 import sys
@@ -9,19 +10,21 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "engine_v2"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 load_dotenv(ROOT / ".env")
 
 from run_one import TASK, verdict  # noqa: E402
-from tests.live.cases import build_actor  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 
 
-async def main():
-    data = json.loads((HERE / "contract-nli" / "test.json").read_text(encoding="utf-8"))
+async def main(dataset, output):
+    if output.exists():
+        raise FileExistsError("Refusing to overwrite a result; choose a new --out")
+    data = json.loads(dataset.read_text(encoding="utf-8"))
+    from tests.live.cases import build_actor
     pairs = [(doc, key) for doc in data["documents"]
              for key, a in doc["annotation_sets"][0]["annotations"].items() if a["choice"] == "Contradiction"]
     llm = build_actor()
@@ -40,7 +43,8 @@ async def main():
 
     await asyncio.gather(*(one(d, k) for d, k in pairs))
     results.sort(key=lambda r: (r["verdict"] == "Contradiction", r["chars"]))
-    (HERE / "plain_scan.json").write_text(json.dumps(results, ensure_ascii=False, indent=1), encoding="utf-8")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(results, ensure_ascii=False, indent=1), encoding="utf-8")
     wrong = [r for r in results if r["verdict"] != "Contradiction"]
     print(f"{len(results)} pairs with gold Contradiction; plain model wrong on {len(wrong)}")
     by = {}
@@ -52,4 +56,9 @@ async def main():
         print(f"  doc {r['doc']} {r['hypothesis']} ({r['chars']} chars) -> {r['verdict']}")
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Historical v2 plain scan; makes live API calls")
+    parser.add_argument("--dataset", type=Path, default=ROOT / "experiments/grounding_vs_calibration/data/contract-nli/test.json")
+    parser.add_argument("--out", type=Path, default=ROOT / "scratch/plain_scan_new.json")
+    args = parser.parse_args()
+    asyncio.run(main(args.dataset, args.out))

@@ -1,5 +1,8 @@
 # Results — grounding vs calibration
 
+> Scope correction (2026-09-30): round 2 measures world compatibility as an error proxy, not confidence in answer correctness generally. The historical world/renderer are preserved; [current evidence summary](../../docs/RESULTS.md).
+
+
 Preregistered in `PREREGISTRATION.md` (including several amendments made before/around these runs, all
 dated and marked). Round 1 (variant 2 = surrogate only, bare-id list, now invalid): raw per-answer output
 `raw_results.json`, run metadata `run_summary.json`, `metrics_summary.json`. Round 2 (variant 2 = 2a/2b/2c
@@ -84,8 +87,7 @@ thresholds.
 | NotMentioned | 26 | 0.000 [0.000, 0.000] | 0.206 [0.067, 0.377] | 0.206 [0.062, 0.380] |
 
 Notable: 2a's NotMentioned-class AUROC is exactly 0 with a degenerate CI \[0, 0\] — every bootstrap
-resample of this class reproduces perfect *inverted* separation (every wrong answer scores at least as
-high a P(none fits) as every correct one). Entailment has only 5 wrong answers, so its CI is wide despite
+resample of this class reproduces perfect *inverted* separation (every wrong answer scores a lower P(none fits) than every correct one). Entailment has only 5 wrong answers, so its CI is wide despite
 the highest point estimates in the table.
 
 ### Exploratory: breakdown by difficulty group
@@ -115,7 +117,7 @@ At the TypeSafe rate confirmed against the console on 2026-09-27 (~$0.034 / mill
 
 **The main metric is significantly below 0.5 for both variants**: 2a's 95% CI [0.149, 0.302] and 2b's
 [0.198, 0.362] both sit entirely below 0.5 — not merely uninformative, the signal is **inverted** for
-both. **2a and 2b are statistically indistinguishable from each other**: the paired difference CI
+both. **No difference between 2a and 2b was detected by this interval**: the paired difference CI
 [−0.010, 0.122] includes 0, so the higher point estimate for 2b (0.278 vs 0.223) is not a distinguishable
 effect in this data. Both conclusions hold before looking at any class breakdown.
 

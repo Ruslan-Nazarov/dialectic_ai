@@ -26,7 +26,9 @@ CLASSES = ["Entailment", "Contradiction", "NotMentioned"]
 CONDITIONS = ["no_world", "nda_world", "control_world"]
 EVAL_V3 = ROOT / "contract_nli_runs" / "eval_v3.json"
 COND_TO_ARM = {"no_world": "plain", "nda_world": "world", "control_world": "placebo"}
-GPT5MINI_ALL = {"plain": 0.57, "world": 0.54, "placebo": 0.56}  # eval_v3.md, ALL row
+_gpt_rows = json.loads(EVAL_V3.read_text(encoding="utf-8"))
+GPT5MINI_ALL = {arm: sum(r["verdict"] == r["gold"] for r in _gpt_rows if r["arm"] == arm)
+               / sum(r["arm"] == arm for r in _gpt_rows) for arm in COND_TO_ARM.values()}
 
 
 def load_records():
